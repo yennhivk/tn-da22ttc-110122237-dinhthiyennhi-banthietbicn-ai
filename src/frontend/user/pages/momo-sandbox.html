@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cổng thanh toán MoMo - Sandbox</title>
+    <!-- Import Google Fonts for premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --momo-pink: #a50064;
+            --momo-pink-hover: #8f0055;
+            --momo-pink-light: #fef0f6;
+            --napas-gradient: linear-gradient(135deg, #a50064 0%, #d91c7a 100%);
+            --gray-text: #6b7280;
+            --dark-text: #1f2937;
+            --light-gray: #f3f4f6;
+            --error-red: #dc2626;
+            --border-color: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #f7f7f8;
+            color: var(--dark-text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .header-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .momo-brand-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(165, 0, 100, 0.2);
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        /* Banner Message */
+        .banner-alert {
+            background-color: #eff6ff;
+            border-bottom: 1px solid #dbeafe;
+            color: #1e40af;
+            padding: 10px 0;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .banner-alert-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* Main Workspace Layout */
+        main {
+            flex: 1;
+            max-width: 1100px;
+            width: 100%;
+            margin: 24px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            main {
+                grid-template-columns: 1fr;
+                margin: 12px auto;
+            }
+        }
+
+        /* Card Container Styles */
+        .payment-card {
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+            padding: 24px;
+        }
+
+        /* Order Details Card (Left Column) */
+        .order-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--dark-text);
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .info-item {
+            margin-bottom: 16px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: var(--gray-text);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--dark-text);
+            word-break: break-all;
+        }
+
+        .provider-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .provider-logo {
+            width: 20px;
+            height: 20px;
+        }
+
+        .amount-display {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--dark-text);
+            margin-top: 10px;
+        }
+
+        /* Timer Section */
+        .timer-box {
+            background-color: #fffbeb;
+            border: 1px solid #fef3c7;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 24px;
+            text-align: center;
+        }
+
+        .timer-label {
+            font-size: 13px;
+            color: #b45309;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .timer-countdown {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            font-weight: 700;
+        }
+
+        .time-segment {
+            background-color: #f59e0b;
+            color: #ffffff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            min-width: 32px;
+            text-align: center;
+        }
+
+        .time-label {
+            font-size: 10px;
+            color: #92400e;
+            align-self: flex-end;
+            margin: 0 2px 2px 2px;
+        }
+
+        .safety-link {
+            display: block;
+            text-align: center;
+            margin-top: 16px;
+            font-size: 12px;
+            color: var(--momo-pink);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .safety-link:hover {
+            color: var(--momo-pink-hover);
+            text-decoration: underline;
+        }
+
+        /* Right Column Layout: Interactive Payment Methods */
+        .methods-card {
+            display: flex;
+            flex-direction: column;
+            min-height: 500px;
+        }
+
+        /* Tab Switchers */
+        .tabs-header {
+            display: flex;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 24px;
+            gap: 16px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 12px 4px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--gray-text);
+            cursor: pointer;
+            position: relative;
+            transition: color 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: var(--momo-pink);
+        }
+
+        .tab-btn.active {
+            color: var(--momo-pink);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--momo-pink);
+        }
+
+        /* Tab Contents */
+        .tab-content {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+        }
+
+        .tab-content.active {
+            display: flex;
+        }
+
+        /* QR Code Scanner Tab View */
+        .qr-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px 0;
+            flex: 1;
+        }
+
+        .qr-wrapper {
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .qr-wrapper:hover {
+            transform: scale(1.02);
+        }
+
+        .qr-scanner-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--momo-pink), transparent);
+            animation: scan 2.5s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; }
+            50% { top: 100%; }
+            100% { top: 0%; }
+        }
+
+        .qr-instruction {
+            font-size: 14px;
+            color: var(--gray-text);
+            max-width: 320px;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        .qr-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--momo-pink-light);
+            color: var(--momo-pink);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 9999px;
+            margin-bottom: 24px;
+            border: 1px solid #fbcfe8;
+        }
+
+        .status-spinner {
+            width: 12px;
+            height: 12px;
+            border: 2px solid transparent;
+            border-top-color: var(--momo-pink);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ATM Napas Card Tab View */
+        .card-form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Virtual Napas Card */
+        .virtual-card {
+            background: var(--napas-gradient);
+            border-radius: 12px;
+            height: 180px;
+            padding: 20px;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 8px 16px rgba(165, 0, 100, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .virtual-card::after {
+            content: '';
+            position: absolute;
+            right: -20px;
+            top: -20px;
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+
+        .card-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .napas-icon-wrapper {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+        .napas-text {
+            font-size: 14px;
+            font-weight: 800;
+            font-style: italic;
+            color: #1e3a8a;
+        }
+
+        .napas-blue { color: #005691; }
+        .napas-red { color: #ed1c24; }
+        .napas-green { color: #39b54a; }
+
+        .card-chip {
+            width: 35px;
+            height: 25px;
+            background: linear-gradient(135deg, #ffd700 0%, #cca000 100%);
+            border-radius: 4px;
+            margin-top: 10px;
+            position: relative;
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
+        }
+
+        .card-number-display {
+            font-size: 18px;
+            letter-spacing: 0.15em;
+            font-weight: 500;
+            font-family: monospace;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .card-footer-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .card-holder-display {
+            font-size: 13px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        .card-expiry-display {
+            font-size: 12px;
+            text-align: right;
+        }
+
+        /* Form Inputs Styling */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 480px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+        }
+
+        .form-group.col-span-2 {
+            grid-column: span 2;
+        }
+
+        @media (max-width: 480px) {
+            .form-group.col-span-2 {
+                grid-column: span 1;
+            }
+        }
+
+        .form-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--dark-text);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .tooltip-icon {
+            width: 14px;
+            height: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--light-gray);
+            border-radius: 50%;
+            color: var(--gray-text);
+            font-size: 10px;
+            cursor: help;
+            border: 1px solid var(--border-color);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: var(--momo-pink);
+            box-shadow: 0 0 0 3px rgba(165, 0, 100, 0.1);
+        }
+
+        .form-input.error {
+            border-color: var(--error-red);
+            background-color: #fef2f2;
+        }
+
+        .error-message {
+            color: var(--error-red);
+            font-size: 11px;
+            font-weight: 500;
+            margin-top: 4px;
+            display: none;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s, box-shadow 0.2s;
+            text-align: center;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-momo {
+            background-color: var(--momo-pink);
+            color: #ffffff;
+            box-shadow: 0 4px 6px -1px rgba(165, 0, 100, 0.2);
+        }
+
+        .btn-momo:hover {
+            background-color: var(--momo-pink-hover);
+        }
+
+        .btn-cancel {
+            background-color: #ffffff;
+            color: var(--gray-text);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-cancel:hover {
+            background-color: var(--light-gray);
+            color: var(--dark-text);
+        }
+
+        /* Processing/Loading overlay */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            z-index: 999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .big-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border-color);
+            border-top-color: var(--momo-pink);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        /* Footer */
+        footer {
+            background-color: #ffffff;
+            border-top: 1px solid var(--border-color);
+            padding: 20px 0;
+            text-align: center;
+            font-size: 12px;
+            color: var(--gray-text);
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header containing logo MoMo (SVG) and title -->
+    <header>
+        <div class="header-container">
+            <div class="logo-group">
+                <!-- Inline SVG of MoMo logo to ensure it loads flawlessly -->
+                <svg class="momo-brand-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="100" height="100" rx="22" fill="#a50064"/>
+                    <text x="50" y="44" font-family="'Inter', sans-serif" font-weight="900" font-size="34" fill="white" text-anchor="middle">mo</text>
+                    <text x="50" y="76" font-family="'Inter', sans-serif" font-weight="900" font-size="34" fill="white" text-anchor="middle">mo</text>
+                </svg>
+                <span class="header-title">Cổng thanh toán MoMo</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Info banner at top -->
+    <div class="banner-alert">
+        <div class="banner-alert-container">
+            <span>ℹ️ Điền thông tin thẻ hoặc quét mã để thanh toán. Lưu ý: Không tắt trình duyệt này khi chưa hoàn tất.</span>
+        </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <main>
+        <!-- Left: Order Details Column -->
+        <section class="payment-card">
+            <h2 class="order-title">Thông tin đơn hàng</h2>
+            
+            <div class="info-item">
+                <div class="info-label">Nhà cung cấp</div>
+                <div class="info-value provider-row">
+                    <!-- Inline SVG MoMo Icon next to MoMo Payment - fixes broken logo issue! -->
+                    <svg class="provider-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="100" height="100" rx="22" fill="#a50064"/>
+                        <text x="50" y="44" font-family="'Inter', sans-serif" font-weight="900" font-size="34" fill="white" text-anchor="middle">mo</text>
+                        <text x="50" y="76" font-family="'Inter', sans-serif" font-weight="900" font-size="34" fill="white" text-anchor="middle">mo</text>
+                    </svg>
+                    <span>MoMo Payment</span>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">Mã đơn hàng</div>
+                <div class="info-value" id="orderIdText">-</div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-label">Mô tả</div>
+                <div class="info-value" id="orderInfoText">-</div>
+            </div>
+
+            <div class="info-item" style="margin-bottom: 0;">
+                <div class="info-label">Số tiền</div>
+                <div class="info-value amount-display" id="amountText">0đ</div>
+            </div>
+
+            <!-- Timer Section -->
+            <div class="timer-box">
+                <div class="timer-label">Đơn hàng sẽ hết hạn sau:</div>
+                <div class="timer-countdown">
+                    <span class="time-segment" id="timer-hour">01</span>
+                    <span class="time-label">Giờ</span>
+                    <span class="time-segment" id="timer-min">59</span>
+                    <span class="time-label">Phút</span>
+                    <span class="time-segment" id="timer-sec">59</span>
+                    <span class="time-label">Giây</span>
+                </div>
+            </div>
+
+            <a href="#" class="safety-link" onclick="event.preventDefault(); alert('Trang thanh toán của hệ thống được bảo mật mã hóa SSL 256-bit.');">Hướng dẫn thanh toán an toàn</a>
+        </section>
+
+        <!-- Right: Interactive Payment Methods Column -->
+        <section class="payment-card methods-card">
+            <!-- Navigation Tabs -->
+            <div class="tabs-header">
+                <button class="tab-btn active" onclick="switchTab('qr-tab')">📱 Quét mã QR</button>
+                <button class="tab-btn" onclick="switchTab('card-tab')">💳 Thẻ ATM nội địa</button>
+            </div>
+
+            <!-- Tab 1: QR Scanning Payment -->
+            <div class="tab-content active" id="qr-tab">
+                <div class="qr-section">
+                    <div class="qr-wrapper">
+                        <div class="qr-scanner-line"></div>
+                        <!-- Fully customized high fidelity SVG QR code representation -->
+                        <svg viewBox="0 0 100 100" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="100" height="100" fill="white" rx="10"/>
+                            
+                            <!-- Corner anchors -->
+                            <rect x="10" y="10" width="25" height="25" fill="#a50064" rx="2"/>
+                            <rect x="15" y="15" width="15" height="15" fill="white" rx="1"/>
+                            <rect x="18" y="18" width="9" height="9" fill="#a50064" rx="0.5"/>
+                            
+                            <rect x="65" y="10" width="25" height="25" fill="#a50064" rx="2"/>
+                            <rect x="70" y="15" width="15" height="15" fill="white" rx="1"/>
+                            <rect x="73" y="18" width="9" height="9" fill="#a50064" rx="0.5"/>
+                            
+                            <rect x="10" y="65" width="25" height="25" fill="#a50064" rx="2"/>
+                            <rect x="15" y="70" width="15" height="15" fill="white" rx="1"/>
+                            <rect x="18" y="73" width="9" height="9" fill="#a50064" rx="0.5"/>
+                            
+                            <rect x="65" y="65" width="10" height="10" fill="#a50064" rx="1"/>
+                            <rect x="67" y="67" width="6" height="6" fill="white" rx="0.5"/>
+                            <rect x="69" y="69" width="2" height="2" fill="#a50064"/>
+                            
+                            <!-- Random QR elements -->
+                            <rect x="40" y="10" width="5" height="10" fill="#a50064"/>
+                            <rect x="50" y="10" width="10" height="5" fill="#a50064"/>
+                            <rect x="45" y="20" width="5" height="5" fill="#a50064"/>
+                            <rect x="10" y="40" width="10" height="5" fill="#a50064"/>
+                            <rect x="10" y="50" width="5" height="10" fill="#a50064"/>
+                            <rect x="20" y="45" width="5" height="5" fill="#a50064"/>
+                            <rect x="40" y="40" width="15" height="15" fill="#a50064" rx="1"/>
+                            <rect x="43" y="43" width="9" height="9" fill="white" rx="0.5"/>
+                            <rect x="65" y="40" width="10" height="5" fill="#a50064"/>
+                            <rect x="80" y="45" width="5" height="15" fill="#a50064"/>
+                            <rect x="40" y="65" width="5" height="15" fill="#a50064"/>
+                            <rect x="50" y="75" width="10" height="5" fill="#a50064"/>
+                            <rect x="40" y="80" width="15" height="10" fill="#a50064"/>
+                            <rect x="60" y="80" width="5" height="5" fill="#a50064"/>
+                            <rect x="80" y="65" width="10" height="10" fill="#a50064"/>
+                            
+                            <!-- MoMo inner logo inside QR -->
+                            <rect x="38" y="38" width="24" height="24" rx="4" fill="#a50064" stroke="white" stroke-width="2"/>
+                            <text x="50" y="47" font-family="'Inter', sans-serif" font-weight="950" font-size="8" fill="white" text-anchor="middle">mo</text>
+                            <text x="50" y="57" font-family="'Inter', sans-serif" font-weight="950" font-size="8" fill="white" text-anchor="middle">mo</text>
+                        </svg>
+                    </div>
+
+                    <div class="qr-status-badge">
+                        <div class="status-spinner"></div>
+                        <span>Đang chờ bạn quét mã...</span>
+                    </div>
+
+                    <p class="qr-instruction">
+                        Mở ứng dụng <strong>Ví MoMo</strong> trên điện thoại và chọn <strong>Quét Mã</strong> để hoàn tất thanh toán cho đơn hàng này.
+                    </p>
+
+                    <div class="action-buttons" style="width: 100%; max-width: 320px;">
+                        <button class="btn btn-momo" onclick="simulatePayment('success')">
+                            ✅ Giả lập Quét & Thanh toán thành công
+                        </button>
+                        <button class="btn btn-cancel" onclick="simulatePayment('failed')">
+                            Hủy giao dịch
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: ATM Napas Card Payment -->
+            <div class="tab-content" id="card-tab">
+                <div class="card-form-section">
+                    <!-- Virtual Card Representation -->
+                    <div class="virtual-card">
+                        <div class="card-header-row">
+                            <span style="font-size: 11px; font-weight: 700; opacity: 0.8; letter-spacing: 0.05em;">DOMESTIC CARD</span>
+                            <div class="napas-icon-wrapper">
+                                <span class="napas-text">
+                                    <span class="napas-blue">na</span><span class="napas-red">pa</span><span class="napas-green">s</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-chip"></div>
+                        <div class="card-number-display" id="cardNoPreview">•••• •••• •••• ••••</div>
+                        <div class="card-footer-row">
+                            <div>
+                                <div style="font-size: 8px; opacity: 0.7; margin-bottom: 2px;">CARD HOLDER</div>
+                                <div class="card-holder-display" id="cardNamePreview">TÊN CHỦ THẺ</div>
+                            </div>
+                            <div class="card-expiry-display">
+                                <div style="font-size: 8px; opacity: 0.7; margin-bottom: 2px;">VALID FROM</div>
+                                <div id="cardExpiryPreview">MM/YY</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Form -->
+                    <form id="atmCardForm" onsubmit="handleCardSubmit(event)" novalidate>
+                        <div class="form-grid">
+                            <!-- Card Number Input -->
+                            <div class="form-group col-span-2">
+                                <label class="form-label" for="cardNo">Số thẻ</label>
+                                <div class="input-wrapper">
+                                    <input type="text" class="form-input" id="cardNo" placeholder="9704 0000 0000 0000" maxlength="19" oninput="formatCardNumber(this)">
+                                </div>
+                                <div class="error-message" id="cardNoError">Số thẻ đã điền không đúng.</div>
+                            </div>
+
+                            <!-- Expiry Input -->
+                            <div class="form-group">
+                                <label class="form-label" for="cardExpiry">Ngày phát hành</label>
+                                <div class="input-wrapper">
+                                    <input type="text" class="form-input" id="cardExpiry" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)">
+                                </div>
+                                <div class="error-message" id="cardExpiryError">Ngày cấp sai.</div>
+                            </div>
+
+                            <!-- Phone Number Input -->
+                            <div class="form-group">
+                                <label class="form-label" for="cardPhone">
+                                    Số điện thoại 
+                                    <span class="tooltip-icon" title="Số điện thoại đăng ký SMS Banking của thẻ">?</span>
+                                </label>
+                                <div class="input-wrapper">
+                                    <input type="text" class="form-input" id="cardPhone" placeholder="09xxxxxxxx" maxlength="10" oninput="formatPhone(this)">
+                                </div>
+                                <div class="error-message" id="cardPhoneError">Số điện thoại không hợp lệ.</div>
+                            </div>
+
+                            <!-- Card Holder Name Input -->
+                            <div class="form-group col-span-2">
+                                <label class="form-label" for="cardName">Tên chủ thẻ</label>
+                                <div class="input-wrapper">
+                                    <input type="text" class="form-input" id="cardName" placeholder="NGUYEN VAN A" oninput="formatCardName(this)">
+                                </div>
+                                <div class="error-message" id="cardNameError">Tên thẻ không đúng.</div>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-momo">Thanh toán</button>
+                            <button type="button" class="btn btn-cancel" onclick="simulatePayment('failed')">Hủy giao dịch</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Loading overlay when simulating payment processing -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="big-spinner"></div>
+        <div class="loading-text">Đang xử lý giao dịch...</div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 MoMo Sandbox Simulator. Bản quyền thuộc về Ví MoMo & Khoá Luận Tốt Nghiệp.</p>
+    </footer>
+
+    <script>
+        const API_URL = 'http://localhost:3000';
+        
+        // Fetch values from URL Query Parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const orderId = urlParams.get('orderId') || 'YNT_UNKNOWN';
+        const amount = urlParams.get('amount') || '0';
+        const orderInfo = urlParams.get('orderInfo') || 'Thanh toán đơn hàng';
+
+        // Render Order Info dynamically
+        document.getElementById('orderIdText').textContent = orderId;
+        document.getElementById('orderInfoText').textContent = decodeURIComponent(orderInfo);
+        document.getElementById('amountText').textContent = formatMoney(amount) + 'đ';
+
+        function formatMoney(amount) {
+            return parseInt(amount || 0).toLocaleString('vi-VN');
+        }
+
+        // Tab selection logic
+        function switchTab(tabId) {
+            // Remove active class from all tabs and buttons
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            // Activate target tab and button
+            document.getElementById(tabId).classList.add('active');
+            
+            // Find the sender button
+            const btnText = tabId === 'qr-tab' ? '📱 Quét mã QR' : '💳 Thẻ ATM nội địa';
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => {
+                if (btn.textContent.includes(btnText.substring(2))) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // Timer Countdown logic (1 hour, 59 minutes, 59 seconds)
+        let hours = 1;
+        let minutes = 59;
+        let seconds = 59;
+
+        const timerInterval = setInterval(() => {
+            seconds--;
+            if (seconds < 0) {
+                seconds = 59;
+                minutes--;
+                if (minutes < 0) {
+                    minutes = 59;
+                    hours--;
+                    if (hours < 0) {
+                        clearInterval(timerInterval);
+                        alert('Giao dịch đã hết hạn thanh toán!');
+                        simulatePayment('failed');
+                        return;
+                    }
+                }
+            }
+
+            document.getElementById('timer-hour').textContent = String(hours).padStart(2, '0');
+            document.getElementById('timer-min').textContent = String(minutes).padStart(2, '0');
+            document.getElementById('timer-sec').textContent = String(seconds).padStart(2, '0');
+        }, 1000);
+
+        // Input Form Helpers & live preview mirroring
+        function formatCardNumber(input) {
+            let value = input.value.replace(/\D/g, '');
+            let formatted = '';
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 4 === 0) formatted += ' ';
+                formatted += value[i];
+            }
+            input.value = formatted;
+            
+            // Mirror to virtual card preview
+            const preview = document.getElementById('cardNoPreview');
+            preview.textContent = formatted || '•••• •••• •••• ••••';
+            
+            // Hide error on active typing
+            hideError('cardNo');
+        }
+
+        function formatExpiry(input) {
+            let value = input.value.replace(/\D/g, '');
+            if (value.length > 2) {
+                input.value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            } else {
+                input.value = value;
+            }
+            
+            // Mirror to virtual card preview
+            const preview = document.getElementById('cardExpiryPreview');
+            preview.textContent = input.value || 'MM/YY';
+            
+            hideError('cardExpiry');
+        }
+
+        // Phone number input control (allow digits only)
+        function formatPhone(input) {
+            input.value = input.value.replace(/\D/g, '').substring(0, 10);
+            hideError('cardPhone');
+        }
+
+        function formatCardName(input) {
+            // Capitalize and strip numbers
+            input.value = input.value.toUpperCase().replace(/[^A-Z\s]/g, '');
+            
+            // Mirror to virtual card preview
+            const preview = document.getElementById('cardNamePreview');
+            preview.textContent = input.value || 'TÊN CHỦ THẺ';
+            
+            hideError('cardName');
+        }
+
+        function showError(fieldId, message) {
+            const input = document.getElementById(fieldId);
+            input.classList.add('error');
+            const errorDiv = document.getElementById(fieldId + 'Error');
+            if (message) errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError(fieldId) {
+            const input = document.getElementById(fieldId);
+            input.classList.remove('error');
+            const errorDiv = document.getElementById(fieldId + 'Error');
+            errorDiv.style.display = 'none';
+        }
+
+        // Validation & ATM Card Submission logic
+        async function handleCardSubmit(event) {
+            event.preventDefault();
+            
+            let isValid = true;
+            const cardNo = document.getElementById('cardNo').value.replace(/\s/g, '');
+            const cardExpiry = document.getElementById('cardExpiry').value;
+            const cardPhone = document.getElementById('cardPhone').value;
+            const cardName = document.getElementById('cardName').value.trim();
+
+            // Validate Card Number (Expect 16 digits)
+            if (cardNo.length !== 16) {
+                showError('cardNo');
+                isValid = false;
+            } else {
+                hideError('cardNo');
+            }
+
+            // Validate Expiry (MM/YY)
+            const expiryParts = cardExpiry.split('/');
+            if (expiryParts.length !== 2 || expiryParts[0].length !== 2 || expiryParts[1].length !== 2) {
+                showError('cardExpiry');
+                isValid = false;
+            } else {
+                const month = parseInt(expiryParts[0]);
+                if (month < 1 || month > 12) {
+                    showError('cardExpiry', 'Tháng không hợp lệ.');
+                    isValid = false;
+                } else {
+                    hideError('cardExpiry');
+                }
+            }
+
+            // Validate Phone Number
+            if (cardPhone.length !== 10 || !cardPhone.startsWith('0')) {
+                showError('cardPhone');
+                isValid = false;
+            } else {
+                hideError('cardPhone');
+            }
+
+            // Validate Card Holder Name
+            if (cardName.length === 0 || !/^[A-Z\s]+$/.test(cardName)) {
+                showError('cardName');
+                isValid = false;
+            } else {
+                hideError('cardName');
+            }
+
+            if (isValid) {
+                await simulatePayment('success');
+            }
+        }
+
+        // Call simulator API in backend and perform redirection
+        async function simulatePayment(result) {
+            clearInterval(timerInterval);
+            
+            // Show processing screen
+            document.getElementById('loadingOverlay').style.display = 'flex';
+
+            try {
+                const response = await fetch(`${API_URL}/api/payment/momo/simulate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        orderId: orderId,
+                        result: result,
+                        amount: amount
+                    })
+                });
+
+                const data = await response.json();
+
+                // Wait 1.5 seconds to simulate banking response latency
+                await new Promise(resolve => setTimeout(resolve, 1500));
+
+                if (data.success) {
+                    const originalOrderId = orderId.split('_')[0].replace('YNT', '');
+                    
+                    if (result === 'success') {
+                        window.location.href = `payment-result.html?status=success&orderId=${originalOrderId}&transId=${data.data.transId}`;
+                    } else {
+                        window.location.href = `payment-result.html?status=failed&orderId=${originalOrderId}&message=Thanh+toan+that+bai`;
+                    }
+                } else {
+                    alert('Lỗi xử lý giao dịch: ' + data.message);
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                }
+
+            } catch (error) {
+                console.error('Simulation error:', error);
+                alert('Lỗi kết nối máy chủ: ' + error.message);
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

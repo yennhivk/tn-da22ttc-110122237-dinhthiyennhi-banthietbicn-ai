@@ -1,0 +1,527 @@
+<!-- Chatbot Widget -->
+<div id="chatbot-container">
+    <!-- Chat Toggle Button -->
+    <button id="chatbot-toggle" class="chatbot-toggle" title="Chat với chúng tôi">
+        <svg id="chat-icon" class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+        </svg>
+        <svg id="close-icon" class="w-7 h-7 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+        <span class="chatbot-badge hidden">1</span>
+    </button>
+
+    <!-- Chat Window -->
+    <div id="chatbot-window" class="chatbot-window hidden">
+        <!-- Header -->
+        <div class="chatbot-header">
+            <div class="flex items-center gap-3">
+                <div class="chatbot-avatar">
+                    <img src="" alt="Bot" id="chatbot-avatar-img">
+                    <span class="online-dot"></span>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white">Yến Nhi Tech</h3>
+                    <p class="text-xs text-yellow-100">Hỗ trợ trực tuyến</p>
+                </div>
+            </div>
+            <button id="chatbot-minimize" class="text-white hover:text-yellow-200 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Messages Container -->
+        <div id="chatbot-messages" class="chatbot-messages">
+            <!-- Welcome Message -->
+            <div class="chat-message bot-message">
+                <div class="message-content">
+                    <p>Xin chào! 👋 Tôi là trợ lý ảo của <strong>Yến Nhi Tech</strong>.</p>
+                    <p class="mt-2">Tôi có thể giúp bạn:</p>
+                    <ul class="mt-1 ml-4 list-disc text-sm">
+                        <li>Tư vấn sản phẩm</li>
+                        <li>Kiểm tra đơn hàng</li>
+                        <li>Hỗ trợ kỹ thuật</li>
+                        <li>Thông tin khuyến mãi</li>
+                    </ul>
+                </div>
+                <span class="message-time">Vừa xong</span>
+            </div>
+        </div>
+
+        <!-- Quick Replies -->
+        <div id="quick-replies" class="quick-replies">
+            <button class="quick-reply-btn" data-message="Tôi muốn xem sản phẩm mới">🆕 Sản phẩm mới</button>
+            <button class="quick-reply-btn" data-message="Có khuyến mãi gì không?">🎁 Khuyến mãi</button>
+            <button class="quick-reply-btn" data-message="Kiểm tra đơn hàng">📦 Đơn hàng</button>
+            <button class="quick-reply-btn" data-message="Tôi cần hỗ trợ">🆘 Hỗ trợ</button>
+        </div>
+
+        <!-- Input Area -->
+        <div class="chatbot-input-area">
+            <input type="text" id="chatbot-input" placeholder="Nhập tin nhắn..." autocomplete="off">
+            <button id="chatbot-send" class="chatbot-send-btn" title="Gửi">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Chatbot Styles -->
+<style>
+#chatbot-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    font-family: inherit;
+}
+
+.chatbot-toggle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.chatbot-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
+}
+
+.chatbot-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ef4444;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chatbot-window {
+    position: absolute;
+    bottom: 75px;
+    right: 0;
+    width: 380px;
+    max-width: calc(100vw - 40px);
+    height: 520px;
+    max-height: calc(100vh - 120px);
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.chatbot-header {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.chatbot-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.chatbot-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.online-dot {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 12px;
+    height: 12px;
+    background: #22c55e;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.chatbot-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    background: #f8fafc;
+}
+
+.chat-message {
+    margin-bottom: 16px;
+    max-width: 85%;
+}
+
+.bot-message {
+    margin-right: auto;
+}
+
+.user-message {
+    margin-left: auto;
+}
+
+.message-content {
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.bot-message .message-content {
+    background: white;
+    color: #374151;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.user-message .message-content {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.message-time {
+    display: block;
+    font-size: 11px;
+    color: #9ca3af;
+    margin-top: 4px;
+    padding: 0 4px;
+}
+
+.user-message .message-time {
+    text-align: right;
+}
+
+.quick-replies {
+    padding: 8px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+}
+
+.quick-reply-btn {
+    padding: 8px 12px;
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #92400e;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.quick-reply-btn:hover {
+    background: #f59e0b;
+    color: white;
+}
+
+.chatbot-input-area {
+    padding: 12px 16px;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    gap: 8px;
+}
+
+#chatbot-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 24px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+#chatbot-input:focus {
+    border-color: #f59e0b;
+}
+
+.chatbot-send-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.chatbot-send-btn:hover {
+    transform: scale(1.05);
+}
+
+.chatbot-send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Typing indicator */
+.typing-indicator {
+    display: flex;
+    gap: 4px;
+    padding: 12px 16px;
+}
+
+.typing-indicator span {
+    width: 8px;
+    height: 8px;
+    background: #9ca3af;
+    border-radius: 50%;
+    animation: typing 1.4s infinite;
+}
+
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+    0%, 60%, 100% {
+        transform: translateY(0);
+    }
+    30% {
+        transform: translateY(-8px);
+    }
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+    #chatbot-container {
+        bottom: 10px;
+        right: 10px;
+    }
+    
+    .chatbot-window {
+        width: calc(100vw - 20px);
+        height: calc(100vh - 100px);
+        bottom: 70px;
+        right: -10px;
+    }
+    
+    .chatbot-toggle {
+        width: 55px;
+        height: 55px;
+    }
+}
+
+.hidden {
+    display: none !important;
+}
+</style>
+
+<!-- Chatbot Script -->
+<script>
+(function() {
+    // Wait for DOM to be ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initChatbot);
+    } else {
+        initChatbot();
+    }
+
+    function initChatbot() {
+        const toggle = document.getElementById('chatbot-toggle');
+        const window_ = document.getElementById('chatbot-window');
+        const minimize = document.getElementById('chatbot-minimize');
+        const input = document.getElementById('chatbot-input');
+        const sendBtn = document.getElementById('chatbot-send');
+        const messages = document.getElementById('chatbot-messages');
+        const quickReplies = document.querySelectorAll('.quick-reply-btn');
+        const chatIcon = document.getElementById('chat-icon');
+        const closeIcon = document.getElementById('close-icon');
+        const avatarImg = document.getElementById('chatbot-avatar-img');
+
+        // Set avatar image - adjust path based on page location
+        const isInPages = window.location.pathname.includes('/pages/');
+        avatarImg.src = isInPages ? '../images/Screenshot 2025-11-10 154306.png' : 'images/Screenshot 2025-11-10 154306.png';
+
+        let isOpen = false;
+
+        // Toggle chat window
+        toggle.addEventListener('click', () => {
+            isOpen = !isOpen;
+            window_.classList.toggle('hidden', !isOpen);
+            chatIcon.classList.toggle('hidden', isOpen);
+            closeIcon.classList.toggle('hidden', !isOpen);
+            
+            if (isOpen) {
+                input.focus();
+            }
+        });
+
+        // Minimize button
+        minimize.addEventListener('click', () => {
+            isOpen = false;
+            window_.classList.add('hidden');
+            chatIcon.classList.remove('hidden');
+            closeIcon.classList.add('hidden');
+        });
+
+        // Send message
+        function sendMessage() {
+            const text = input.value.trim();
+            if (!text) return;
+
+            addMessage(text, 'user');
+            input.value = '';
+
+            // Show typing indicator
+            showTyping();
+
+            // Simulate bot response
+            setTimeout(() => {
+                hideTyping();
+                const response = getBotResponse(text);
+                addMessage(response, 'bot');
+            }, 1000 + Math.random() * 1000);
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        // Quick replies
+        quickReplies.forEach(btn => {
+            btn.addEventListener('click', () => {
+                input.value = btn.dataset.message;
+                sendMessage();
+            });
+        });
+
+        // Add message to chat
+        function addMessage(text, type) {
+            const div = document.createElement('div');
+            div.className = `chat-message ${type}-message`;
+            
+            const time = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+            
+            div.innerHTML = `
+                <div class="message-content">
+                    <p>${text}</p>
+                </div>
+                <span class="message-time">${time}</span>
+            `;
+            
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        // Typing indicator
+        function showTyping() {
+            const typing = document.createElement('div');
+            typing.id = 'typing-indicator';
+            typing.className = 'chat-message bot-message';
+            typing.innerHTML = `
+                <div class="message-content typing-indicator">
+                    <span></span><span></span><span></span>
+                </div>
+            `;
+            messages.appendChild(typing);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function hideTyping() {
+            const typing = document.getElementById('typing-indicator');
+            if (typing) typing.remove();
+        }
+
+        // Bot responses
+        function getBotResponse(text) {
+            const lower = text.toLowerCase();
+            
+            if (lower.includes('sản phẩm') || lower.includes('mới') || lower.includes('điện thoại') || lower.includes('laptop')) {
+                return '📱 Chúng tôi có nhiều sản phẩm mới nhất từ các thương hiệu hàng đầu như Apple, Samsung, Xiaomi... Bạn có thể xem tại trang <a href="' + (isInPages ? '' : 'pages/') + 'products.html" class="text-yellow-600 underline">Sản phẩm</a> nhé!';
+            }
+            
+            if (lower.includes('khuyến mãi') || lower.includes('giảm giá') || lower.includes('sale')) {
+                return '🎁 Hiện tại chúng tôi đang có nhiều chương trình khuyến mãi hấp dẫn! Giảm đến 50% cho nhiều sản phẩm. Xem chi tiết tại <a href="' + (isInPages ? '' : 'pages/') + 'promotions.html" class="text-yellow-600 underline">Khuyến mãi</a>!';
+            }
+            
+            if (lower.includes('đơn hàng') || lower.includes('kiểm tra') || lower.includes('giao hàng')) {
+                return '📦 Để kiểm tra đơn hàng, bạn vui lòng đăng nhập và vào mục <a href="' + (isInPages ? '' : 'pages/') + 'order-history.html" class="text-yellow-600 underline">Đơn hàng của tôi</a>. Nếu cần hỗ trợ thêm, hãy liên hệ hotline: <strong>1900 1234</strong>';
+            }
+            
+            if (lower.includes('hỗ trợ') || lower.includes('giúp') || lower.includes('vấn đề')) {
+                return '🆘 Tôi sẵn sàng hỗ trợ bạn! Bạn có thể:<br>• Gọi hotline: <strong>1900 1234</strong><br>• Email: support@yennhitech.vn<br>• Hoặc mô tả vấn đề của bạn, tôi sẽ cố gắng giúp đỡ!';
+            }
+            
+            if (lower.includes('giá') || lower.includes('bao nhiêu')) {
+                return '💰 Giá sản phẩm tùy thuộc vào từng mẫu. Bạn có thể xem giá chi tiết tại trang <a href="' + (isInPages ? '' : 'pages/') + 'products.html" class="text-yellow-600 underline">Sản phẩm</a>. Chúng tôi cam kết giá tốt nhất thị trường!';
+            }
+            
+            if (lower.includes('bảo hành')) {
+                return '🛡️ Tất cả sản phẩm tại Yến Nhi Tech đều được bảo hành chính hãng:<br>• Điện thoại: 12-24 tháng<br>• Laptop: 12-36 tháng<br>• Phụ kiện: 6-12 tháng';
+            }
+            
+            if (lower.includes('địa chỉ') || lower.includes('cửa hàng') || lower.includes('ở đâu')) {
+                return '📍 Địa chỉ cửa hàng:<br><strong>Yến Nhi Tech</strong><br>74-76 Lê Lợi, Phường 2, Trà Vinh<br>Mở cửa: 8:00 - 21:00 hàng ngày';
+            }
+            
+            if (lower.includes('xin chào') || lower.includes('hello') || lower.includes('hi')) {
+                return 'Xin chào bạn! 👋 Rất vui được hỗ trợ bạn. Bạn cần tôi giúp gì ạ?';
+            }
+            
+            if (lower.includes('cảm ơn') || lower.includes('thank')) {
+                return 'Không có gì ạ! 😊 Rất vui được hỗ trợ bạn. Nếu cần thêm gì, đừng ngại hỏi nhé!';
+            }
+            
+            // Default response
+            return 'Cảm ơn bạn đã liên hệ! 😊 Tôi chưa hiểu rõ câu hỏi của bạn. Bạn có thể hỏi về:<br>• Sản phẩm mới<br>• Khuyến mãi<br>• Đơn hàng<br>• Bảo hành<br>Hoặc gọi hotline <strong>1900 1234</strong> để được hỗ trợ trực tiếp!';
+        }
+    }
+})();
+</script>

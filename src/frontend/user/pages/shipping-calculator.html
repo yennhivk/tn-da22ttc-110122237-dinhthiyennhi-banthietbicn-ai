@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tính Phí Ship - Yến Nhi Tech</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-title {
+            font-size: 1.5em;
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            color: #666;
+            font-weight: 500;
+        }
+
+        .result-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .final-fee {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .final-fee .label {
+            font-size: 1.1em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .final-fee .value {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .discount-badge {
+            display: inline-block;
+            background: #4caf50;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📦 Tính Phí Vận Chuyển</h1>
+            <p>Nhập thông tin để tính phí ship chính xác</p>
+        </div>
+
+        <div class="content">
+            <form id="shippingForm">
+                <div class="form-group">
+                    <label for="address">Địa chỉ giao hàng *</label>
+                    <input type="text" id="address" placeholder="Ví dụ: 123 Nguyễn Huệ, Quận 1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="province">Tỉnh/Thành phố *</label>
+                    <select id="province" required>
+                        <option value="">-- Chọn tỉnh/thành --</option>
+                        <option value="TP.HCM">TP. Hồ Chí Minh</option>
+                        <option value="Hà Nội">Hà Nội</option>
+                        <option value="Đà Nẵng">Đà Nẵng</option>
+                        <option value="Cần Thơ">Cần Thơ</option>
+                        <option value="Đồng Nai">Đồng Nai</option>
+                        <option value="Bình Dương">Bình Dương</option>
+                        <option value="Long An">Long An</option>
+                        <option value="Tiền Giang">Tiền Giang</option>
+                        <option value="An Giang">An Giang</option>
+                        <option value="Kiên Giang">Kiên Giang</option>
+                        <option value="Huế">Huế</option>
+                        <option value="Quảng Nam">Quảng Nam</option>
+                        <option value="Hải Phòng">Hải Phòng</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="weight">Trọng lượng (kg) *</label>
+                    <input type="number" id="weight" placeholder="Ví dụ: 5" step="0.1" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="orderValue">Giá trị đơn hàng (VNĐ) *</label>
+                    <input type="number" id="orderValue" placeholder="Ví dụ: 1000000" step="1000" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Phí đặc biệt (tùy chọn)</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="fragile" value="FRAGILE">
+                            <label for="fragile">Hàng dễ vỡ (+10,000đ)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="cod" value="COD">
+                            <label for="cod">Thu hộ COD (+5,000đ)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="bulky" value="BULKY">
+                            <label for="bulky">Hàng cồng kềnh (+20,000đ)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="express" value="EXPRESS_2H">
+                            <label for="express">Giao nhanh 2h (+50,000đ)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">🚚 Tính Phí Ship</button>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p style="margin-top: 15px;">Đang tính toán...</p>
+            </div>
+
+            <div class="error" id="error"></div>
+
+            <div class="result" id="result">
+                <h2 class="result-title">📊 Kết Quả Tính Phí</h2>
+                
+                <div class="result-item">
+                    <span class="result-label">📍 Khoảng cách</span>
+                    <span class="result-value" id="distance">-</span>
+                </div>
+
+                <div class="result-item">
+                    <span class="result-label">🗺️ Vùng giao hàng</span>
+                    <span class="result-value" id="zone">-</span>
+                </div>
+
+                <div class="result-item">
+                    <span class="result-label">💰 Phí cơ bản</span>
+                    <span class="result-value" id="baseFee">-</span>
+                </div>
+
+                <div class="result-item">
+                    <span class="result-label">⚖️ Phí vượt trọng</span>
+                    <span class="result-value" id="weightFee">-</span>
+                </div>
+
+                <div class="result-item" id="specialFeesRow" style="display: none;">
+                    <span class="result-label">✨ Phí đặc biệt</span>
+                    <span class="result-value" id="specialFees">-</span>
+                </div>
+
+                <div class="result-item">
+                    <span class="result-label">💵 Tổng phí</span>
+                    <span class="result-value" id="subtotal">-</span>
+                </div>
+
+                <div class="result-item">
+                    <span class="result-label">🎁 Giảm giá</span>
+                    <span class="result-value" id="discount">-</span>
+                </div>
+
+                <div class="final-fee">
+                    <div class="label">PHÍ VẬN CHUYỂN CUỐI CÙNG</div>
+                    <div class="value" id="finalFee">0đ</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+
+        document.getElementById('shippingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Lấy dữ liệu form
+            const address = document.getElementById('address').value;
+            const province = document.getElementById('province').value;
+            const weight = parseFloat(document.getElementById('weight').value);
+            const orderValue = parseFloat(document.getElementById('orderValue').value);
+
+            // Lấy phí đặc biệt
+            const specialFees = [];
+            document.querySelectorAll('.checkbox-item input[type="checkbox"]:checked').forEach(cb => {
+                specialFees.push(cb.value);
+            });
+
+            // Hiển thị loading
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('result').classList.remove('show');
+            document.getElementById('error').classList.remove('show');
+
+            try {
+                const response = await fetch(`${API_BASE}/shipping-config/calculate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        address: address,
+                        province: province,
+                        weight: weight,
+                        orderValue: orderValue,
+                        specialFees: specialFees
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayResult(data.data);
+                } else {
+                    showError(data.message || 'Có lỗi xảy ra');
+                }
+            } catch (error) {
+                showError('Không thể kết nối đến server. Vui lòng kiểm tra lại.');
+                console.error('Error:', error);
+            } finally {
+                document.getElementById('loading').classList.remove('show');
+            }
+        });
+
+        function displayResult(data) {
+            document.getElementById('distance').textContent = `${data.distance_km} km`;
+            document.getElementById('zone').textContent = data.zone_name;
+            document.getElementById('baseFee').textContent = formatMoney(data.base_fee);
+            document.getElementById('weightFee').textContent = formatMoney(data.weight_fee);
+            document.getElementById('subtotal').textContent = formatMoney(data.subtotal_fee);
+            
+            // Hiển thị phí đặc biệt nếu có
+            if (data.special_fees && data.special_fees.length > 0) {
+                document.getElementById('specialFeesRow').style.display = 'flex';
+                const specialFeesText = data.special_fees.map(f => 
+                    `${f.name}: ${formatMoney(f.value)}`
+                ).join(', ');
+                document.getElementById('specialFees').textContent = specialFeesText;
+            } else {
+                document.getElementById('specialFeesRow').style.display = 'none';
+            }
+
+            // Hiển thị giảm giá
+            const discountText = `${data.discount_percent}% (-${formatMoney(data.discount_amount)})`;
+            document.getElementById('discount').innerHTML = discountText + 
+                (data.discount_percent > 0 ? '<span class="discount-badge">🎉 Giảm giá</span>' : '');
+
+            // Hiển thị phí cuối
+            document.getElementById('finalFee').textContent = formatMoney(data.final_fee);
+
+            // Hiển thị kết quả
+            document.getElementById('result').classList.add('show');
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = '❌ ' + message;
+            errorDiv.classList.add('show');
+        }
+
+        function formatMoney(amount) {
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND'
+            }).format(amount);
+        }
+
+        // Auto-format số tiền khi nhập
+        document.getElementById('orderValue').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            e.target.value = value;
+        });
+    </script>
+</body>
+</html>

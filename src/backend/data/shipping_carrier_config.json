@@ -1,0 +1,13 @@
+{
+  "active_mode": "local",
+  "default_length_cm": 15,
+  "default_width_cm": 10,
+  "default_height_cm": 5,
+  "default_weight_kg": 0.5,
+  "ghn_token": "",
+  "ghn_shop_id": "",
+  "ghtk_token": "",
+  "insurance_fee_enabled": true,
+  "insurance_fee_percent": 0.5,
+  "insurance_min_order_value": 1000000
+}

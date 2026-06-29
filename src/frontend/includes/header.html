@@ -1,0 +1,120 @@
+<!-- Navigation Bar - Yellow Theme like Gearvn -->
+<nav class="bg-gradient-to-r from-yellow-500 to-yellow-400 shadow-lg fixed top-0 left-0 right-0 z-50 w-full">
+    <div class="px-3 sm:px-4 lg:px-6">
+        <div class="flex items-center h-16 gap-2 sm:gap-3 lg:gap-4">
+            <!-- Logo -->
+            <a href="../index.html" class="flex items-center gap-2 cursor-pointer whitespace-nowrap group flex-shrink-0 hover:scale-105 transition-all duration-300">
+                <img src="../images/Screenshot 2025-11-10 154306.png" alt="Yến Nhi Tech Logo" class="w-12 h-12 md:w-14 md:h-14 object-cover rounded-full shadow-lg">
+                <div class="flex items-baseline gap-1">
+                    <span class="text-lg md:text-xl font-bold text-red-600 drop-shadow-md">Yến Nhi</span>
+                    <span class="text-xl md:text-2xl font-bold text-blue-500 drop-shadow-lg italic" style="font-family: 'Brush Script MT', 'Lucida Calligraphy', cursive;">Tech</span>
+                </div>
+            </a>
+
+            <!-- Search Bar -->
+            <div class="flex flex-1 max-w-xl mx-2 sm:mx-3">
+                <div class="relative w-full">
+                    <input type="text" id="headerSearch" placeholder="Bạn cần tìm gì?" class="w-full pl-10 pr-3 py-2 md:py-2.5 rounded-lg border-0 text-base md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                    <svg class="w-6 h-6 md:w-6 md:h-6 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Desktop Menu -->
+            <div class="hidden lg:flex items-center gap-6 ml-auto text-black-500">
+                <a href="../index.html" class="text-lg font-bold hover:text-red-600 transition">Trang chủ</a>
+                <a href="products.html" class="text-lg font-bold hover:text-red-600 transition">Sản phẩm</a>
+                <a href="news.html" class="text-lg font-bold hover:text-red-600 transition">Tin tức</a>
+                <a href="promotions.html" class="text-lg font-bold hover:text-red-600 transition">Khuyến mãi</a>
+                <a href="about.html" class="text-lg font-bold hover:text-red-600 transition">Giới thiệu</a>
+                <a href="contact.html" class="text-lg font-bold hover:text-red-600 transition">Liên hệ</a>
+            </div>
+
+            <!-- Right items -->
+            <div class="flex items-center gap-2 sm:gap-3 lg:gap-4">
+                <!-- Cart Icon -->
+                <a href="cart.html" class="relative text-black-500 hover:text-red-600 transition transform hover:scale-110 flex-shrink-0" title="Giỏ hàng">
+                    <svg class="w-6 h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <span class="cart-badge absolute -top-2 -right-2 bg-green-500 text-red-500 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                </a>
+
+                <!-- User Account -->
+                <div class="user-account-container hidden lg:flex items-center gap-2">
+                    <a href="login.html" class="flex items-center gap-2 text-black hover:text-red-600 transition">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span class="text-lg font-semibold">Đăng nhập</span>
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobileMenuBtn" class="lg:hidden text-black-500 hover:text-red-600 transition flex-shrink-0" onclick="toggleMobileMenu()">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path id="menuIcon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        <path id="closeIcon" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Promotional Banner Strip -->
+    <div class="bg-red-600">
+        <div class="px-3 sm:px-4 lg:px-6">
+            <div class="flex items-center justify-between overflow-x-auto gap-3 sm:gap-4 py-2.5 text-white scrollbar-hide">
+                <!-- Deal 1 -->
+                <a href="promotions.html" class="flex items-center gap-2 whitespace-nowrap hover:scale-105 transition flex-shrink-0">
+                    <div class="bg-white rounded-full p-1.5">
+                        <span class="text-lg sm:text-xl">🔥</span>
+                    </div>
+                    <span class="font-bold text-xs sm:text-sm">Săn Deal Online</span>
+                </a>
+
+                <!-- Deal 2 -->
+                <a href="products.html?brand=samsung" class="flex items-center gap-2 whitespace-nowrap hover:scale-105 transition flex-shrink-0">
+                    <div class="bg-white rounded-full p-1.5">
+                        <span class="text-lg sm:text-xl">📱</span>
+                    </div>
+                    <span class="font-bold text-xs sm:text-sm">Samsung mua 1 tặng 1</span>
+                </a>
+
+                <!-- Deal 3 -->
+                <a href="promotions.html" class="flex items-center gap-2 whitespace-nowrap hover:scale-105 transition flex-shrink-0">
+                    <div class="bg-white rounded-full p-1.5">
+                        <span class="text-lg sm:text-xl">🎁</span>
+                    </div>
+                    <span class="font-bold text-xs sm:text-sm">Voucher tặng bạn mới</span>
+                </a>
+
+                <!-- Deal 4 -->
+                <a href="products.html?category=appliances" class="flex items-center gap-2 whitespace-nowrap hover:scale-105 transition flex-shrink-0">
+                    <div class="bg-white rounded-full p-1.5">
+                        <span class="text-lg sm:text-xl">❄️</span>
+                    </div>
+                    <span class="font-bold text-xs sm:text-sm">Máy nước nóng từ 2.29 triệu</span>
+                </a>
+
+                <!-- Deal 5 -->
+                <a href="products.html?special=11.11" class="flex items-center gap-2 whitespace-nowrap hover:scale-105 transition flex-shrink-0">
+                    <div class="bg-yellow-400 rounded-full px-2 py-0.5 animate-pulse">
+                        <span class="font-black text-red-600 text-xs sm:text-sm">11.11</span>
+                    </div>
+                    <span class="font-bold text-xs sm:text-sm">Trợ giá cực đã - Sale 50%</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+function toggleMobileMenu() {
+    const menuIcon = document.getElementById('menuIcon');
+    const closeIcon = document.getElementById('closeIcon');
+    if (menuIcon && closeIcon) {
+        menuIcon.classList.toggle('hidden');
+        closeIcon.classList.toggle('hidden');
+    }
+}
+</script>

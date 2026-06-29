@@ -1,0 +1,237 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../images/Screenshot 2025-11-10 154306.png">
+    <title>Chi tiết bài viết - Yến Nhi Tech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        .article-content { line-height: 1.8; }
+        .article-content h2 { font-size: 1.5rem; font-weight: 700; margin: 1.5rem 0 1rem; color: #1f2937; }
+        .article-content h3 { font-size: 1.25rem; font-weight: 600; margin: 1.25rem 0 0.75rem; color: #374151; }
+        .article-content p { margin-bottom: 1rem; color: #4b5563; }
+        .article-content ul, .article-content ol { margin: 1rem 0; padding-left: 1.5rem; }
+        .article-content li { margin-bottom: 0.5rem; color: #4b5563; }
+        .article-content img { max-width: 100%; border-radius: 0.5rem; margin: 1rem 0; }
+        .article-content a { color: #4f46e5; text-decoration: underline; }
+        .related-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation Bar -->
+    <nav class="bg-gradient-to-r from-yellow-500 to-yellow-400 shadow-lg fixed top-0 left-0 right-0 z-50 w-full">
+        <div class="px-3 sm:px-4 lg:px-6">
+            <div class="flex items-center h-16 gap-2 sm:gap-3 lg:gap-4">
+                <a href="../../index.html" class="flex items-center gap-2 cursor-pointer whitespace-nowrap group flex-shrink-0 hover:scale-105 transition-all duration-300">
+                    <img src="../../images/Screenshot 2025-11-10 154306.png" alt="Yến Nhi Tech Logo" class="w-12 h-12 md:w-14 md:h-14 object-cover rounded-full shadow-lg">
+                    <div class="flex items-baseline gap-1">
+                        <span class="text-lg md:text-xl font-bold text-red-600 drop-shadow-md">Yến Nhi</span>
+                        <span class="text-xl md:text-2xl font-bold text-blue-500 drop-shadow-lg italic" style="font-family: 'Brush Script MT', cursive;">Tech</span>
+                    </div>
+                </a>
+                <div class="hidden lg:flex items-center gap-6 ml-auto text-black">
+                    <a href="../../index.html" class="text-lg font-bold hover:text-red-600 transition">Trang chủ</a>
+                    <a href="products.html" class="text-lg font-bold hover:text-red-600 transition">Sản phẩm</a>
+                    <a href="news.html" class="text-lg font-bold hover:text-red-600 transition">Tin tức</a>
+                    <a href="articles.html" class="text-lg font-bold text-red-600">Bài viết</a>
+                    <a href="contact.html" class="text-lg font-bold hover:text-red-600 transition">Liên hệ</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-20 pb-12">
+        <div class="max-w-4xl mx-auto px-4">
+            <!-- Breadcrumb -->
+            <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6 pt-4">
+                <a href="../../index.html" class="hover:text-indigo-600">Trang chủ</a>
+                <span>/</span>
+                <a href="articles.html" class="hover:text-indigo-600">Bài viết</a>
+                <span>/</span>
+                <span id="breadcrumbTitle" class="text-gray-700 font-medium truncate max-w-xs">Đang tải...</span>
+            </nav>
+
+            <!-- Article Container -->
+            <article id="articleContainer" class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <!-- Loading -->
+                <div class="p-12 text-center">
+                    <div class="animate-spin w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+                    <p class="text-gray-500">Đang tải bài viết...</p>
+                </div>
+            </article>
+
+            <!-- Related Articles -->
+            <section id="relatedArticles" class="mt-12 hidden">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">📚 Bài viết liên quan</h2>
+                <div id="relatedGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-gray-400">© 2025 Yến Nhi Tech. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const ARTICLES_API_URL = 'http://localhost:3000/api/articles';
+
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('vi-VN', { 
+                day: '2-digit', month: 'long', year: 'numeric' 
+            });
+        }
+
+        function getCategoryName(category) {
+            const names = {
+                'huong_dan': '📚 Hướng dẫn',
+                'danh_gia': '⭐ Đánh giá',
+                'meo_vat': '💡 Mẹo vặt',
+                'so_sanh': '⚖️ So sánh'
+            };
+            return names[category] || category;
+        }
+
+        function getCategoryBadgeColor(category) {
+            const colors = {
+                'huong_dan': 'bg-blue-100 text-blue-700',
+                'danh_gia': 'bg-yellow-100 text-yellow-700',
+                'meo_vat': 'bg-green-100 text-green-700',
+                'so_sanh': 'bg-purple-100 text-purple-700'
+            };
+            return colors[category] || 'bg-gray-100 text-gray-700';
+        }
+
+        async function loadArticleDetail() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const articleId = urlParams.get('id');
+
+            if (!articleId) {
+                document.getElementById('articleContainer').innerHTML = `
+                    <div class="p-12 text-center">
+                        <div class="text-6xl mb-4">❌</div>
+                        <p class="text-red-500 text-lg font-semibold">Không tìm thấy bài viết</p>
+                        <a href="articles.html" class="inline-block mt-4 text-indigo-600 hover:underline">← Quay lại danh sách bài viết</a>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                const response = await fetch(`${ARTICLES_API_URL}/${articleId}`);
+                const result = await response.json();
+
+                if (!result.success || !result.data) {
+                    throw new Error('Không tìm thấy bài viết');
+                }
+
+                const article = result.data;
+                document.title = `${article.tieu_de} - Yến Nhi Tech`;
+                document.getElementById('breadcrumbTitle').textContent = article.tieu_de;
+
+                document.getElementById('articleContainer').innerHTML = `
+                    <!-- Featured Image -->
+                    <div class="relative h-64 md:h-96 overflow-hidden">
+                        <img src="${article.hinh_anh || 'https://via.placeholder.com/800x400?text=Bài+viết'}" alt="${article.tieu_de}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x400?text=Bài+viết'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute bottom-6 left-6 right-6">
+                            <span class="${getCategoryBadgeColor(article.danh_muc)} px-4 py-1.5 rounded-full text-sm font-bold">${getCategoryName(article.danh_muc)}</span>
+                        </div>
+                    </div>
+
+                    <!-- Article Content -->
+                    <div class="p-6 md:p-10">
+                        <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4">${article.tieu_de}</h1>
+                        
+                        <!-- Meta Info -->
+                        <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-6 pb-6 border-b border-gray-200">
+                            <span class="flex items-center gap-1">✍️ ${article.tac_gia || 'Admin'}</span>
+                            <span class="flex items-center gap-1">📅 ${formatDate(article.ngay_tao)}</span>
+                            <span class="flex items-center gap-1">👁️ ${article.luot_xem || 0} lượt xem</span>
+                        </div>
+
+                        <!-- Description -->
+                        ${article.mo_ta_ngan ? `<p class="text-lg text-gray-600 mb-6 italic">${article.mo_ta_ngan}</p>` : ''}
+
+                        <!-- Main Content -->
+                        <div class="article-content">
+                            ${article.noi_dung || '<p>Nội dung đang được cập nhật...</p>'}
+                        </div>
+
+                        <!-- Tags -->
+                        ${article.tags ? `
+                            <div class="mt-8 pt-6 border-t border-gray-200">
+                                <span class="text-gray-600 font-semibold mr-2">🏷️ Tags:</span>
+                                ${article.tags.split(',').map(tag => `<span class="inline-block bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm mr-2 mb-2">${tag.trim()}</span>`).join('')}
+                            </div>
+                        ` : ''}
+
+                        <!-- Share -->
+                        <div class="mt-6 flex items-center gap-4">
+                            <span class="text-gray-600 font-semibold">Chia sẻ:</span>
+                            <button onclick="shareOnFacebook()" class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition">f</button>
+                            <button onclick="copyLink()" class="w-10 h-10 bg-gray-600 text-white rounded-full flex items-center justify-center hover:bg-gray-700 transition">🔗</button>
+                        </div>
+                    </div>
+                `;
+
+                // Load related articles
+                if (article.related && article.related.length > 0) {
+                    loadRelatedArticles(article.related);
+                }
+
+            } catch (error) {
+                console.error('Lỗi load bài viết:', error);
+                document.getElementById('articleContainer').innerHTML = `
+                    <div class="p-12 text-center">
+                        <div class="text-6xl mb-4">❌</div>
+                        <p class="text-red-500 text-lg font-semibold">Lỗi tải bài viết</p>
+                        <p class="text-gray-400 text-sm mt-2">Vui lòng thử lại sau</p>
+                        <a href="articles.html" class="inline-block mt-4 text-indigo-600 hover:underline">← Quay lại danh sách bài viết</a>
+                    </div>
+                `;
+            }
+        }
+
+        function loadRelatedArticles(related) {
+            const section = document.getElementById('relatedArticles');
+            const grid = document.getElementById('relatedGrid');
+            
+            if (!related || related.length === 0) return;
+
+            section.classList.remove('hidden');
+            grid.innerHTML = related.map(article => `
+                <article class="related-card bg-white rounded-xl shadow-md overflow-hidden cursor-pointer transition-all duration-300" onclick="window.location.href='article-detail.html?id=${article.ma_bai_viet}'">
+                    <div class="relative h-32 overflow-hidden">
+                        <img src="${article.hinh_anh || 'https://via.placeholder.com/200x100?text=Bài+viết'}" alt="${article.tieu_de}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://via.placeholder.com/200x100?text=Bài+viết'">
+                    </div>
+                    <div class="p-3">
+                        <h3 class="font-bold text-sm text-gray-800 line-clamp-2 hover:text-indigo-600 transition">${article.tieu_de}</h3>
+                    </div>
+                </article>
+            `).join('');
+        }
+
+        function shareOnFacebook() {
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank');
+        }
+
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href);
+            alert('Đã sao chép link!');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadArticleDetail);
+    </script>
+
+    <!-- Search Suggestions -->
+    <script src="../js/search-suggestions.js?v=1"></script>
+</body>
+</html>
+

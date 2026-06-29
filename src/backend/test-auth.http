@@ -1,0 +1,82 @@
+### Test kết nối database
+GET http://localhost:3300/api/test-db
+
+### ==========================================
+### ĐĂNG KÝ TÀI KHOẢN MỚI
+### ==========================================
+POST http://localhost:3300/api/auth/register
+Content-Type: application/json
+
+{
+  "ten_dang_nhap": "testuser",
+  "mat_khau": "123456",
+  "email": "testuser@gmail.com",
+  "vai_tro": "khach_hang"
+}
+
+### ==========================================
+### ĐĂNG NHẬP
+### ==========================================
+POST http://localhost:3300/api/auth/login
+Content-Type: application/json
+
+{
+  "ten_dang_nhap": "testuser",
+  "mat_khau": "123456"
+}
+
+### ==========================================
+### ĐĂNG NHẬP VỚI TÀI KHOẢN ADMIN
+### ==========================================
+POST http://localhost:3300/api/auth/login
+Content-Type: application/json
+
+{
+  "ten_dang_nhap": "admin",
+  "mat_khau": "123456"
+}
+
+### ==========================================
+### KIỂM TRA TRẠNG THÁI ĐĂNG NHẬP
+### ==========================================
+GET http://localhost:3300/api/auth/me
+
+### ==========================================
+### ĐĂNG XUẤT
+### ==========================================
+POST http://localhost:3300/api/auth/logout
+
+### ==========================================
+### TEST ĐĂNG KÝ VỚI EMAIL ĐÃ TỒN TẠI
+### ==========================================
+POST http://localhost:3300/api/auth/register
+Content-Type: application/json
+
+{
+  "ten_dang_nhap": "testuser2",
+  "mat_khau": "123456",
+  "email": "testuser@gmail.com"
+}
+
+### ==========================================
+### TEST ĐĂNG NHẬP SAI MẬT KHẨU
+### ==========================================
+POST http://localhost:3300/api/auth/login
+Content-Type: application/json
+
+{
+  "ten_dang_nhap": "testuser",
+  "mat_khau": "wrongpassword"
+}
+
+### ==========================================
+### TEST ĐĂNG KÝ VỚI MẬT KHẨU NGẮN
+### ==========================================
+POST http://localhost:3300/api/auth/register
+Content-Type: application/json
+
+{
+  "ten_dang_nhap": "shortpass",
+  "mat_khau": "123",
+  "email": "short@gmail.com"
+}

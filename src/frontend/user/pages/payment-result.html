@@ -1,0 +1,285 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../images/Screenshot 2025-11-10 154306.png">
+    <title>Kết quả thanh toán - Yến Nhi Tech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="max-w-md w-full mx-4">
+        <div id="resultContainer" class="bg-white rounded-2xl shadow-xl p-8 text-center">
+            <!-- Content will be loaded by JavaScript -->
+            <div class="animate-pulse">
+                <div class="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-4"></div>
+                <div class="h-6 bg-gray-200 rounded w-3/4 mx-auto mb-2"></div>
+                <div class="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Kiểm tra nếu là callback từ MoMo
+            const resultCode = urlParams.get('resultCode');
+            const momoOrderId = urlParams.get('orderId');
+            const transId = urlParams.get('transId');
+            const momoMessage = urlParams.get('message');
+            
+            let status, orderId, message;
+            
+            if (resultCode !== null) {
+                // Callback từ MoMo
+                status = resultCode === '0' ? 'success' : 'failed';
+                // Lấy orderId gốc từ momoOrderId (format: YNT{orderId}_{timestamp})
+                orderId = momoOrderId ? momoOrderId.split('_')[0].replace('YNT', '') : '';
+                message = momoMessage;
+            } else {
+                // Redirect từ backend
+                status = urlParams.get('status');
+                orderId = urlParams.get('orderId');
+                message = urlParams.get('message');
+            }
+
+            const container = document.getElementById('resultContainer');
+
+            if (status === 'success') {
+                container.innerHTML = `
+                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                    <h1 class="text-2xl font-bold text-green-600 mb-2">Thanh toán thành công!</h1>
+                    <p class="text-gray-600 mb-4">Cảm ơn bạn đã mua hàng tại Yến Nhi Tech</p>
+                    
+                    <div class="bg-gray-50 rounded-lg p-4 mb-6 text-left">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-500">Mã đơn hàng:</span>
+                            <span class="font-semibold">#${orderId}</span>
+                        </div>
+                        ${transId ? `
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Mã giao dịch:</span>
+                            <span class="font-mono text-sm">${transId}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <!-- Nút xem hóa đơn -->
+                        <button onclick="viewInvoice(${orderId})" class="block w-full border border-blue-600 text-blue-600 hover:bg-blue-50 font-semibold py-3 rounded-lg transition flex justify-center items-center gap-2 mb-3">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                            Xem hóa đơn
+                        </button>                        <button onclick="downloadInvoice(${orderId})" class="block w-full border border-green-600 text-green-600 hover:bg-green-50 font-semibold py-3 rounded-lg transition flex justify-center items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                            </svg>
+                            Tải hóa đơn (PDF)
+                        </button>                        <a href="order-history.html" class="block w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition">
+                            Xem đơn hàng
+                        </a>
+                        <a href="products.html" class="block w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 rounded-lg transition">
+                            Tiếp tục mua sắm
+                        </a>
+                    </div>
+                `;
+
+                // Xóa dữ liệu checkout và promo
+                clearCheckoutData();
+
+            } else if (status === 'failed') {
+                container.innerHTML = `
+                    <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </div>
+                    <h1 class="text-2xl font-bold text-red-600 mb-2">Thanh toán thất bại</h1>
+                    <p class="text-gray-600 mb-4">${message || 'Giao dịch không thành công. Vui lòng thử lại.'}</p>
+                    
+                    ${orderId ? `
+                    <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Mã đơn hàng:</span>
+                            <span class="font-semibold">#${orderId}</span>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="space-y-3">
+                        <a href="checkout.html" class="block w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-lg transition">
+                            Thử lại
+                        </a>
+                        <a href="cart.html" class="block w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 rounded-lg transition">
+                            Quay lại giỏ hàng
+                        </a>
+                    </div>
+                `;
+
+            } else {
+                container.innerHTML = `
+                    <div class="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-10 h-10 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                    </div>
+                    <h1 class="text-2xl font-bold text-yellow-600 mb-2">Có lỗi xảy ra</h1>
+                    <p class="text-gray-600 mb-6">${message || 'Không thể xác định trạng thái thanh toán.'}</p>
+                    
+                    <div class="space-y-3">
+                        <a href="order-history.html" class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition">
+                            Kiểm tra đơn hàng
+                        </a>
+                        <a href="../../index.html" class="block w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 rounded-lg transition">
+                            Về trang chủ
+                        </a>
+                    </div>
+                `;
+            }
+        });
+
+        function clearCheckoutData() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user'));
+                if (user) {
+                    const checkoutKey = `checkout_${user.ma_tai_khoan}`;
+                    const selectedKey = `selected_${user.ma_tai_khoan}`;
+                    const promoKey = `promo_data_${user.ma_tai_khoan}`;
+                    const appliedPromoKey = `applied_promo_${user.ma_tai_khoan}`;
+                    
+                    localStorage.removeItem(checkoutKey);
+                    localStorage.removeItem(selectedKey);
+                    localStorage.removeItem(promoKey);
+                    localStorage.removeItem(appliedPromoKey);
+                }
+            } catch (e) {
+                console.error('Error clearing checkout data:', e);
+            }
+        }
+
+        
+        async function viewInvoice(orderId) {
+            if (!orderId) {
+                alert('Không tìm thấy mã đơn hàng!');
+                return;
+            }
+            
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert('Vui lòng đăng nhập để xem hóa đơn.');
+                    return;
+                }
+                
+                const btn = event.currentTarget;
+                const originalContent = btn.innerHTML;
+                btn.innerHTML = '<span class="animate-spin mr-2">🔄</span> Đang tải hóa đơn...';
+                btn.disabled = true;
+
+                const API_URL = 'http://localhost:3000/api';
+                const response = await fetch(`${API_URL}/auth/my-orders/${orderId}/invoice?action=view`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Mã lỗi: ${response.status}`);
+                }
+                
+                // Hiển thị PDF trong tab mới
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                window.open(url, '_blank');
+                
+                // Mở lại các nút
+                setTimeout(() => window.URL.revokeObjectURL(url), 10000);
+                
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            } catch (err) {
+                console.error('View error:', err);
+                alert('Có lỗi xảy ra khi xem hóa đơn! ' + err.message);
+                
+                const btn = event.currentTarget;
+                btn.innerHTML = `
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                    Xem hóa đơn
+                `;
+                btn.disabled = false;
+            }
+        }
+
+        async function downloadInvoice(orderId) {
+            if (!orderId) {
+                alert('Không tìm thấy mã đơn hàng!');
+                return;
+            }
+            
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    alert('Vui lòng đăng nhập để tải hóa đơn.');
+                    return;
+                }
+                
+                const btn = event.currentTarget;
+                const originalContent = btn.innerHTML;
+                btn.innerHTML = '<span class="animate-spin mr-2">🔄</span> Đang tạo PDF...';
+                btn.disabled = true;
+
+                // Tuỳ chỉnh cấu hình API tùy host hiện tại
+                const API_URL = 'http://localhost:3000/api';
+                const response = await fetch(`${API_URL}/auth/my-orders/${orderId}/invoice`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error("Backend Error Response:", errorText);
+                    throw new Error(`Mã lỗi: ${response.status} - Chi tiết: ${errorText}`);
+                }
+                
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = `Hoa_Don_${orderId}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            } catch (err) {
+                console.error('Download error:', err);
+                alert('Có lỗi xảy ra khi tải hóa đơn! ' + err.message);
+                
+                const btn = event.currentTarget;
+                btn.innerHTML = `
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    Tải hóa đơn (PDF)
+                `;
+                btn.disabled = false;
+            }
+        }
+    </script>
+
+    <!-- Search Suggestions -->
+    <script src="../js/search-suggestions.js?v=1"></script>
+</body>
+</html>
+

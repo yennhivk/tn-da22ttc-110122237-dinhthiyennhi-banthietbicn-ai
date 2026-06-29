@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../images/Screenshot 2025-11-10 154306.png">
+    <title>Đang xử lý đăng nhập...</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, 'Noto Sans', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .loader-container {
+            text-align: center;
+            color: white;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="loader-container">
+        <div class="spinner"></div>
+        <h2>Đang xử lý đăng nhập...</h2>
+        <p>Vui lòng đợi trong giây lát</p>
+    </div>
+
+    <script>
+        (function() {
+            // Lấy token và user từ URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            const userStr = urlParams.get('user');
+            const error = urlParams.get('error');
+            const redirect = urlParams.get('redirect');
+
+            console.log('Token:', token ? 'Có' : 'Không');
+            console.log('User string:', userStr);
+            console.log('Redirect:', redirect);
+
+            if (error) {
+                alert('Đăng nhập Google thất bại: ' + error);
+                window.location.replace('login.html');
+                return;
+            }
+            
+            if (token && userStr) {
+                try {
+                    const decodedUserStr = decodeURIComponent(userStr);
+                    console.log('Decoded user:', decodedUserStr);
+                    
+                    const user = JSON.parse(decodedUserStr);
+                    console.log('Parsed user:', user);
+                    
+                    // Lưu vào localStorage
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('user', JSON.stringify(user));
+                    
+                    console.log('Đã lưu localStorage, đang chuyển trang...');
+                    
+                    // Kiểm tra redirect về admin
+                    if (redirect === 'admin') {
+                        // Kiểm tra quyền admin
+                        if (user.vai_tro === 'admin') {
+                            setTimeout(function() {
+                                window.location.href = '../../admin/pages/admin.html';
+                            }, 500);
+                        } else {
+                            alert('Bạn không có quyền truy cập trang quản trị!');
+                            localStorage.removeItem('token');
+                            localStorage.removeItem('user');
+                            setTimeout(function() {
+                                window.location.href = 'login.html?message=' + encodeURIComponent('Bạn không có quyền truy cập trang quản trị');
+                            }, 500);
+                        }
+                    } else {
+                        // Chuyển về trang chủ
+                        setTimeout(function() {
+                            window.location.href = '../../index.html';
+                        }, 500);
+                    }
+                } catch (e) {
+                    console.error('Lỗi xử lý dữ liệu:', e);
+                    alert('Có lỗi xảy ra khi xử lý đăng nhập: ' + e.message);
+                    window.location.replace('login.html');
+                }
+            } else {
+                alert('Không tìm thấy thông tin đăng nhập');
+                window.location.replace('login.html');
+            }
+        })();
+    </script>
+    <!-- Chatbot Widget -->
+    <link rel="stylesheet" href="../../css/chatbot.css?v=20260613_light">
+    <script src="../js/chatbot.js?v=20250510"></script>
+
+    <!-- Search Suggestions -->
+    <script src="../js/search-suggestions.js?v=1"></script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+const f="d:/BaoCao_KLTN/kltn-da22ttc-dinhthiyennhi-thietbicongnghe-nodejs/frontend/js/search-suggestions.js"; let c=require("fs").readFileSync(f,"utf8"); c=c.replace("        });\\n        }\\n\\n        //", "        });\n        }\n\n        //"); require("fs").writeFileSync(f,c,"utf8");

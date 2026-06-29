@@ -1,0 +1,518 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../images/Screenshot 2025-11-10 154306.png">
+    <title>Chi Tiết Sản Phẩm - Yến Nhi Tech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        .thumbnail-item {
+            transition: all 0.2s ease;
+        }
+        .thumbnail-item:hover, .thumbnail-item.active {
+            border-color: #dc2626;
+            transform: scale(1.05);
+        }
+        .main-image {
+            transition: transform 0.3s ease;
+        }
+        .main-image:hover {
+            transform: scale(1.02);
+        }
+        .quantity-btn {
+            transition: all 0.2s ease;
+        }
+        .quantity-btn:hover:not(:disabled) {
+            background-color: #dc2626;
+            color: white;
+        }
+        .tab-btn.active {
+            border-color: #dc2626;
+            color: #dc2626;
+        }
+        .star-rating {
+            color: #fbbf24;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation Bar -->
+    <nav class="bg-gradient-to-r from-yellow-500 to-yellow-400 shadow-lg fixed top-0 left-0 right-0 z-50 w-full">
+        <div class="px-3 sm:px-4 lg:px-6">
+            <div class="flex items-center h-16 gap-2 sm:gap-3 lg:gap-4">
+                <a href="../../index.html" class="flex items-center gap-2 cursor-pointer whitespace-nowrap group flex-shrink-0 hover:scale-105 transition-all duration-300">
+                    <img src="../../images/Screenshot 2025-11-10 154306.png" alt="Yến Nhi Tech Logo" class="w-12 h-12 md:w-14 md:h-14 object-cover rounded-full shadow-lg">
+                    <div class="flex items-baseline gap-1">
+                        <span class="text-lg md:text-xl font-bold text-red-600 drop-shadow-md">Yến Nhi</span>
+                        <span class="text-xl md:text-2xl font-bold text-blue-500 drop-shadow-lg italic" style="font-family: 'Brush Script MT', 'Lucida Calligraphy', cursive;">Tech</span>
+                    </div>
+                </a>
+
+                <!-- Search Bar -->
+                <div class="flex flex-1 max-w-xl mx-2 sm:mx-3">
+                    <div class="relative w-full">
+                        <input type="text" id="searchInput" placeholder="Bạn cần tìm gì?" class="w-full pl-10 pr-3 py-2 md:py-2.5 rounded-lg border-0 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                        <svg class="w-6 h-6 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden lg:flex items-center gap-6 ml-auto text-black">
+                    <a href="../../index.html" class="text-lg font-bold hover:text-red-600 transition">Trang chủ</a>
+                    <a href="products.html" class="text-lg font-bold text-red-600">Sản phẩm</a>
+                    <a href="news.html" class="text-lg font-bold hover:text-red-600 transition">Tin tức</a>
+                    <a href="promotions.html" class="text-lg font-bold hover:text-red-600 transition">Khuyến mãi</a>
+                    <a href="about.html" class="text-lg font-bold hover:text-red-600 transition">Giới thiệu</a>
+                    <a href="contact.html" class="text-lg font-bold hover:text-red-600 transition">Liên hệ</a>
+                </div>
+
+                <!-- Right items -->
+                <div class="flex items-center gap-2 sm:gap-3 lg:gap-4">
+                    <a href="cart.html" class="relative text-black hover:text-red-600 transition transform hover:scale-110 flex-shrink-0" title="Giỏ hàng">
+                        <svg class="w-6 h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        <span class="cart-badge absolute -top-2 -right-2 bg-green-500 text-red-500 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                    </a>
+                    <div class="user-account-container hidden lg:flex items-center gap-2">
+                        <a href="login.html" class="flex items-center gap-2 text-black hover:text-red-600 transition">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span class="text-lg font-semibold">Đăng nhập</span>
+                        </a>
+                    </div>
+                    <button id="mobileMenuBtn" class="lg:hidden text-white hover:text-yellow-300 transition flex-shrink-0" onclick="toggleMobileMenu()">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path id="menuIcon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-20 pb-12">
+        <!-- Breadcrumb -->
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <nav class="flex items-center text-sm text-gray-600">
+                <a href="../../index.html" class="hover:text-red-600">Trang chủ</a>
+                <svg class="w-4 h-4 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                <a href="products.html" class="hover:text-red-600">Sản phẩm</a>
+                <svg class="w-4 h-4 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                <span id="breadcrumbCategory" class="text-gray-500">Danh mục</span>
+                <svg class="w-4 h-4 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                <span id="breadcrumbProduct" class="text-red-600 font-medium">Tên sản phẩm</span>
+            </nav>
+        </div>
+
+        <!-- Product Detail Section -->
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6">
+                    <!-- Product Images -->
+                    <div class="space-y-4">
+                        <!-- Main Image -->
+                        <div class="relative bg-gray-100 rounded-lg overflow-hidden aspect-square">
+                            <img id="mainImage" src="https://via.placeholder.com/600x600?text=Loading..." alt="Sản phẩm" class="main-image w-full h-full object-contain p-4">
+                            <!-- Badges -->
+                            <div class="absolute top-4 left-4 space-y-2">
+                                <span id="discountBadge" class="hidden bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold">-15%</span>
+                                <span id="stockBadge" class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">Còn hàng</span>
+                            </div>
+                            <!-- Zoom Icon -->
+                            <button onclick="openImageModal()" class="absolute bottom-4 right-4 bg-white/80 hover:bg-white p-2 rounded-full shadow-lg transition">
+                                <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg>
+                            </button>
+                        </div>
+                        <!-- Thumbnails -->
+                        <div id="thumbnailContainer" class="flex gap-3 overflow-x-auto pb-2">
+                            <!-- Thumbnails will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Product Info -->
+                    <div class="space-y-6">
+                        <!-- Brand & Name -->
+                        <div>
+                            <span id="productBrand" class="text-blue-600 font-semibold text-sm uppercase tracking-wide">Thương hiệu</span>
+                            <h1 id="productName" class="text-2xl lg:text-3xl font-bold text-gray-900 mt-2">Đang tải...</h1>
+                        </div>
+
+                        <!-- Rating -->
+                        <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-1">
+                                <div id="starRating" class="star-rating flex">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                </div>
+                                <span id="ratingText" class="text-gray-600 text-sm ml-2">5.0</span>
+                            </div>
+                            <span class="text-gray-400">|</span>
+                            <span id="reviewCount" class="text-gray-600 text-sm">0 đánh giá</span>
+                            <span class="text-gray-400">|</span>
+                            <span id="soldCount" class="text-gray-600 text-sm">Đã bán: 0</span>
+                        </div>
+
+                        <!-- Price -->
+                        <div class="bg-gradient-to-r from-red-50 to-orange-50 rounded-xl p-4">
+                            <div class="flex items-baseline gap-3">
+                                <span id="productPrice" class="text-3xl font-bold text-red-600">0₫</span>
+                                <span id="oldPrice" class="text-lg text-gray-400 line-through">0₫</span>
+                                <span id="discountPercent" class="bg-red-600 text-white px-2 py-1 rounded text-sm font-bold">-15%</span>
+                            </div>
+                            <p class="text-green-600 text-sm mt-2 font-medium">
+                                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                Tiết kiệm: <span id="savedAmount">0₫</span>
+                            </p>
+                        </div>
+
+                        <!-- Promotions -->
+                        <div class="border border-red-200 rounded-xl p-4 bg-red-50/50">
+                            <h3 class="font-bold text-red-600 mb-3 flex items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path></svg>
+                                Ưu đãi đặc biệt
+                            </h3>
+                            <ul class="space-y-2 text-sm text-gray-700">
+                                <li class="flex items-start gap-2">
+                                    <svg class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                    Trả góp 0% qua thẻ tín dụng
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <svg class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                    Freeship toàn quốc đơn từ 500K
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <svg class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                    Bảo hành chính hãng 12 tháng
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <svg class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                    Đổi trả miễn phí trong 7 ngày
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Quantity & Add to Cart -->
+                        <div class="space-y-4">
+                            <!-- Quantity -->
+                            <div class="flex items-center gap-4">
+                                <span class="text-gray-700 font-medium">Số lượng:</span>
+                                <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                                    <button onclick="decreaseQuantity()" class="quantity-btn px-4 py-2 text-gray-600 hover:bg-gray-100 transition">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg>
+                                    </button>
+                                    <input type="number" id="quantity" value="1" min="1" class="w-16 text-center border-x border-gray-300 py-2 focus:outline-none">
+                                    <button onclick="increaseQuantity()" class="quantity-btn px-4 py-2 text-gray-600 hover:bg-gray-100 transition">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                    </button>
+                                </div>
+                                <span id="stockInfo" class="text-gray-500 text-sm">Còn 10 sản phẩm</span>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex gap-3">
+                                <button onclick="addToCartFromDetail()" id="addToCartBtn" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-lg hover:shadow-xl">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                    Thêm vào giỏ hàng
+                                </button>
+                                <button onclick="buyNow()" class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-lg hover:shadow-xl">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                    Mua ngay
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Tabs -->
+            <div class="bg-white rounded-xl shadow-lg mt-8 overflow-hidden">
+                <!-- Tab Headers -->
+                <div class="flex border-b">
+                    <button onclick="switchTab('description')" id="tab-description" class="tab-btn active flex-1 py-4 px-6 font-semibold text-gray-600 border-b-2 border-transparent hover:text-red-600 transition">
+                        Mô tả sản phẩm
+                    </button>
+                    <button onclick="switchTab('specs')" id="tab-specs" class="tab-btn flex-1 py-4 px-6 font-semibold text-gray-600 border-b-2 border-transparent hover:text-red-600 transition">
+                        Thông số kỹ thuật
+                    </button>
+                    <button onclick="switchTab('reviews')" id="tab-reviews" class="tab-btn flex-1 py-4 px-6 font-semibold text-gray-600 border-b-2 border-transparent hover:text-red-600 transition">
+                        Đánh giá (<span id="tabReviewCount">0</span>)
+                    </button>
+                </div>
+
+                <!-- Tab Contents -->
+                <div class="p-6">
+                    <!-- Description Tab -->
+                    <div id="content-description" class="tab-content">
+                        <div id="productDescription" class="prose max-w-none text-gray-700">
+                            <p>Đang tải mô tả sản phẩm...</p>
+                        </div>
+                    </div>
+
+                    <!-- Specs Tab -->
+                    <div id="content-specs" class="tab-content hidden">
+                        <div id="productSpecs" class="space-y-2">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="flex border-b border-gray-100 py-3">
+                                    <span class="w-1/2 text-gray-500">Thương hiệu</span>
+                                    <span id="specBrand" class="w-1/2 font-medium text-gray-900">-</span>
+                                </div>
+                                <div class="flex border-b border-gray-100 py-3">
+                                    <span class="w-1/2 text-gray-500">Danh mục</span>
+                                    <span id="specCategory" class="w-1/2 font-medium text-gray-900">-</span>
+                                </div>
+                                <div class="flex border-b border-gray-100 py-3">
+                                    <span class="w-1/2 text-gray-500">Tình trạng</span>
+                                    <span id="specStatus" class="w-1/2 font-medium text-green-600">Còn hàng</span>
+                                </div>
+                                <div class="flex border-b border-gray-100 py-3">
+                                    <span class="w-1/2 text-gray-500">Bảo hành</span>
+                                    <span class="w-1/2 font-medium text-gray-900">12 tháng chính hãng</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reviews Tab -->
+                    <div id="content-reviews" class="tab-content hidden">
+                        <!-- Tổng quan đánh giá -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                            <!-- Điểm trung bình -->
+                            <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl p-6 text-center border border-yellow-200">
+                                <div class="text-5xl font-bold text-yellow-600" id="avgRatingDisplay">0</div>
+                                <div class="flex justify-center mt-2" id="avgStarsDisplay">
+                                    <!-- Stars will be rendered here -->
+                                </div>
+                                <p class="text-gray-600 mt-2"><span id="totalReviewsDisplay">0</span> đánh giá</p>
+                            </div>
+                            
+                            <!-- Phân bố sao -->
+                            <div class="md:col-span-2 bg-gray-50 rounded-xl p-6 border border-gray-200">
+                                <div class="space-y-2" id="ratingDistribution">
+                                    <!-- Rating bars will be rendered here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Form viết đánh giá -->
+                        <div id="reviewFormContainer" class="bg-blue-50 rounded-xl p-6 mb-6 border border-blue-200 hidden">
+                            <h3 class="font-bold text-lg text-gray-900 mb-4">✍️ Viết đánh giá của bạn</h3>
+                            <form id="reviewForm" onsubmit="submitReview(event)">
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Đánh giá sao</label>
+                                    <div class="flex gap-2" id="starSelector">
+                                        <button type="button" onclick="selectStar(1)" class="star-btn text-3xl text-gray-300 hover:text-yellow-400 transition">★</button>
+                                        <button type="button" onclick="selectStar(2)" class="star-btn text-3xl text-gray-300 hover:text-yellow-400 transition">★</button>
+                                        <button type="button" onclick="selectStar(3)" class="star-btn text-3xl text-gray-300 hover:text-yellow-400 transition">★</button>
+                                        <button type="button" onclick="selectStar(4)" class="star-btn text-3xl text-gray-300 hover:text-yellow-400 transition">★</button>
+                                        <button type="button" onclick="selectStar(5)" class="star-btn text-3xl text-gray-300 hover:text-yellow-400 transition">★</button>
+                                    </div>
+                                    <input type="hidden" id="selectedRating" value="5">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Nội dung đánh giá</label>
+                                    <textarea id="reviewContent" rows="4" class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..." required></textarea>
+                                </div>
+                                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition">
+                                    Gửi đánh giá
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Nút viết đánh giá (cho người chưa đăng nhập) -->
+                        <div id="loginToReview" class="bg-gray-50 rounded-xl p-6 mb-6 text-center border border-gray-200 hidden">
+                            <p class="text-gray-600 mb-3">Đăng nhập để viết đánh giá sản phẩm</p>
+                            <a href="login.html" class="inline-block bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg transition">
+                                Đăng nhập ngay
+                            </a>
+                        </div>
+
+                        <!-- Danh sách đánh giá -->
+                        <div id="reviewsContainer">
+                            <div class="text-center py-8 text-gray-500">
+                                <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                                <p>Chưa có đánh giá nào cho sản phẩm này</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Products -->
+            <div class="mt-10 bg-white rounded-xl shadow-lg p-6">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-3">
+                        <span class="bg-red-600 text-white p-2 rounded-lg">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                            </svg>
+                        </span>
+                        Sản phẩm liên quan
+                    </h2>
+                </div>
+                <div id="relatedProducts">
+                    <!-- Related products will be loaded here -->
+                    <div class="flex justify-center items-center py-12">
+                        <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-red-600"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-yellow-100 text-gray-900 pt-12 pb-6">
+        <div class="max-w-7xl mx-auto px-4">
+            <!-- Main Footer Content -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
+                <!-- About Column -->
+                <div class="lg:col-span-1">
+                    <h3 class="text-lg font-bold mb-4 text-red-600">VỀ YẾN NHI TECH</h3>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li><a href="about.html" class="hover:text-gray-900 hover:font-semibold transition">Giới thiệu công ty</a></li>
+                        <li><a href="contact.html#map-section" class="hover:text-gray-900 hover:font-semibold transition">Hệ thống cửa hàng</a></li>
+                    </ul>
+                </div>
+
+                <!-- Policy Column -->
+                <div class="lg:col-span-1">
+                    <h3 class="text-lg font-bold mb-4 text-red-600">CHÍNH SÁCH</h3>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li><a href="policy-warranty.html" class="hover:text-gray-900 hover:font-semibold transition">Chính sách bảo hành</a></li>
+                        <li><a href="policy-return.html" class="hover:text-gray-900 hover:font-semibold transition">Chính sách đổi trả</a></li>
+                        <li><a href="policy-privacy.html" class="hover:text-gray-900 hover:font-semibold transition">Chính sách bảo mật</a></li>
+                    </ul>
+                </div>
+
+                <!-- Info Column -->
+                <div class="lg:col-span-1">
+                    <h3 class="text-lg font-bold mb-4 text-red-600">THÔNG TIN</h3>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li><a href="payment-guide.html" class="hover:text-gray-900 hover:font-semibold transition">Hướng dẫn thanh toán</a></li>
+                        <li><a href="order-history.html" class="hover:text-gray-900 hover:font-semibold transition">Tra cứu đơn hàng</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Column -->
+                <div class="lg:col-span-2">
+                    <h3 class="text-lg font-bold mb-4 text-red-600">TỔNG ĐÀI HỖ TRỢ</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
+                            </svg>
+                            <div>
+                                <p class="text-gray-900 font-semibold">Mua hàng: 1900.5301</p>
+                                <p class="text-gray-700">Gọi miễn phí từ 8:00 - 21:30</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/>
+                            </svg>
+                            <div>
+                                <p class="text-gray-900 font-semibold">Bảo hành: 1900.5325</p>
+                                <p class="text-gray-700">8:00 - 21:00 (cả CN và Lễ)</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+                                <circle cx="8" cy="10" r="1.5"/>
+                                <circle cx="12" cy="10" r="1.5"/>
+                                <circle cx="16" cy="10" r="1.5"/>
+                            </svg>
+                            <div>
+                                <p class="text-gray-900 font-semibold">Khiếu nại: 1900.5310</p>
+                                <p class="text-gray-700">8:00 - 21:30</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                            </svg>
+                            <div>
+                                <p class="text-gray-900 font-semibold">Email: support@yennhitech.vn</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment & Shipping Methods -->
+            <div class="border-t border-gray-600 pt-8 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Shipping -->
+                    <div>
+                        <h4 class="text-sm font-bold mb-4 text-gray-900">ĐƠN VỊ VẬN CHUYỂN</h4>
+                        <div class="flex flex-wrap gap-4">
+                            <div class="bg-white rounded px-3 py-2 text-xs font-semibold text-gray-700 shadow-md">🚚 GHTK</div>
+                            <div class="bg-white rounded px-3 py-2 text-xs font-semibold text-gray-700 shadow-md">📦 Viettel Post</div>
+                            <div class="bg-white rounded px-3 py-2 text-xs font-semibold text-gray-700 shadow-md">🚛 J&T Express</div>
+                            <div class="bg-white rounded px-3 py-2 text-xs font-semibold text-gray-700 shadow-md">📮 VNPost</div>
+                        </div>
+                    </div>
+
+                    <!-- Payment -->
+                    <div>
+                        <h4 class="text-sm font-bold mb-4 text-gray-900">PHƯƠNG THỨC THANH TOÁN</h4>
+                        <div class="flex flex-wrap gap-4">
+                            <div class="bg-white rounded px-3 py-2 text-xs font-semibold text-gray-700 shadow-md">💳 Visa/Master</div>
+                            <div class="bg-white rounded px-3 py-2 text-xs font-semibold text-gray-700 shadow-md">🏦 ATM</div>
+                            <div class="bg-white rounded px-3 py-2 text-xs font-semibold text-gray-700 shadow-md">💰 Momo</div>
+                            <div class="bg-white rounded px-3 py-2 text-xs font-semibold text-gray-700 shadow-md">🏧 ZaloPay</div>
+                            <div class="bg-white rounded px-3 py-2 text-xs font-semibold text-gray-700 shadow-md">💵 COD</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Social & Copyright -->
+            <div class="border-t border-gray-600 pt-6">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="text-sm text-gray-900">
+                        <p>&copy; 2024 Yến Nhi Tech. All rights reserved.</p>
+                        <p class="mt-1">📍 Địa chỉ: 74-76 Lê Lợi, Phường 2, Trà Vinh</p>
+                    </div>
+                    <div class="flex gap-4">
+                        <a href="#" class="bg-blue-600 hover:bg-blue-700 p-2 rounded-full transition">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </a>
+                        <a href="#" class="bg-red-600 hover:bg-red-700 p-2 rounded-full transition">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </a>
+                        <a href="#" class="bg-pink-600 hover:bg-pink-700 p-2 rounded-full transition">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Image Modal -->
+    <div id="imageModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+        <button onclick="closeImageModal()" class="absolute top-4 right-4 text-white hover:text-gray-300">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+        <img id="modalImage" src="" alt="Zoom" class="max-w-full max-h-full object-contain">
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/auth-ui.js?v=2"></script>
+    <script src="../js/product-detail.js?v=2"></script>
+    <!-- Chatbot Widget -->
+    <link rel="stylesheet" href="../../css/chatbot.css?v=20260613_light">
+    <script src="../js/chatbot.js?v=20250510"></script>
+
+    <!-- Search Suggestions -->
+    <script src="../js/search-suggestions.js?v=1"></script>
+</body>
+</html>

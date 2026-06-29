@@ -1,0 +1,254 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../images/Screenshot 2025-11-10 154306.png">
+    <title>X�c nh?n Email - Y?n Nhi Tech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .otp-input {
+            width: 40px;
+            height: 48px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .otp-input:focus {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+        }
+        .countdown {
+            font-size: 36px;
+            font-weight: bold;
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full">
+        <div class="text-center mb-5">
+            <div class="w-14 h-14 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg class="w-7 h-7 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+            </div>
+            <h1 class="text-xl font-bold text-gray-800 mb-1">X�c nh?n Email</h1>
+            <p class="text-gray-600 text-sm">M� x�c nh?n d� g?i d?n</p>
+            <p id="emailDisplay" class="text-yellow-600 font-semibold text-sm"></p>
+        </div>
+
+        <!-- Countdown Timer -->
+        <div class="text-center mb-4">
+            <p class="text-gray-500 text-sm mb-1">M� h?t h?n sau</p>
+            <div class="countdown" id="countdown">5:00</div>
+        </div>
+
+        <!-- OTP Input -->
+        <div class="flex justify-center gap-2 mb-4" id="otpContainer">
+            <input type="text" maxlength="1" class="otp-input" data-index="0">
+            <input type="text" maxlength="1" class="otp-input" data-index="1">
+            <input type="text" maxlength="1" class="otp-input" data-index="2">
+            <input type="text" maxlength="1" class="otp-input" data-index="3">
+            <input type="text" maxlength="1" class="otp-input" data-index="4">
+            <input type="text" maxlength="1" class="otp-input" data-index="5">
+        </div>
+
+        <!-- Error Message -->
+        <p id="errorMsg" class="text-red-500 text-center text-sm mb-3 hidden"></p>
+
+        <!-- Verify Button -->
+        <button id="verifyBtn" onclick="verifyOTP()" class="w-full bg-yellow-500 text-white font-bold py-2.5 rounded-lg hover:bg-yellow-600 transition mb-3 text-sm">
+            X�c nh?n
+        </button>
+
+        <!-- Resend -->
+        <div class="text-center">
+            <p class="text-gray-500 text-xs mb-1">Kh�ng nh?n du?c m�?</p>
+            <button id="resendBtn" onclick="resendOTP()" class="text-yellow-600 font-semibold text-sm hover:underline disabled:text-gray-400 disabled:cursor-not-allowed" disabled>
+                G?i l?i m�
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        let email = '';
+        let countdown = 300; // 5 ph�t
+        let timer = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // L?y email t? URL
+            const urlParams = new URLSearchParams(window.location.search);
+            email = urlParams.get('email');
+            
+            if (!email) {
+                alert('Kh�ng t�m th?y th�ng tin email');
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            document.getElementById('emailDisplay').textContent = email;
+            startCountdown();
+            setupOTPInputs();
+        });
+
+        function setupOTPInputs() {
+            const inputs = document.querySelectorAll('.otp-input');
+            
+            inputs.forEach((input, index) => {
+                input.addEventListener('input', (e) => {
+                    const value = e.target.value;
+                    // Ch? cho ph�p nh?p s?
+                    e.target.value = value.replace(/[^0-9]/g, '');
+                    if (e.target.value && index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                    // ?n l?i khi ngu?i d�ng dang nh?p
+                    hideError();
+                });
+                
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                    // Cho ph�p nh?n Enter d? x�c th?c
+                    if (e.key === 'Enter' && getOTP().length === 6) {
+                        verifyOTP();
+                    }
+                });
+                
+                // Cho ph�p paste
+                input.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '').slice(0, 6);
+                    pastedData.split('').forEach((char, i) => {
+                        if (inputs[i]) inputs[i].value = char;
+                    });
+                    // Kh�ng t? d?ng verify khi paste, d? ngu?i d�ng ki?m tra l?i
+                });
+            });
+            
+            inputs[0].focus();
+        }
+
+        function getOTP() {
+            const inputs = document.querySelectorAll('.otp-input');
+            return Array.from(inputs).map(i => i.value).join('');
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function startCountdown() {
+            countdown = 300; // 5 ph�t
+            document.getElementById('resendBtn').disabled = true;
+            document.getElementById('countdown').textContent = formatTime(countdown);
+            
+            timer = setInterval(() => {
+                countdown--;
+                document.getElementById('countdown').textContent = formatTime(countdown);
+                
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                    document.getElementById('countdown').textContent = '0:00';
+                    document.getElementById('resendBtn').disabled = false;
+                    showError('M� OTP d� h?t h?n. Vui l�ng g?i l?i m� m?i.');
+                }
+            }, 1000);
+        }
+
+        function showError(msg) {
+            const errorEl = document.getElementById('errorMsg');
+            errorEl.textContent = msg;
+            errorEl.classList.remove('hidden');
+        }
+
+        function hideError() {
+            document.getElementById('errorMsg').classList.add('hidden');
+        }
+
+        async function verifyOTP() {
+            const otp = getOTP();
+            
+            if (otp.length !== 6) {
+                showError('Vui l�ng nh?p d? 6 s?');
+                return;
+            }
+            
+            hideError();
+            document.getElementById('verifyBtn').disabled = true;
+            document.getElementById('verifyBtn').textContent = '�ang x�c nh?n...';
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/verify-otp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, otp })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    clearInterval(timer);
+                    localStorage.setItem('token', data.data.token);
+                    localStorage.setItem('user', JSON.stringify(data.data.user));
+                    alert('?? ' + data.message);
+                    window.location.href = '../index.html';
+                } else {
+                    showError(data.message);
+                    // Clear inputs
+                    document.querySelectorAll('.otp-input').forEach(i => i.value = '');
+                    document.querySelector('.otp-input').focus();
+                }
+            } catch (error) {
+                showError('Kh�ng th? k?t n?i d?n server');
+            }
+            
+            document.getElementById('verifyBtn').disabled = false;
+            document.getElementById('verifyBtn').textContent = 'X�c nh?n';
+        }
+
+        async function resendOTP() {
+            try {
+                const response = await fetch(`${API_URL}/auth/resend-otp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    hideError();
+                    startCountdown();
+                    alert('�� g?i l?i m� OTP!');
+                    document.querySelectorAll('.otp-input').forEach(i => i.value = '');
+                    document.querySelector('.otp-input').focus();
+                } else {
+                    showError(data.message);
+                }
+            } catch (error) {
+                showError('Kh�ng th? k?t n?i d?n server');
+            }
+        }
+    </script>
+    <!-- Chatbot Widget -->
+    <link rel="stylesheet" href="../../css/chatbot.css?v=20260613_light">
+    <script src="../js/chatbot.js?v=20250510"></script>
+
+    <!-- Search Suggestions -->
+    <script src="../js/search-suggestions.js?v=1"></script>
+</body>
+</html>

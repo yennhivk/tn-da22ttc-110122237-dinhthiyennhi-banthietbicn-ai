@@ -1,0 +1,688 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <link rel="icon" type="image/png" href="../../images/Screenshot 2025-11-10 154306.png">    <title>Thông báo - Yến Nhi Tech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .tab-active {
+            color: #ee4d2d;
+            border-bottom: 2px solid #ee4d2d;
+        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .notification-item:hover { background-color: #f9fafb; }
+        .notification-unread { background-color: #fef3c7; border-left: 4px solid #f59e0b; }
+        .notification-unread:hover { background-color: #fef9c3; }
+        /* Scrollbar for dropdown */
+        .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: #EAB308; border-radius: 10px; }
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #CA8A04; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation Bar -->
+    <nav class="bg-gradient-to-r from-yellow-500 to-yellow-400 shadow-lg fixed top-0 left-0 right-0 z-50 w-full">
+        <div class="px-3 sm:px-4 lg:px-6">
+            <div class="flex items-center h-16 gap-2 sm:gap-3 lg:gap-4">
+                <!-- Logo -->
+                <a href="../../index.html" class="flex items-center gap-2 cursor-pointer whitespace-nowrap group flex-shrink-0 hover:scale-105 transition-all duration-300">
+                    <img src="../../images/Screenshot 2025-11-10 154306.png" alt="Yến Nhi Tech Logo" class="w-12 h-12 md:w-14 md:h-14 object-cover rounded-full shadow-lg">
+                    <div class="flex items-baseline gap-1">
+                        <span class="text-lg md:text-xl font-bold text-red-600 drop-shadow-md">Yến Nhi</span>
+                        <span class="text-xl md:text-2xl font-bold text-blue-500 drop-shadow-lg italic" style="font-family: 'Brush Script MT', 'Lucida Calligraphy', cursive;">Tech</span>
+                    </div>
+                </a>
+
+                <!-- Search Bar -->
+                <div class="flex flex-1 max-w-xl mx-2 sm:mx-3">
+                    <div class="relative w-full">
+                        <input type="text" id="searchInput" placeholder="Bạn cần tìm gì?" class="w-full pl-10 pr-3 py-2 md:py-2.5 rounded-lg border-0 text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                        <svg class="w-6 h-6 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden lg:flex items-center gap-6 ml-auto text-black-500">
+                    <a href="../../index.html" class="text-lg font-bold hover:text-red-600 transition">Trang chủ</a>
+                    <a href="products.html" class="text-lg font-bold hover:text-red-600 transition">Sản phẩm</a>
+                    <a href="news.html" class="text-lg font-bold hover:text-red-600 transition">Tin tức</a>
+                    <a href="promotions.html" class="text-lg font-bold hover:text-red-600 transition">Khuyến mãi</a>
+                    <a href="about.html" class="text-lg font-bold hover:text-red-600 transition">Giới thiệu</a>
+                    <a href="contact.html" class="text-lg font-bold hover:text-red-600 transition">Liên hệ</a>
+                </div>
+
+                <!-- Right items -->
+                <div class="flex items-center gap-2 sm:gap-3 lg:gap-4">
+                    <!-- Cart Icon -->
+                    <a href="cart.html" class="relative text-black-500 hover:text-red-600 transition transform hover:scale-110 flex-shrink-0" title="Giỏ hàng">
+                        <svg class="w-6 h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        <span class="cart-badge absolute -top-2 -right-2 bg-green-500 text-red-500 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                    </a>
+
+                    <!-- User Account -->
+                    <div class="user-account-container"></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Secondary Navigation - Category Menu -->
+    <div class="bg-white shadow-md fixed top-16 left-0 right-0 z-40 hidden lg:block">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex items-center gap-6 py-3 text-sm relative">
+                <!-- Danh mục Dropdown Button -->
+                <div class="relative group">
+                    <button class="flex items-center gap-2 font-bold text-white bg-gradient-to-r from-red-600 to-red-700 px-4 py-2 rounded-lg hover:from-red-700 hover:to-red-800 transition shadow-md">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                        <span>Danh mục</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+
+                    <!-- Mega Dropdown Menu -->
+                    <div class="absolute left-0 top-full mt-2 w-screen max-w-5xl bg-white shadow-2xl rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 border border-gray-200 z-50">
+                        <div class="grid grid-cols-12 gap-0">
+                            <!-- Left Sidebar Menu -->
+                            <div class="col-span-3 bg-gray-50 rounded-l-lg border-r border-gray-200">
+                                <div class="py-4">
+                                    <!-- Điện thoại -->
+                                    <a href="#" onclick="event.preventDefault(); showCategoryProducts('phone')" class="category-menu-item group/item flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors border-l-4 border-transparent hover:border-red-600" data-category="phone">
+                                        <svg class="w-6 h-6 text-gray-600 group-hover/item:text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                        <span class="text-base font-semibold text-gray-700 group-hover/item:text-red-600 flex-grow">Điện thoại</span>
+                                        <svg class="w-5 h-5 text-gray-400 group-hover/item:text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                    </a>
+
+                                    <!-- Laptop -->
+                                    <a href="#" onclick="event.preventDefault(); showCategoryProducts('laptop')" class="category-menu-item group/item flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors border-l-4 border-transparent hover:border-red-600" data-category="laptop">
+                                        <svg class="w-6 h-6 text-gray-600 group-hover/item:text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                        <span class="text-base font-semibold text-gray-700 group-hover/item:text-red-600 flex-grow">Laptop</span>
+                                        <svg class="w-5 h-5 text-gray-400 group-hover/item:text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                    </a>
+
+                                    <!-- Điện máy -->
+                                    <a href="#" onclick="event.preventDefault(); showCategoryProducts('appliances')" class="category-menu-item group/item flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors border-l-4 border-transparent hover:border-red-600" data-category="appliances">
+                                        <svg class="w-6 h-6 text-gray-600 group-hover/item:text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                        <span class="text-base font-semibold text-gray-700 group-hover/item:text-red-600 flex-grow">Điện máy</span>
+                                        <svg class="w-5 h-5 text-gray-400 group-hover/item:text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                    </a>
+
+                                    <!-- Phụ kiện -->
+                                    <a href="#" onclick="event.preventDefault(); showCategoryProducts('accessories')" class="category-menu-item group/item flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors border-l-4 border-transparent hover:border-red-600" data-category="accessories">
+                                        <svg class="w-6 h-6 text-gray-600 group-hover/item:text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
+                                        <span class="text-base font-semibold text-gray-700 group-hover/item:text-red-600 flex-grow">Phụ kiện</span>
+                                        <svg class="w-5 h-5 text-gray-400 group-hover/item:text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                    </a>
+
+                                    <!-- Divider -->
+                                    <div class="my-2 border-t border-gray-200"></div>
+
+                                    <!-- Thương hiệu -->
+                                    <div class="px-4 py-2">
+                                        <p class="text-sm font-bold text-gray-500 uppercase mb-2">Thương hiệu</p>
+                                    </div>
+                                    
+                                    <a href="#" onclick="event.preventDefault(); showCategoryProducts('apple')" class="category-menu-item group/item flex items-center gap-3 px-4 py-2 hover:bg-red-50 transition-colors" data-category="apple">
+                                        <span class="text-xl flex-shrink-0">🍎</span>
+                                        <span class="text-base font-semibold text-gray-700 group-hover/item:text-red-600">Apple</span>
+                                    </a>
+                                    <a href="#" onclick="event.preventDefault(); showCategoryProducts('samsung')" class="category-menu-item group/item flex items-center gap-3 px-4 py-2 hover:bg-red-50 transition-colors" data-category="samsung">
+                                        <span class="text-blue-600 font-bold text-sm flex-shrink-0">S</span>
+                                        <span class="text-base font-semibold text-gray-700 group-hover/item:text-red-600">Samsung</span>
+                                    </a>
+                                    <a href="#" onclick="event.preventDefault(); showCategoryProducts('xiaomi')" class="category-menu-item group/item flex items-center gap-3 px-4 py-2 hover:bg-red-50 transition-colors" data-category="xiaomi">
+                                        <span class="text-orange-500 font-bold text-sm flex-shrink-0">mi</span>
+                                        <span class="text-base font-semibold text-gray-700 group-hover/item:text-red-600">Xiaomi</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Right Content - Gợi ý sản phẩm động -->
+                            <div class="col-span-9 p-6 flex flex-col h-[500px]">
+                                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2 flex-shrink-0">
+                                    <span class="text-xl">🔥</span>
+                                    <span id="categoryTitle">Điện thoại - Gợi ý cho bạn</span>
+                                </h3>
+
+                                <!-- Category Content Container with Scroll -->
+                                <div id="categoryContent" class="overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-yellow-500 scrollbar-track-gray-200">
+                                    <!-- Sản phẩm sẽ được render động bởi JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dynamic Navigation Categories -->
+                <div id="dynamic-nav-categories" class="flex items-center gap-4">
+                    <span class="text-gray-400 text-sm">Đang tải danh mục...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Promotional Banner -->
+    <section class="pt-16 lg:pt-28 bg-red-600 fixed top-0 left-0 right-0 z-20">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex items-center justify-between overflow-x-auto gap-4 py-3 text-white scrollbar-hide">
+                <a href="promotions.html" class="flex items-center gap-2 whitespace-nowrap hover:scale-105 transition flex-shrink-0">
+                    <div class="bg-white rounded-full p-2"><span class="text-2xl">🔥</span></div>
+                    <span class="font-bold text-sm md:text-base">Săn Deal Online</span>
+                </a>
+                <a href="products.html" class="flex items-center gap-2 whitespace-nowrap hover:scale-105 transition flex-shrink-0">
+                    <div class="bg-white rounded-full p-2"><span class="text-2xl">🎁</span></div>
+                    <span class="font-bold text-sm md:text-base">Samsung mua 1 tặng 1</span>
+                </a>
+                <a href="promotions.html" class="flex items-center gap-2 whitespace-nowrap hover:scale-105 transition flex-shrink-0">
+                    <div class="bg-white rounded-full p-2"><span class="text-2xl">🎁</span></div>
+                    <span class="font-bold text-sm md:text-base">Voucher tặng bạn mới</span>
+                </a>
+                <a href="products.html" class="flex items-center gap-2 whitespace-nowrap hover:scale-105 transition flex-shrink-0">
+                    <div class="bg-white rounded-full p-2"><span class="text-2xl">🚿</span></div>
+                    <span class="font-bold text-sm md:text-base">Máy nước nóng từ 2.29 triệu</span>
+                </a>
+                <a href="promotions.html" class="flex items-center gap-2 whitespace-nowrap hover:scale-105 transition flex-shrink-0">
+                    <div class="bg-yellow-400 rounded-full px-3 py-1 animate-pulse">
+                        <span class="font-black text-red-600 text-sm">11.11</span>
+                    </div>
+                    <span class="font-bold text-sm md:text-base">Trợ giá cực sốc - Sale 50%</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <br><br>
+
+    <!-- Main Content -->
+    <main class="pt-40 pb-12 min-h-screen">
+        <div class="max-w-4xl mx-auto px-4">
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-2xl font-bold">Thông báo</h1>
+                <button id="markAllRead" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
+                    Đánh dấu tất cả đã đọc
+                </button>
+            </div>
+
+            <!-- Notification Tabs -->
+            <div class="bg-white rounded-lg shadow mb-6">
+                <div class="flex border-b overflow-x-auto">
+                    <button class="notification-tab tab-active px-6 py-4 font-medium whitespace-nowrap" data-tab="all">Tất cả</button>
+                    <button class="notification-tab px-6 py-4 font-medium whitespace-nowrap text-gray-600 hover:text-gray-900" data-tab="order">Đơn hàng</button>
+                    <button class="notification-tab px-6 py-4 font-medium whitespace-nowrap text-gray-600 hover:text-gray-900" data-tab="promotion">Khuyến mãi</button>
+                    <button class="notification-tab px-6 py-4 font-medium whitespace-nowrap text-gray-600 hover:text-gray-900" data-tab="system">Hệ thống</button>
+                </div>
+            </div>
+
+            <!-- Notifications List -->
+            <div id="notificationsList" class="space-y-3"></div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden bg-white rounded-lg shadow p-12 text-center">
+                <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                </svg>
+                <p class="text-gray-500 text-lg">Không có thông báo nào</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-yellow-100 text-gray-900 pt-12 pb-6">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h3 class="text-lg font-bold mb-4 text-red-600">VỀ YẾN NHI MOBILE</h3>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li><a href="about.html" class="hover:text-gray-900 hover:font-semibold transition">Giới thiệu công ty</a></li>
+                        <li><a href="contact.html#map-section" class="hover:text-gray-900 hover:font-semibold transition">Hệ thống cửa hàng</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4 text-red-600">CHÍNH SÁCH</h3>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li><a href="policy-warranty.html" class="hover:text-gray-900 hover:font-semibold transition">Chính sách bảo hành</a></li>
+                        <li><a href="policy-return.html" class="hover:text-gray-900 hover:font-semibold transition">Chính sách đổi trả</a></li>
+                        <li><a href="policy-privacy.html" class="hover:text-gray-900 hover:font-semibold transition">Chính sách bảo mật</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4 text-red-600">THÔNG TIN</h3>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li><a href="payment-guide.html" class="hover:text-gray-900 hover:font-semibold transition">Hướng dẫn thanh toán</a></li>
+                        <li><a href="order-history.html" class="hover:text-gray-900 hover:font-semibold transition">Tra cứu đơn hàng</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4 text-red-600">TỔNG ĐÀI HỖ TRỢ</h3>
+                    <div class="space-y-2 text-sm">
+                        <p class="text-gray-900 font-semibold">Mua hàng: 1900.5301</p>
+                        <p class="text-gray-900 font-semibold">Bảo hành: 1900.5325</p>
+                        <p class="text-gray-900 font-semibold">Email: support@yennhimobile.vn</p>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-300 pt-6 text-center text-sm text-gray-600">
+                <p>© 2025 Yến Nhi Tech. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Category Products Script -->
+    <script>
+        const categoryProducts = {
+            phone: [
+                { name: 'iPhone 15 Pro Max', price: '34.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/i/p/iphone-15-pro-max_3.png' },
+                { name: 'iPhone 15 Pro', price: '28.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/i/p/iphone-15-pro_3.png' },
+                { name: 'iPhone 15', price: '22.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/i/p/iphone-15_2.png' },
+                { name: 'Samsung Galaxy S24 Ultra', price: '33.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/s/a/samsung-galaxy-s24-ultra.png' },
+                { name: 'Samsung Galaxy Z Fold5', price: '41.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/s/a/samsung-galaxy-z-fold-5-xanh.png' },
+                { name: 'Xiaomi 14 Ultra', price: '29.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/x/i/xiaomi-14-ultra-white.png' }
+            ],
+            laptop: [
+                { name: 'MacBook Pro 14 M3 Pro', price: '49.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/m/a/macbook-pro-14-inch-m3-pro-2023.png' },
+                { name: 'MacBook Air 15 M3', price: '32.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/m/a/macbook-air-15-m3-2024.png' },
+                { name: 'Dell XPS 15', price: '45.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/t/e/text_ng_n_12__1_52.png' },
+                { name: 'ASUS ROG Strix G16', price: '35.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/t/e/text_ng_n_5__5_32.png' },
+                { name: 'Lenovo Legion 5 Pro', price: '32.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/t/e/text_ng_n_5__5_18.png' },
+                { name: 'HP Victus 16', price: '25.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/t/e/text_ng_n_5__5_21.png' }
+            ],
+            appliances: [
+                { name: 'Tủ lạnh Samsung Inverter', price: '15.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/t/u/tu-lanh-samsung-inverter-406-lit-rt42cb6784c3sv.png' },
+                { name: 'Máy giặt LG AI DD', price: '12.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/m/a/may-giat-lg-ai-dd-inverter-10-kg-fv1410s4p.png' },
+                { name: 'Điều hòa Daikin Inverter', price: '11.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/d/i/dieu-hoa-daikin-inverter-1-hp-ftkz25vvmv.png' },
+                { name: 'Máy lọc không khí Xiaomi', price: '3.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/m/a/may-loc-khong-khi-xiaomi-smart-air-purifier-4-pro.png' },
+                { name: 'Robot hút bụi Ecovacs', price: '8.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/r/o/robot-hut-bui-lau-nha-ecovacs-deebot-t20-omni.png' },
+                { name: 'Nồi chiên không dầu Philips', price: '2.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/n/o/noi-chien-khong-dau-philips-hd9252-90.png' }
+            ],
+            accessories: [
+                { name: 'AirPods Pro 2', price: '5.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/a/i/airpods-pro-2-2024.png' },
+                { name: 'Apple Watch Series 9', price: '10.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/a/p/apple-watch-series-9-gps-41mm.png' },
+                { name: 'Samsung Galaxy Buds2 Pro', price: '3.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/s/a/samsung-galaxy-buds-2-pro.png' },
+                { name: 'Sạc nhanh Apple 20W', price: '490.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/a/d/adapter-sac-apple-20w-usb-c-mhje3.png' },
+                { name: 'Cáp USB-C to Lightning', price: '490.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/c/a/cap-sac-apple-usb-c-to-lightning-1m.png' },
+                { name: 'Ốp lưng iPhone 15 Pro Max', price: '390.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/o/p/op-lung-iphone-15-pro-max-silicone-case-with-magsafe.png' }
+            ],
+            apple: [
+                { name: 'iPhone 15 Pro Max', price: '34.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/i/p/iphone-15-pro-max_3.png' },
+                { name: 'MacBook Pro 14 M3', price: '49.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/m/a/macbook-pro-14-inch-m3-pro-2023.png' },
+                { name: 'iPad Pro M4', price: '28.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/i/p/ipad-pro-m4-11-inch-wifi.png' },
+                { name: 'Apple Watch Ultra 2', price: '21.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/a/p/apple-watch-ultra-2-49mm-gps-cellular-vien-titanium-day-ocean-band.png' },
+                { name: 'AirPods Pro 2', price: '5.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/a/i/airpods-pro-2-2024.png' },
+                { name: 'iMac 24 M3', price: '35.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/i/m/imac-24-m3-2023.png' }
+            ],
+            samsung: [
+                { name: 'Samsung Galaxy S24 Ultra', price: '33.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/s/a/samsung-galaxy-s24-ultra.png' },
+                { name: 'Samsung Galaxy Z Fold5', price: '41.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/s/a/samsung-galaxy-z-fold-5-xanh.png' },
+                { name: 'Samsung Galaxy Z Flip5', price: '25.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/s/a/samsung-galaxy-z-flip-5-xanh.png' },
+                { name: 'Samsung Galaxy Tab S9 Ultra', price: '27.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/s/a/samsung-galaxy-tab-s9-ultra.png' },
+                { name: 'Samsung Galaxy Watch6 Classic', price: '9.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/s/a/samsung-galaxy-watch-6-classic-43mm.png' },
+                { name: 'Samsung Galaxy Buds2 Pro', price: '3.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/s/a/samsung-galaxy-buds-2-pro.png' }
+            ],
+            xiaomi: [
+                { name: 'Xiaomi 14 Ultra', price: '29.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/x/i/xiaomi-14-ultra-white.png' },
+                { name: 'Xiaomi 14', price: '18.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/x/i/xiaomi-14.png' },
+                { name: 'Xiaomi Pad 6', price: '8.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/x/i/xiaomi-pad-6.png' },
+                { name: 'Xiaomi Watch S3', price: '3.490.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/x/i/xiaomi-watch-s3.png' },
+                { name: 'Xiaomi Buds 4 Pro', price: '2.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/x/i/xiaomi-buds-4-pro.png' },
+                { name: 'Xiaomi Robot Vacuum X10+', price: '12.990.000đ', image: 'https://cdn2.cellphones.com.vn/358x358,webp,q100/media/catalog/product/r/o/robot-hut-bui-lau-nha-xiaomi-robot-vacuum-x10.png' }
+            ]
+        };
+
+        const categoryTitles = {
+            phone: 'Điện thoại - Gợi ý cho bạn',
+            laptop: 'Laptop - Gợi ý cho bạn',
+            appliances: 'Điện máy - Gợi ý cho bạn',
+            accessories: 'Phụ kiện - Gợi ý cho bạn',
+            apple: 'Apple - Sản phẩm nổi bật',
+            samsung: 'Samsung - Sản phẩm nổi bật',
+            xiaomi: 'Xiaomi - Sản phẩm nổi bật'
+        };
+
+        function showCategoryProducts(category) {
+            const products = categoryProducts[category] || [];
+            const title = categoryTitles[category] || 'Gợi ý cho bạn';
+            
+            document.getElementById('categoryTitle').textContent = title;
+            
+            const container = document.getElementById('categoryContent');
+            container.innerHTML = `
+                <div class="grid grid-cols-3 gap-4">
+                    ${products.map(product => `
+                        <a href="products.html?search=${encodeURIComponent(product.name)}" class="group bg-white border border-gray-200 rounded-xl p-4 hover:shadow-lg hover:border-red-300 transition-all duration-300">
+                            <div class="aspect-square mb-3 overflow-hidden rounded-lg bg-gray-50">
+                                <img src="${product.image}" alt="${product.name}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300">
+                            </div>
+                            <h4 class="text-sm font-semibold text-gray-800 group-hover:text-red-600 transition line-clamp-2 mb-2">${product.name}</h4>
+                            <p class="text-red-600 font-bold text-base">${product.price}</p>
+                        </a>
+                    `).join('')}
+                </div>
+            `;
+        }    </script>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        let currentTab = 'all';
+        let allNotifications = [];
+        let isLoggedIn = false;
+        
+        // Key đ lu trng thi đ đc vo localStorage
+        function getReadNotificationsKey() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            return user ? `read_notifications_${user.ma_tai_khoan}` : 'read_notifications_guest';
+        }
+        
+        // Ly danh sch ID thàng bo đ đc t localStorage
+        function getReadNotificationIds() {
+            try {
+                return JSON.parse(localStorage.getItem(getReadNotificationsKey())) || [];
+            } catch {
+                return [];
+            }
+        }
+        
+        // Lu ID thàng bo đ đc vo localStorage
+        function saveReadNotificationId(id) {
+            const readIds = getReadNotificationIds();
+            if (!readIds.includes(id)) {
+                readIds.push(id);
+                localStorage.setItem(getReadNotificationsKey(), JSON.stringify(readIds));
+            }
+        }
+        
+        // Đánh dấu tất cả đã đọc
+        function saveAllAsRead() {
+            const readIds = allNotifications.map(n => n.id);
+            localStorage.setItem(getReadNotificationsKey(), JSON.stringify(readIds));
+        }
+
+        function formatTimeAgo(date) {
+            const d = new Date(date);
+            const diff = new Date() - d;
+            const minutes = Math.floor(diff / (1000 * 60));
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            if (minutes < 1) return 'Vừa xong';
+            if (minutes < 60) return `${minutes} phút trước`;
+            if (hours < 24) return `${hours} giờ trước`;
+            if (days < 7) return `${days} ngày trước`;
+            return d.toLocaleDateString('vi-VN');
+        }
+
+        function getIconForType(type, title) {
+            if (type === 'order') {
+                if (title.includes('đang được giao')) return { icon: 'fa-truck', color: 'text-green-500' };
+                if (title.includes('hoàn thành') || title.includes('đã giao')) return { icon: 'fa-check-circle', color: 'text-green-600' };
+                if (title.includes('hủy') || title.includes('thất bại')) return { icon: 'fa-times-circle', color: 'text-red-500' };
+                return { icon: 'fa-box', color: 'text-blue-500' };
+            }
+            if (type === 'promotion') return { icon: 'fa-tag', color: 'text-red-500' };
+            if (type === 'news') return { icon: 'fa-newspaper', color: 'text-blue-500' };
+            return { icon: 'fa-bell', color: 'text-yellow-500' };
+        }
+
+        function renderNotifications(notifications) {
+            const container = document.getElementById('notificationsList');
+            const emptyState = document.getElementById('emptyState');
+            
+            console.log('Rendering notifications:', notifications);
+            
+            if (!notifications || notifications.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            container.innerHTML = notifications.map(notif => {
+                const iconInfo = getIconForType(notif.type, notif.title || '');
+                const isRead = notif.read === true || notif.read === 1;
+                return `
+                <div class="notification-item ${isRead ? '' : 'notification-unread'} bg-white rounded-lg shadow p-4 cursor-pointer transition" 
+                     onclick="handleNotificationClick('${notif.id}', '${notif.link || ''}')">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                            <i class="fas ${iconInfo.icon} ${iconInfo.color}"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center justify-between mb-1">
+                                <h3 class="font-semibold text-gray-900">${notif.title || ''}</h3>
+                                ${isRead ? '' : '<span class="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></span>'}
+                            </div>
+                            <p class="text-gray-600 text-sm mb-2">${notif.message || ''}</p>
+                            <span class="text-xs text-gray-400">${formatTimeAgo(notif.time)}</span>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        async function handleNotificationClick(id, link) {
+            // Đánh dấu đã đọc
+            const notif = allNotifications.find(n => n.id == id);
+            if (notif && notif.read !== true && notif.read !== 1) {
+                notif.read = 1;
+                
+                // Lưu vào localStorage
+                saveReadNotificationId(id);
+                
+                // Cập nhật badge thông báo
+                updateLocalBadge();
+            }
+            
+            filterNotifications();
+            if (link) window.location.href = link;
+        }
+
+        // Cập nhật badge trên trang hiện tại và toàn bộ site
+        function updateLocalBadge() {
+            const unreadCount = allNotifications.filter(n => n.read !== true && n.read !== 1).length;
+            localStorage.setItem('notification_unread_count', unreadCount);
+            
+            // Cập nhật badge trong dropdown nếu có
+            const badge = document.getElementById('notificationBadge');
+            if (badge) {
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+            
+            // Gọi hàm refresh từ auth-ui.js nếu có
+            if (typeof updateAllNotificationBadges === 'function') {
+                updateAllNotificationBadges(unreadCount);
+            }
+        }
+
+        function filterNotifications() {
+            let filtered = currentTab === 'all' 
+                ? allNotifications 
+                : allNotifications.filter(n => n.type === currentTab);
+            renderNotifications(filtered);
+        }
+
+        async function loadNotifications() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user'));
+                const token = localStorage.getItem('token');
+                isLoggedIn = !!(user && token);
+                
+                // Lấy danh sách ID đã đọc từ localStorage
+                const readIds = getReadNotificationIds();
+
+                if (isLoggedIn) {
+                    // Lấy thông báo từ API (đã đăng nhập)
+                    try {
+                        const response = await fetch(`${API_URL}/notifications`, {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        
+                        // Nếu token hết hạn hoặc không hợp lệ, fallback sang public
+                        if (!response.ok) {
+                            console.warn('Auth failed, falling back to public notifications');
+                            throw new Error('Auth failed');
+                        }
+                        
+                        const result = await response.json();
+                        console.log('Notifications API response:', result);
+                        
+                        if (result.success && result.data) {
+                            allNotifications = result.data.map(n => {
+                                const id = n.id || n.ma_thong_bao;
+                                return {
+                                    id: id,
+                                    type: n.type || n.loai_thong_bao,
+                                    title: n.title || n.tieu_de,
+                                    message: n.message || n.noi_dung || '',
+                                    link: n.link || n.duong_dan || '',
+                                    time: n.time || n.ngay_tao,
+                                    // Kiểm tra xem đã đọc chưa (từ API hoặc localStorage)
+                                    read: n.read === true || n.read === 1 || n.da_doc === 1 || readIds.includes(id)
+                                };
+                            });
+                            console.log('Mapped notifications:', allNotifications);
+                        }
+                    } catch (authError) {
+                        console.warn('Falling back to public notifications:', authError.message);
+                        // Fallback sang public notifications
+                        const publicResponse = await fetch(`${API_URL}/notifications/public`);
+                        if (publicResponse.ok) {
+                            const publicResult = await publicResponse.json();
+                            if (publicResult.success && publicResult.data) {
+                                allNotifications = publicResult.data.map(n => {
+                                    const id = n.id || n.ma_thong_bao;
+                                    return {
+                                        id: id,
+                                        type: n.type || n.loai_thong_bao,
+                                        title: n.title || n.tieu_de,
+                                        message: n.message || n.noi_dung || '',
+                                        link: n.link || n.duong_dan || '',
+                                        time: n.time || n.ngay_tao,
+                                        read: n.read === true || n.read === 1 || readIds.includes(id)
+                                    };
+                                });
+                            }
+                        }
+                    }
+                } else {
+                    // Lấy thông báo công khai (chưa đăng nhập)
+                    const response = await fetch(`${API_URL}/notifications/public`);
+                    if (response.ok) {
+                        const result = await response.json();
+                        console.log('Public notifications API response:', result);
+                        
+                        if (result.success && result.data) {
+                            allNotifications = result.data.map(n => {
+                                const id = n.id || n.ma_thong_bao;
+                                return {
+                                    id: id,
+                                    type: n.type || n.loai_thong_bao,
+                                    title: n.title || n.tieu_de,
+                                    message: n.message || n.noi_dung || '',
+                                    link: n.link || n.duong_dan || '',
+                                    time: n.time || n.ngay_tao,
+                                    read: n.read === true || n.read === 1 || readIds.includes(id)
+                                };
+                            });
+                            console.log('Mapped public notifications:', allNotifications);
+                        }
+                    }
+                }
+
+                // Nếu không có thông báo nào, thêm thông báo mặc định
+                if (allNotifications.length === 0) {
+                    allNotifications = [
+                        { id: 'system_welcome', type: 'system', title: 'Chào mừng bạn đến với Yến Nhi Tech!', message: 'Khám phá ngay các sản phẩm công nghệ hàng đầu.', time: new Date(), read: readIds.includes('system_welcome') }
+                    ];
+                }
+
+                // Cập nhật badge sau khi load
+                updateLocalBadge();
+                filterNotifications();
+            } catch (error) {
+                console.error('Load notifications error:', error);
+                // Fallback: hiển thị thông báo mặc định
+                const readIds = getReadNotificationIds();
+                allNotifications = [
+                    { id: 'system_welcome', type: 'system', title: 'Chào mừng bạn đến với Yến Nhi Tech!', message: 'Khám phá ngay các sản phẩm công nghệ hàng đầu.', time: new Date(), read: readIds.includes('system_welcome') }
+                ];
+                updateLocalBadge();
+                filterNotifications();
+            }
+        }
+
+        async function markAllRead() {
+            allNotifications.forEach(n => { n.read = 1; });
+            
+            // Lưu tất cả vào localStorage
+            saveAllAsRead();
+            
+            // Cập nhật badge thông báo
+            updateLocalBadge();
+            
+            filterNotifications();
+        }
+
+        document.querySelectorAll('.notification-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.notification-tab').forEach(t => {
+                    t.classList.remove('tab-active');
+                    t.classList.add('text-gray-600');
+                });
+                this.classList.add('tab-active');
+                this.classList.remove('text-gray-600');
+                currentTab = this.dataset.tab;
+                filterNotifications();
+            });
+        });
+
+        document.getElementById('markAllRead').addEventListener('click', markAllRead);
+
+        // Cập nhật số lượng giỏ hàng
+        function updateCartBadge() {
+            try {
+                const user = JSON.parse(localStorage.getItem('user'));
+                const cartKey = user ? `cart_${user.ma_tai_khoan}` : 'cart_guest';
+                const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+                const totalItems = cart.reduce((sum, item) => sum + (parseInt(item.so_luong) || 0), 0);
+                const badges = document.querySelectorAll('.cart-badge');
+                badges.forEach(badge => {
+                    badge.textContent = totalItems || 0;
+                });
+            } catch (error) {
+                console.error('Error updating cart badge:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadNotifications();
+            updateCartBadge();
+        });
+    </script>
+
+    <!-- Auth UI Script -->
+    <script src="../js/auth-ui.js"></script>
+    <!-- Chatbot Widget -->
+    <link rel="stylesheet" href="../../css/chatbot.css?v=20260613_light">
+    <script src="../js/chatbot.js?v=20250510"></script>
+    
+    <!-- Dynamic Nav Categories -->
+    <script src="../js/nav-categories.js"></script>
+
+    <!-- Search Suggestions -->
+    <script src="../js/search-suggestions.js?v=1"></script>
+</body>
+</html>
+

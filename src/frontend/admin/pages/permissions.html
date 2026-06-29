@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../images/Screenshot 2025-11-10 154306.png">
+    <title>Quản lý Phân quyền - Yến Nhi Tech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+        }
+        
+        body {
+            font-size: 16px;
+            background: #f8f9fa;
+        }
+
+        /* Toggle Switch Styling */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e0;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #10b981;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        /* Permission Card Styling */
+        .permission-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+        }
+
+        .permission-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .permission-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .permission-item:hover {
+            background: #f7fafc;
+        }
+
+        /* Header styling */
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
+        }
+
+        /* Employee card */
+        .employee-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 24px;
+        }
+
+        .employee-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #e2e8f0;
+        }
+
+        .role-badge {
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .role-manager {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .role-waiter {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .role-admin {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        /* Action buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #475569;
+            padding: 10px 24px;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: #f8fafc;
+            border-color: #cbd5e0;
+        }
+
+        /* Permission count badge */
+        .permission-count {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        /* Icon styling */
+        .permission-icon {
+            font-size: 20px;
+            margin-right: 8px;
+        }
+
+        /* Status indicator */
+        .status-active {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: #dcfce7;
+            color: #166534;
+            border-radius: 16px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .status-active::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+
+        /* Section header */
+        .section-header {
+            font-size: 14px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Action buttons group */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        /* Back button */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .back-button:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Info box */
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: start;
+            gap: 12px;
+        }
+
+        .info-box-icon {
+            font-size: 20px;
+            margin-top: 2px;
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.9);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="p-6">
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div>
+            <div class="spinner"></div>
+            <p class="mt-4 text-gray-700 font-semibold">Đang tải...</p>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="flex items-center justify-between">
+                <div>
+                    <a href="../pages/admin.html" class="back-button">
+                        ← Quay lại
+                    </a>
+                    <h1 class="text-3xl font-bold mt-3">Quản lý Phân quyền</h1>
+                    <p class="opacity-90 mt-2">Cấu hình quyền hạn cho nhân viên quản lý các chức năng trong hệ thống</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Employee Info Card -->
+        <div id="employee-card" class="employee-card">
+            <!-- Will be populated by JavaScript -->
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+            <span class="info-box-icon">ℹ️</span>
+            <div>
+                <p class="font-semibold text-blue-900">Hướng dẫn phân quyền</p>
+                <p class="text-sm text-blue-800 mt-1">Bật/tắt các quyền bằng cách nhấn vào công tắc. Các quyền được tổ chức theo từng module quản lý. Nhớ nhấn "Lưu thay đổi" sau khi hoàn tất.</p>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="action-buttons mb-6">
+            <button onclick="enableAllPermissions()" class="btn-secondary">
+                ✅ Bật tất cả
+            </button>
+            <button onclick="disableAllPermissions()" class="btn-secondary">
+                ❌ Tắt tất cả
+            </button>
+            <button onclick="resetToDefault()" class="btn-secondary">
+                🔄 Đặt lại mặc định
+            </button>
+        </div>
+
+        <!-- Permissions Grid -->
+        <div id="permissions-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Permissions will be populated by JavaScript -->
+        </div>
+
+        <!-- Save Button -->
+        <div class="mt-8 flex justify-end gap-4">
+            <button onclick="window.location.href='admin.html'" class="btn-secondary">
+                Hủy
+            </button>
+            <button onclick="savePermissions()" class="btn-primary">
+                💾 Lưu thay đổi
+            </button>
+        </div>
+    </div>
+
+    <script src="../js/permissions.js"></script>
+</body>
+</html>

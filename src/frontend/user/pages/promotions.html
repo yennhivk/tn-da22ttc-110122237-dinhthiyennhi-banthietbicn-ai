@@ -1,0 +1,919 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../images/Screenshot 2025-11-10 154306.png">
+    <title>Khuyến Mãi - Yến Nhi Tech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        /* Animations */
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        .lightning-blink {
+            animation: blink 1.5s infinite;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Scrollbar for dropdown */
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 6px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background: #EAB308;
+            border-radius: 10px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+            background: #CA8A04;
+        }
+
+        /* Promotion Card Style */
+        .promo-card {
+            position: relative;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .promo-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .promo-card img {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .promo-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .promo-info {
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .promo-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1e40af;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .promo-date {
+            font-size: 13px;
+            color: #dc2626;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .btn-detail {
+            background: #2563eb;
+            color: white;
+            padding: 10px 30px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: inline-block;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-detail:hover {
+            background: #1e40af;
+            transform: translateX(5px);
+        }
+
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation Bar - Yellow Theme -->
+    <nav class="bg-gradient-to-r from-yellow-500 to-yellow-400 shadow-lg fixed top-0 left-0 right-0 z-50 w-full">
+        <div class="px-3 sm:px-4 lg:px-6">
+            <div class="flex items-center h-16 gap-2 sm:gap-3 lg:gap-4">
+                <!-- Logo -->
+                <a href="../../index.html" class="flex items-center gap-2 cursor-pointer whitespace-nowrap group flex-shrink-0 hover:scale-105 transition-all duration-300">
+                    <!-- Logo Image -->
+                    <img src="../../images/Screenshot 2025-11-10 154306.png" alt="Yến Nhi Tech Logo" class="w-12 h-12 md:w-14 md:h-14 object-cover rounded-full shadow-lg group-hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] transition-all duration-300">
+                    
+                    <!-- Text Logo -->
+                    <div class="flex items-baseline gap-1">
+                        <span class="text-lg md:text-xl font-bold text-red-600 drop-shadow-md">Yến Nhi</span>
+                        <span class="text-xl md:text-2xl font-bold text-blue-500 drop-shadow-lg italic" style="font-family: 'Brush Script MT', 'Lucida Calligraphy', cursive;">Tech</span>
+                    </div>
+                </a>
+
+                <!-- Search Bar -->
+                <div class="flex flex-1 max-w-xl mx-2 sm:mx-3">
+                    <div class="relative w-full">
+                        <input type="text" id="searchInput" placeholder="Bạn cần tìm gì?" class="w-full pl-10 pr-3 py-2 md:py-2.5 rounded-lg border-0 text-base md:text-base text-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                        <svg class="w-6 h-6 md:w-6 md:h-6 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden lg:flex items-center gap-6 ml-auto text-black">
+                    <a href="../../index.html" class="text-lg font-bold hover:text-red-600 transition">Trang chủ</a>
+                    <a href="products.html" class="text-lg font-bold hover:text-red-600 transition">Sản phẩm</a>
+                    <a href="news.html" class="text-lg font-bold hover:text-red-600 transition">Tin tức</a>
+                    <a href="promotions.html" class="text-lg font-bold text-red-600">Khuyến mãi</a>
+                    <a href="about.html" class="text-lg font-bold hover:text-red-600 transition">Giới thiệu</a>
+                    <a href="contact.html" class="text-lg font-bold hover:text-red-600 transition">Liên hệ</a>
+                </div>
+
+                <!-- Right items -->
+                <div class="flex items-center gap-2 sm:gap-3 lg:gap-4">
+                    <!-- Cart Icon -->
+                    <a href="cart.html" class="relative text-black hover:text-red-600 transition transform hover:scale-110 flex-shrink-0" title="Giỏ hàng">
+                        <svg class="w-6 h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        <span class="cart-badge absolute -top-2 -right-2 bg-green-500 text-red-500 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                    </a>
+
+                    <!-- User Account -->
+                    <div class="user-account-container hidden lg:flex items-center gap-2">
+                        <a href="login.html" class="flex items-center gap-2 text-black hover:text-red-600 transition">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span class="text-lg font-semibold">Đăng nhập</span>
+                        </a>
+                    </div>
+
+                    <!-- Mobile Menu Button -->
+                    <button id="mobileMenuBtn" class="lg:hidden text-white hover:text-yellow-300 transition flex-shrink-0" onclick="toggleMobileMenu()">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path id="menuIcon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            <path id="closeIcon" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Dropdown -->
+    <div id="mobileMenu" class="hidden bg-white border-t border-gray-200 shadow-lg lg:hidden fixed top-16 left-0 right-0 z-40">
+        <div class="px-4 py-2">
+            <div class="relative mb-3">
+                <input type="text" id="mobileSearchInput" placeholder="Tìm kiếm..." class="w-full px-4 py-2.5 rounded-lg border-2 border-yellow-200 text-sm text-gray-700">
+                <button onclick="handleMobileSearch()" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-yellow-500">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="flex flex-col space-y-1">
+                <a href="../../index.html" class="block py-3 px-4 text-base font-semibold text-gray-800 hover:bg-yellow-50 hover:text-yellow-500 rounded-lg transition">🏠 Trang chủ</a>
+                <a href="products.html" class="block py-3 px-4 text-base font-semibold text-gray-800 hover:bg-yellow-50 hover:text-yellow-500 rounded-lg transition">📱 Sản phẩm</a>
+                <a href="news.html" class="block py-3 px-4 text-base font-semibold text-gray-800 hover:bg-yellow-50 hover:text-yellow-500 rounded-lg transition">📰 Tin tức</a>
+                <a href="promotions.html" class="block py-3 px-4 text-base font-semibold text-yellow-500 hover:bg-yellow-50 rounded-lg transition">🎉 Khuyến mãi</a>
+                <a href="about.html" class="block py-3 px-4 text-base font-semibold text-gray-800 hover:bg-yellow-50 hover:text-yellow-500 rounded-lg transition">ℹ️ Giới thiệu</a>
+                <a href="contact.html" class="block py-3 px-4 text-base font-semibold text-gray-800 hover:bg-yellow-50 hover:text-yellow-500 rounded-lg transition">📞 Liên hệ</a>
+                <a href="../../admin/pages/admin-login.html" class="block py-3 px-4 text-base font-semibold text-gray-800 hover:bg-yellow-50 hover:text-yellow-500 rounded-lg transition">👤 Quản trị</a>
+                <div class="pt-3 pb-2">
+                    <a href="cart.html" class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-lg transition duration-200 shadow-md">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        <span>Giỏ hàng (<span class="cart-badge">0</span>)</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Secondary Navigation - Category Menu -->
+    <div class="bg-white shadow-md fixed top-16 left-0 right-0 z-40 hidden lg:block">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex items-center gap-6 py-3 text-sm relative">
+                <!-- Danh mục Dropdown Button -->
+                <div class="relative group">
+                    <button class="flex items-center gap-2 font-bold text-white bg-gradient-to-r from-red-600 to-red-700 px-4 py-2 rounded-lg hover:from-red-700 hover:to-red-800 transition shadow-md">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                        <span>Danh mục</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+
+                    <!-- Mega Dropdown Menu -->
+                    <div class="absolute left-0 top-full mt-2 w-screen max-w-5xl bg-white shadow-2xl rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 border border-gray-200 z-50">
+                        <div class="grid grid-cols-12 gap-0">
+                            <!-- Left Sidebar Menu -->
+                            <div class="col-span-3 bg-gray-50 rounded-l-lg border-r border-gray-200">
+                                <div class="py-4">
+                                    <!-- Điện thoại -->
+                                    <a href="#" onclick="event.preventDefault(); showCategoryProducts('phone')" class="category-menu-item group/item flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors border-l-4 border-transparent hover:border-red-600" data-category="phone">
+                                        <svg class="w-6 h-6 text-gray-600 group-hover/item:text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                                        <span class="text-base font-semibold text-gray-700 group-hover/item:text-red-600 flex-grow">Điện thoại</span>
+                                        <svg class="w-5 h-5 text-gray-400 group-hover/item:text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                    </a>
+
+                                    <!-- Laptop -->
+                                    <a href="#" onclick="event.preventDefault(); showCategoryProducts('laptop')" class="category-menu-item group/item flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors border-l-4 border-transparent hover:border-red-600" data-category="laptop">
+                                        <svg class="w-6 h-6 text-gray-600 group-hover/item:text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                        <span class="text-base font-semibold text-gray-700 group-hover/item:text-red-600 flex-grow">Laptop</span>
+                                        <svg class="w-5 h-5 text-gray-400 group-hover/item:text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                    </a>
+
+                                    <!-- Điện máy -->
+                                    <a href="#" onclick="event.preventDefault(); showCategoryProducts('appliances')" class="category-menu-item group/item flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors border-l-4 border-transparent hover:border-red-600" data-category="appliances">
+                                        <svg class="w-6 h-6 text-gray-600 group-hover/item:text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                        <span class="text-base font-semibold text-gray-700 group-hover/item:text-red-600 flex-grow">Điện máy</span>
+                                        <svg class="w-5 h-5 text-gray-400 group-hover/item:text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                    </a>
+
+                                    <!-- Phụ kiện -->
+                                    <a href="#" onclick="event.preventDefault(); showCategoryProducts('accessories')" class="category-menu-item group/item flex items-center gap-3 px-4 py-3 hover:bg-red-50 transition-colors border-l-4 border-transparent hover:border-red-600" data-category="accessories">
+                                        <svg class="w-6 h-6 text-gray-600 group-hover/item:text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path></svg>
+                                        <span class="text-base font-semibold text-gray-700 group-hover/item:text-red-600 flex-grow">Phụ kiện</span>
+                                        <svg class="w-5 h-5 text-gray-400 group-hover/item:text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                    </a>
+
+                                    <!-- Divider -->
+                                    <div class="my-2 border-t border-gray-200"></div>
+
+                                    <!-- Thương hiệu -->
+                                    <div class="px-4 py-2">
+                                        <p class="text-sm font-bold text-gray-500 uppercase mb-2">Thương hiệu</p>
+                                    </div>
+                                    
+                                    <a href="#" onclick="event.preventDefault(); showCategoryProducts('apple')" class="category-menu-item group/item flex items-center gap-3 px-4 py-2 hover:bg-red-50 transition-colors" data-category="apple">
+                                        <span class="text-xl flex-shrink-0">🍎</span>
+                                        <span class="text-base font-semibold text-gray-700 group-hover/item:text-red-600">Apple</span>
+                                    </a>
+                                    <a href="#" onclick="event.preventDefault(); showCategoryProducts('samsung')" class="category-menu-item group/item flex items-center gap-3 px-4 py-2 hover:bg-red-50 transition-colors" data-category="samsung">
+                                        <span class="text-blue-600 font-bold text-sm flex-shrink-0">S</span>
+                                        <span class="text-base font-semibold text-gray-700 group-hover/item:text-red-600">Samsung</span>
+                                    </a>
+                                    <a href="#" onclick="event.preventDefault(); showCategoryProducts('xiaomi')" class="category-menu-item group/item flex items-center gap-3 px-4 py-2 hover:bg-red-50 transition-colors" data-category="xiaomi">
+                                        <span class="text-orange-500 font-bold text-sm flex-shrink-0">mi</span>
+                                        <span class="text-base font-semibold text-gray-700 group-hover/item:text-red-600">Xiaomi</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Right Content - Gợi ý sản phẩm động -->
+                            <div class="col-span-9 p-6 flex flex-col h-[500px]">
+                                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2 flex-shrink-0">
+                                    <span class="text-xl">🔥</span>
+                                    <span id="categoryTitle">Điện thoại - Gợi ý cho bạn</span>
+                                </h3>
+
+                                <!-- Category Content Container with Scroll -->
+                                <div id="categoryContent" class="overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-yellow-500 scrollbar-track-gray-200">
+                                    <!-- Sản phẩm sẽ được render động bởi JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dynamic Navigation Categories -->
+                <div id="dynamic-nav-categories" class="flex items-center gap-4">
+                    <span class="text-gray-400 text-sm">Đang tải danh mục...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Promotional Banner Strip -->
+    <section class="pt-28 bg-red-600">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex items-center justify-between overflow-x-auto gap-4 py-3 text-white scrollbar-hide">
+                <!-- Deal 1 -->
+                <a href="promotions.html" class="flex items-center gap-2 whitespace-nowrap hover:scale-105 transition flex-shrink-0">
+                    <div class="bg-white rounded-full p-2">
+                        <span class="text-2xl">🔥</span>
+                    </div>
+                    <span class="font-bold text-sm md:text-base">Săn Deal Online</span>
+                </a>
+
+                <!-- Deal 2 -->
+                <a href="products.html?brand=samsung" class="flex items-center gap-2 whitespace-nowrap hover:scale-105 transition flex-shrink-0">
+                    <div class="bg-white rounded-full p-2">
+                        <span class="text-2xl">📱</span>
+                    </div>
+                    <span class="font-bold text-sm md:text-base">Samsung mua 1 tặng 1</span>
+                </a>
+
+                <!-- Deal 3 -->
+                <a href="promotions.html" class="flex items-center gap-2 whitespace-nowrap hover:scale-105 transition flex-shrink-0">
+                    <div class="bg-white rounded-full p-2">
+                        <span class="text-2xl">🎁</span>
+                    </div>
+                    <span class="font-bold text-sm md:text-base">Voucher tặng bạn mới</span>
+                </a>
+
+                <!-- Deal 4 -->
+                <a href="products.html?category=appliances" class="flex items-center gap-2 whitespace-nowrap hover:scale-105 transition flex-shrink-0">
+                    <div class="bg-white rounded-full p-2">
+                        <span class="text-2xl">❄️</span>
+                    </div>
+                    <span class="font-bold text-sm md:text-base">Máy nước nóng từ 2.29 triệu</span>
+                </a>
+
+                <!-- Deal 5 -->
+                <a href="products.html?special=11.11" class="flex items-center gap-2 whitespace-nowrap hover:scale-105 transition flex-shrink-0">
+                    <div class="bg-yellow-400 rounded-full px-3 py-1 animate-pulse">
+                        <span class="font-black text-red-600 text-sm">11.11</span>
+                    </div>
+                    <span class="font-bold text-sm md:text-base">Trở giá cực đã - Sale 50%</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="pt-20 tet-background">
+        <!-- Header with HOT badge -->
+        <section class="relative py-6 border-b-2 border-orange-300" style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px);">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="flex items-center justify-center gap-3">
+                    <h1 class="text-3xl md:text-4xl font-black text-red-600" style="text-shadow: 2px 2px 4px rgba(255,215,0,0.5);">🎉 CHƯƠNG TRÌNH KHUYẾN MÃI ĐẶC SẮC 🎉</h1>
+                </div>
+                <p class="text-center mt-3 text-gray-700 text-sm md:text-base font-medium">
+                    🌸 <span class="text-red-600 font-bold">XUÂN VUI - TẾT ĐẸP - DEAL NGẬP TRÀN</span> 🌸
+                </p>
+            </div>
+        </section>
+
+        <!-- Banner Notification -->
+        <section class="relative py-4" style="background: rgba(255, 240, 200, 0.8);">
+            <div class="max-w-7xl mx-auto px-4">
+                <p class="text-center text-gray-800 text-base md:text-lg font-bold">
+                    ⚡ Hãy thường xuyên theo dõi các chương trình khuyến mãi để có cơ hội mua <span class="text-red-600 font-black">HÀNG CHÍNH HÃNG GIÁ TỐT NHẤT</span> ⚡
+                </p>
+            </div>
+        </section>
+
+        <!-- Voucher Section -->
+        <section class="py-8 bg-white/50 backdrop-blur-sm">
+            <div class="max-w-7xl mx-auto px-4">
+                <h2 class="text-2xl font-bold text-red-600 mb-6 flex items-center gap-2">
+                    🎁 Mã Khuyến Mãi Đang Hoạt Động
+                </h2>
+                <div id="voucher-container" class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+                    <!-- Loading placeholder -->
+                    <div class="flex-shrink-0 w-80 bg-gray-100 rounded-xl p-4 animate-pulse">
+                        <div class="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+                        <div class="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+                        <div class="h-3 bg-gray-200 rounded w-2/3"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Suggestions Section - Mã khuyến mãi sắp diễn ra -->
+        <section class="py-10">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-xl md:text-2xl font-black text-gray-800 uppercase tracking-tighter flex items-center gap-2">
+                        <span class="w-2 h-8 bg-red-600 rounded-full"></span>
+                        🎁 Mã khuyến mãi dành cho bạn
+                    </h2>
+                </div>
+
+                <div id="promotions-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                    <!-- Loading -->
+                    <div class="col-span-full text-center py-8">
+                        <div class="animate-spin w-8 h-8 border-4 border-yellow-500 border-t-transparent rounded-full mx-auto mb-2"></div>
+                        <p class="text-gray-500">Đang tải mã khuyến mãi...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Load mã khuyến mãi từ API
+        async function loadPromotions() {
+            const container = document.getElementById('promotions-container');
+            try {
+                const response = await fetch('http://localhost:3000/api/products/promotions/upcoming');
+                const data = await response.json();
+                
+                if (data.success && data.data.length > 0) {
+                    container.innerHTML = data.data.map(promo => {
+                        const startDate = new Date(promo.ngay_bat_dau);
+                        const endDate = new Date(promo.ngay_ket_thuc);
+                        const now = new Date();
+                        const isActive = promo.trang_thai_hien_thi === 'active';
+                        const isUpcoming = promo.trang_thai_hien_thi === 'upcoming';
+                        
+                        const statusBadge = isActive 
+                            ? '<span class="bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">Đang diễn ra</span>'
+                            : '<span class="bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded-full">Sắp diễn ra</span>';
+                        
+                        return `
+                            <div class="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border-2 border-yellow-200 hover:border-yellow-400 group">
+                                <div class="p-5">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-3xl">🎫</span>
+                                            ${statusBadge}
+                                        </div>
+                                        <button onclick="copyCode('${promo.ma_giam_gia}')" class="bg-red-500 hover:bg-red-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                            Sao chép
+                                        </button>
+                                    </div>
+                                    
+                                    <h3 class="text-lg font-bold text-gray-800 mb-2 group-hover:text-red-600 transition">${promo.ten_khuyen_mai}</h3>
+                                    
+                                    <div class="bg-white rounded-lg p-3 mb-3 border-2 border-dashed border-yellow-400">
+                                        <p class="text-center font-mono text-xl font-black text-red-600 tracking-wider">${promo.ma_giam_gia}</p>
+                                    </div>
+                                    
+                                    <p class="text-sm text-gray-600 mb-3">${promo.mo_ta || 'Áp dụng cho tất cả sản phẩm'}</p>
+                                    
+                                    <div class="flex items-center gap-2 text-xs text-gray-500">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                        <span>${startDate.toLocaleDateString('vi-VN')} - ${endDate.toLocaleDateString('vi-VN')}</span>
+                                    </div>
+                                    
+                                    ${promo.dieu_kien_ap_dung ? `<p class="text-xs text-orange-600 mt-2 italic">⚠️ ${promo.dieu_kien_ap_dung}</p>` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    container.innerHTML = `
+                        <div class="col-span-full text-center py-12 bg-gray-50 rounded-2xl">
+                            <span class="text-6xl mb-4 block">🎁</span>
+                            <p class="text-gray-500 text-lg">Chưa có mã khuyến mãi nào</p>
+                            <p class="text-gray-400 text-sm mt-2">Hãy quay lại sau để nhận ưu đãi nhé!</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading promotions:', error);
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12 bg-red-50 rounded-2xl">
+                        <span class="text-4xl mb-4 block">❌</span>
+                        <p class="text-red-500">Không thể tải mã khuyến mãi</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Copy mã khuyến mãi
+        function copyCode(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Đã sao chép mã: ' + code);
+            }).catch(() => {
+                // Fallback
+                const input = document.createElement('input');
+                input.value = code;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                alert('Đã sao chép mã: ' + code);
+            });
+        }
+        
+        // Load khi trang ready
+        document.addEventListener('DOMContentLoaded', loadPromotions);
+    </script>
+
+    <script>
+    </script>
+
+    <script>
+    </script>
+
+    <script>
+    </script>
+
+    <!-- Footer -->
+    <footer class="bg-yellow-100 text-gray-900 pt-12 pb-6">
+        <div class="max-w-7xl mx-auto px-4">
+            <!-- Main Footer Content -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
+                <!-- About Column -->
+                <div class="lg:col-span-1">
+                    <h3 class="text-lg font-bold mb-4 text-red-600">VỀ YẾN NHI TECH</h3>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li><a href="about.html" class="hover:text-gray-900 hover:font-semibold transition">Giới thiệu công ty</a></li>
+                        <li><a href="contact.html#map-section" class="hover:text-gray-900 hover:font-semibold transition">Hệ thống cửa hàng</a></li>
+                    </ul>
+                </div>
+
+                <!-- Policy Column -->
+                <div class="lg:col-span-1">
+                    <h3 class="text-lg font-bold mb-4 text-red-600">CHÍNH SÁCH</h3>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li><a href="policy-warranty.html" class="hover:text-gray-900 hover:font-semibold transition">Chính sách bảo hành</a></li>
+                        <li><a href="policy-return.html" class="hover:text-gray-900 hover:font-semibold transition">Chính sách đổi trả</a></li>
+                        <li><a href="policy-privacy.html" class="hover:text-gray-900 hover:font-semibold transition">Chính sách bảo mật</a></li>
+                    </ul>
+                </div>
+
+                <!-- Info Column -->
+                <div class="lg:col-span-1">
+                    <h3 class="text-lg font-bold mb-4 text-red-600">THÔNG TIN</h3>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li><a href="payment-guide.html" class="hover:text-gray-900 hover:font-semibold transition">Hướng dẫn thanh toán</a></li>
+                        <li><a href="order-history.html" class="hover:text-gray-900 hover:font-semibold transition">Tra cứu đơn hàng</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Column -->
+                <div class="lg:col-span-2">
+                    <h3 class="text-lg font-bold mb-4 text-red-600">TỔNG ĐÀI HỖ TRỢ</h3>
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56-.35-.12-.74-.03-1.01.24l-1.57 1.97c-2.83-1.35-5.48-3.9-6.89-6.83l1.95-1.66c.27-.28.35-.67.24-1.02-.37-1.11-.56-2.3-.56-3.53 0-.54-.45-.99-.99-.99H4.19C3.65 3 3 3.24 3 3.99 3 13.28 10.73 21 20.01 21c.71 0 .99-.63.99-1.18v-3.45c0-.54-.45-.99-.99-.99z"/>
+                            </svg>
+                            <div>
+                                <p class="text-gray-900 font-semibold">Mua hàng: 1900.5301</p>
+                                <p class="text-gray-700">Gọi miễn phí từ 8:00 - 21:30</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/>
+                            </svg>
+                            <div>
+                                <p class="text-gray-900 font-semibold">Bảo hành: 1900.5325</p>
+                                <p class="text-gray-700">8:00 - 21:00 (cả CN và Lễ)</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+                                <circle cx="8" cy="10" r="1.5"/>
+                                <circle cx="12" cy="10" r="1.5"/>
+                                <circle cx="16" cy="10" r="1.5"/>
+                            </svg>
+                            <div>
+                                <p class="text-gray-900 font-semibold">Khiếu nại: 1900.5310</p>
+                                <p class="text-gray-700">8:00 - 21:30</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <svg class="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                            </svg>
+                            <div>
+                                <p class="text-gray-900 font-semibold">Email: support@yennhitech.vn</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment & Shipping Methods -->
+            <div class="border-t border-gray-600 pt-8 mb-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Shipping -->
+                    <div>
+                        <h4 class="text-sm font-bold mb-4 text-gray-900">ĐƠN VỊ VẬN CHUYỂN</h4>
+                        <div class="flex flex-wrap gap-4">
+                            <div class="bg-white rounded px-3 py-2 text-xs font-semibold text-gray-700 shadow-md">🚚 GHTK</div>
+                            <div class="bg-white rounded px-3 py-2 text-xs font-semibold text-gray-700 shadow-md">📦 Viettel Post</div>
+                            <div class="bg-white rounded px-3 py-2 text-xs font-semibold text-gray-700 shadow-md">🚛 J&T Express</div>
+                            <div class="bg-white rounded px-3 py-2 text-xs font-semibold text-gray-700 shadow-md">📮 VNPost</div>
+                        </div>
+                    </div>
+
+                    <!-- Payment -->
+                    <div>
+                        <h4 class="text-sm font-bold mb-4 text-gray-900">PHƯƠNG THỨC THANH TOÁN</h4>
+                        <div class="flex flex-wrap gap-4">
+                            <div class="bg-white rounded px-3 py-2 text-xs font-semibold text-gray-700 shadow-md">💳 Visa/Master</div>
+                            <div class="bg-white rounded px-3 py-2 text-xs font-semibold text-gray-700 shadow-md">🏦 ATM</div>
+                            <div class="bg-white rounded px-3 py-2 text-xs font-semibold text-gray-700 shadow-md">💰 Momo</div>
+                            <div class="bg-white rounded px-3 py-2 text-xs font-semibold text-gray-700 shadow-md">🏧 ZaloPay</div>
+                            <div class="bg-white rounded px-3 py-2 text-xs font-semibold text-gray-700 shadow-md">💵 COD</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Social & Copyright -->
+            <div class="border-t border-gray-600 pt-6">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div class="text-sm text-gray-900">
+                        <p>&copy; 2024 Yến Nhi Tech. All rights reserved.</p>
+                        <p class="mt-1">📍 Địa chỉ: 74-76 Lê Lợi, Phường 2, Trà Vinh</p>
+                    </div>
+                    <div class="flex gap-4">
+                        <a href="#" class="bg-blue-600 hover:bg-blue-700 p-2 rounded-full transition">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </a>
+                        <a href="#" class="bg-red-600 hover:bg-red-700 p-2 rounded-full transition">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        </a>
+                        <a href="#" class="bg-pink-600 hover:bg-pink-700 p-2 rounded-full transition">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button id="scrollTopBtn" onclick="scrollToTop()" class="hidden fixed bottom-20 md:bottom-24 right-4 md:right-6 bg-yellow-300 hover:bg-yellow-400 text-white p-2.5 md:p-3 rounded-full shadow-lg transition duration-300 z-40">
+        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+        </svg>
+    </button>
+
+    <script src="../js/auth-ui.js"></script>
+    <script src="../js/main.js"></script>
+    <script>
+        // Category Product Suggestions Data
+        const categoryProducts = {
+            phone: {
+                title: 'Điện thoại - Gợi ý cho bạn',
+                products: [
+                    { name: 'iPhone 15 Pro Max', price: '34.990.000đ', image: 'https://images.unsplash.com/photo-1678652197831-2d180705cd2c?w=200&h=200&fit=crop', tag: 'HOT' },
+                    { name: 'Samsung S24 Ultra', price: '25.990.000đ', image: 'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=200&h=200&fit=crop', tag: 'NEW' },
+                    { name: 'Xiaomi 14 Pro', price: '19.990.000đ', image: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=200&h=200&fit=crop', tag: '-15%' },
+                    { name: 'OPPO Find X7', price: '22.990.000đ', image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&h=200&fit=crop', tag: 'NEW' },
+                    { name: 'iPhone 14 Pro', price: '27.990.000đ', image: 'https://images.unsplash.com/photo-1678911820864-e2c567c655d7?w=200&h=200&fit=crop', tag: '-10%' },
+                    { name: 'Samsung S23 FE', price: '12.990.000đ', image: 'https://images.unsplash.com/photo-1610945264803-c22b62d2a7b3?w=200&h=200&fit=crop', tag: 'SALE' }
+                ]
+            },
+            laptop: {
+                title: 'Laptop - Gợi ý cho bạn',
+                products: [
+                    { name: 'MacBook Pro M3', price: '54.990.000đ', image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=200&h=200&fit=crop', tag: 'HOT' },
+                    { name: 'Dell XPS 15', price: '42.990.000đ', image: 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=200&h=200&fit=crop', tag: '-10%' },
+                    { name: 'Asus ROG Zephyrus', price: '52.990.000đ', image: 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=200&h=200&fit=crop', tag: 'GAMING' },
+                    { name: 'HP Spectre x360', price: '38.990.000đ', image: 'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=200&h=200&fit=crop', tag: '-12%' },
+                    { name: 'Lenovo ThinkPad X1', price: '45.990.000đ', image: 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=200&h=200&fit=crop', tag: 'NEW' },
+                    { name: 'MSI Creator Z16', price: '49.990.000đ', image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=200&h=200&fit=crop', tag: 'HOT' }
+                ]
+            },
+            appliances: {
+                title: 'Điện máy - Gợi ý cho bạn',
+                products: [
+                    { name: 'Tủ lạnh Samsung Inverter', price: '8.990.000đ', image: 'https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?w=400&h=400&fit=crop', tag: '-20%' },
+                    { name: 'Máy giặt LG AI', price: '12.990.000đ', image: 'https://images.unsplash.com/photo-1604335399105-a0c585fd81a1?w=400&h=400&fit=crop', tag: 'HOT' },
+                    { name: 'Tivi Sony 4K 55"', price: '18.990.000đ', image: 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop', tag: 'NEW' },
+                    { name: 'Điều hòa Daikin Inverter', price: '9.990.000đ', image: 'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&h=400&fit=crop', tag: '-15%' },
+                    { name: 'Máy lọc không khí Sharp', price: '5.990.000đ', image: 'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&h=400&fit=crop', tag: 'SALE' },
+                    { name: 'Nồi cơm điện Toshiba', price: '2.490.000đ', image: 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400&h=400&fit=crop', tag: '-10%' }
+                ]
+            },
+            accessories: {
+                title: 'Phụ kiện - Gợi ý cho bạn',
+                products: [
+                    { name: 'AirPods Pro 2', price: '6.990.000đ', image: 'https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=400&h=400&fit=crop', tag: 'HOT' },
+                    { name: 'Apple Watch Series 9', price: '10.990.000đ', image: 'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=400&h=400&fit=crop', tag: 'NEW' },
+                    { name: 'Bàn phím Logitech MX Keys', price: '2.990.000đ', image: 'https://images.unsplash.com/photo-1595225476474-87563907a212?w=400&h=400&fit=crop', tag: '-10%' },
+                    { name: 'Chuột Logitech MX Master 3', price: '2.490.000đ', image: 'https://images.unsplash.com/photo-1527814050087-3793815479db?w=400&h=400&fit=crop', tag: 'HOT' },
+                    { name: 'Tai nghe Sony WH-1000XM5', price: '8.990.000đ', image: 'https://images.unsplash.com/photo-1545127398-14699f92334b?w=400&h=400&fit=crop', tag: 'NEW' },
+                    { name: 'Webcam Logitech C920', price: '1.990.000đ', image: 'https://m.media-amazon.com/images/I/71iNwni9TsL._AC_SL1500_.jpg', tag: 'SALE' }
+                ]
+            },
+            apple: {
+                title: 'Apple - Sản phẩm nổi bật',
+                products: [
+                    { name: 'iPhone 15 Pro Max', price: '34.990.000đ', image: 'https://images.unsplash.com/photo-1678652197831-2d180705cd2c?w=400&h=400&fit=crop', tag: 'HOT' },
+                    { name: 'MacBook Pro M3', price: '54.990.000đ', image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop', tag: 'NEW' },
+                    { name: 'iPad Pro 2024', price: '28.990.000đ', image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop', tag: '-17%' },
+                    { name: 'AirPods Pro 2', price: '6.990.000đ', image: 'https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=400&h=400&fit=crop', tag: 'HOT' },
+                    { name: 'Apple Watch Series 9', price: '10.990.000đ', image: 'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=400&h=400&fit=crop', tag: 'NEW' },
+                    { name: 'iMac 24" M3', price: '38.990.000đ', image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=400&h=400&fit=crop', tag: '-10%' }
+                ]
+            },
+            samsung: {
+                title: 'Samsung - Sản phẩm nổi bật',
+                products: [
+                    { name: 'Samsung S24 Ultra', price: '25.990.000đ', image: 'https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=200&h=200&fit=crop', tag: 'HOT' },
+                    { name: 'Galaxy Z Fold 5', price: '42.990.000đ', image: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=200&h=200&fit=crop', tag: 'NEW' },
+                    { name: 'Galaxy Tab S9', price: '18.990.000đ', image: 'https://images.unsplash.com/photo-1561154464-82e9adf32764?w=200&h=200&fit=crop', tag: '-15%' },
+                    { name: 'Galaxy Buds Pro', price: '4.990.000đ', image: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=200&h=200&fit=crop', tag: 'HOT' },
+                    { name: 'Galaxy Watch 6', price: '7.990.000đ', image: 'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=200&h=200&fit=crop', tag: 'NEW' },
+                    { name: 'Tủ lạnh Samsung Inverter', price: '8.990.000đ', image: 'https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?w=200&h=200&fit=crop', tag: '-20%' }
+                ]
+            },
+            xiaomi: {
+                title: 'Xiaomi - Sản phẩm nổi bật',
+                products: [
+                    { name: 'Xiaomi 14 Pro', price: '19.990.000đ', image: 'https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=400&h=400&fit=crop', tag: 'HOT' },
+                    { name: 'Redmi Note 13 Pro', price: '8.990.000đ', image: 'https://images.unsplash.com/photo-1567581935884-3349723552ca?w=400&h=400&fit=crop', tag: '-10%' },
+                    { name: 'Xiaomi Pad 6', price: '12.990.000đ', image: 'https://images.unsplash.com/photo-1561154464-82e9adf32764?w=400&h=400&fit=crop', tag: 'NEW' },
+                    { name: 'Mi Band 8', price: '990.000đ', image: 'https://images.unsplash.com/photo-1557438159-51eec7a6c9e8?w=400&h=400&fit=crop', tag: 'SALE' },
+                    { name: 'Redmi Buds 4 Pro', price: '1.990.000đ', image: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400&h=400&fit=crop', tag: '-15%' },
+                    { name: 'Xiaomi Smart TV 55"', price: '9.990.000đ', image: 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop', tag: 'HOT' }
+                ]
+            }
+        };
+
+        // Function to show category products
+        function showCategoryProducts(category) {
+            const titleEl = document.getElementById('categoryTitle');
+            const contentEl = document.getElementById('categoryContent');
+            
+            const data = categoryProducts[category];
+            if (!data) return;
+            
+            titleEl.textContent = data.title;
+            
+            // Update active menu item
+            document.querySelectorAll('.category-menu-item').forEach(item => {
+                item.classList.remove('bg-red-50', 'border-red-600');
+                if (item.dataset.category === category) {
+                    item.classList.add('bg-red-50', 'border-red-600');
+                }
+            });
+            
+            contentEl.innerHTML = `
+                <div class="grid grid-cols-3 gap-4">
+                    ${data.products.map(product => `
+                        <a href="products.html?search=${encodeURIComponent(product.name)}" class="group bg-white rounded-lg border border-gray-200 hover:border-red-500 hover:shadow-xl transition overflow-hidden">
+                            <div class="relative">
+                                <img src="${product.image}" alt="${product.name}" class="w-full h-40 object-cover group-hover:scale-105 transition duration-300">
+                                <span class="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded shadow-lg">${product.tag}</span>
+                            </div>
+                            <div class="p-4">
+                                <h4 class="text-base font-semibold text-gray-800 mb-2 line-clamp-2 h-12">${product.name}</h4>
+                                <span class="block w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-lg transition text-sm mb-3 text-center">Mua ngay</span>
+                                <p class="text-lg font-black text-red-600">${product.price}</p>
+                            </div>
+                        </a>
+                    `).join('')}
+                </div>
+            `;
+        }
+        // Load khuyến mãi từ database
+        const API_BASE = 'http://localhost:3000/api';
+        
+        async function loadPromotions() {
+            try {
+                const response = await fetch(`${API_BASE}/admin/public/promotions`);
+                const data = await response.json();
+                
+                const container = document.getElementById('voucher-container');
+                
+                if (data.success && data.data.length > 0) {
+                    container.innerHTML = data.data.map(promo => {
+                        const endDate = new Date(promo.ngay_ket_thuc);
+                        const now = new Date();
+                        const startDate = new Date(promo.ngay_bat_dau);
+                        
+                        let statusBadge = '';
+                        if (now < startDate) {
+                            statusBadge = '<span class="inline-block bg-yellow-100 text-yellow-700 text-[10px] px-2 py-0.5 rounded font-bold">SẮP DIỄN RA</span>';
+                        } else if (now <= endDate) {
+                            statusBadge = '<span class="inline-block bg-green-100 text-green-700 text-[10px] px-2 py-0.5 rounded font-bold">ĐANG DIỄN RA</span>';
+                        }
+                        
+                        return `
+                            <div class="flex-shrink-0 w-80 bg-white border-2 border-dashed border-red-200 rounded-xl p-4 flex justify-between items-center shadow-sm hover:shadow-md transition-shadow">
+                                <div class="flex-1">
+                                    <div class="text-red-600 font-bold text-xl">${promo.ten_khuyen_mai}</div>
+                                    <div class="text-gray-600 text-sm font-medium">${promo.mo_ta || ''}</div>
+                                    <div class="flex items-center gap-2 mt-2">
+                                        <span class="inline-block bg-orange-100 text-orange-700 text-xs px-2 py-0.5 rounded font-mono font-bold">${promo.ma_giam_gia}</span>
+                                        ${statusBadge}
+                                    </div>
+                                    ${promo.dieu_kien_ap_dung ? `<div class="inline-block border border-red-200 text-red-500 text-[10px] px-2 py-0.5 rounded mt-2 font-bold uppercase">${promo.dieu_kien_ap_dung}</div>` : ''}
+                                    <div class="text-gray-400 text-xs mt-3">HSD: ${endDate.toLocaleDateString('vi-VN')}</div>
+                                </div>
+                                <button onclick="savePromoCode('${promo.ma_giam_gia}', '${promo.ten_khuyen_mai.replace(/'/g, "\\'")}', this)" class="save-promo-btn bg-green-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-green-700 transition shadow-sm text-sm">
+                                    💾 Lưu mã
+                                </button>
+                            </div>
+                        `;
+                    }).join('');
+                    
+                    // Cập nhật trạng thái nút sau khi render
+                    updateSavedPromoButtons();
+                } else {
+                    container.innerHTML = `
+                        <div class="w-full text-center py-8">
+                            <div class="text-gray-400 text-lg">🎁 Chưa có khuyến mãi nào đang diễn ra</div>
+                            <p class="text-gray-400 text-sm mt-2">Hãy quay lại sau nhé!</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading promotions:', error);
+                document.getElementById('voucher-container').innerHTML = `
+                    <div class="w-full text-center py-8">
+                        <div class="text-red-500 text-lg">❌ Không thể tải khuyến mãi</div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Lấy key lưu mã khuyến mãi theo user
+        function getSavedPromosKey() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            return user ? `saved_promos_${user.ma_tai_khoan}` : 'saved_promos_guest';
+        }
+        
+        // Lấy danh sách mã đã lưu
+        function getSavedPromos() {
+            try {
+                return JSON.parse(localStorage.getItem(getSavedPromosKey())) || [];
+            } catch {
+                return [];
+            }
+        }
+        
+        // Lưu mã khuyến mãi
+        function savePromoCode(code, name, button) {
+            const savedPromos = getSavedPromos();
+            
+            // Kiểm tra xem mã đã được lưu chưa
+            const existingIndex = savedPromos.findIndex(p => p.code === code);
+            
+            if (existingIndex >= 0) {
+                // Đã lưu rồi -> Xóa mã
+                savedPromos.splice(existingIndex, 1);
+                localStorage.setItem(getSavedPromosKey(), JSON.stringify(savedPromos));
+                
+                // Cập nhật giao diện nút
+                button.innerHTML = '💾 Lưu mã';
+                button.classList.remove('bg-gray-400', 'hover:bg-gray-500');
+                button.classList.add('bg-green-600', 'hover:bg-green-700');
+                
+                alert(`Đã xóa mã "${code}" khỏi danh sách đã lưu!`);
+            } else {
+                // Chưa lưu -> Lưu mã mới
+                savedPromos.push({
+                    code: code,
+                    name: name,
+                    savedAt: new Date().toISOString()
+                });
+                localStorage.setItem(getSavedPromosKey(), JSON.stringify(savedPromos));
+                
+                // Cập nhật giao diện nút
+                button.innerHTML = '✅ Đã lưu';
+                button.classList.remove('bg-green-600', 'hover:bg-green-700');
+                button.classList.add('bg-gray-400', 'hover:bg-gray-500');
+                
+                alert(`Đã lưu mã "${code}" vào giỏ hàng!\nBạn có thể sử dụng mã này khi thanh toán.`);
+            }
+        }
+        
+        // Cập nhật trạng thái các nút đã lưu
+        function updateSavedPromoButtons() {
+            const savedPromos = getSavedPromos();
+            const savedCodes = savedPromos.map(p => p.code);
+            
+            document.querySelectorAll('.save-promo-btn').forEach(btn => {
+                const onclickAttr = btn.getAttribute('onclick');
+                const match = onclickAttr.match(/savePromoCode\('([^']+)'/);
+                if (match) {
+                    const code = match[1];
+                    if (savedCodes.includes(code)) {
+                        btn.innerHTML = '✅ Đã lưu';
+                        btn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                        btn.classList.add('bg-gray-400', 'hover:bg-gray-500');
+                    }
+                }
+            });
+        }
+        
+        // Load khi trang được tải
+        document.addEventListener('DOMContentLoaded', loadPromotions);
+    </script>
+    <!-- Chatbot Widget -->
+    <link rel="stylesheet" href="../../css/chatbot.css?v=20260613_light">
+    <script src="../js/chatbot.js?v=20250510"></script>
+    
+    <!-- Dynamic Nav Categories -->
+    <script src="../js/nav-categories.js"></script>
+
+    <!-- Search Suggestions -->
+    <script src="../js/search-suggestions.js?v=1"></script>
+</body>
+</html>

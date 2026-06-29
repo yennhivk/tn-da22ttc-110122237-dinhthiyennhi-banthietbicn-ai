@@ -1,0 +1,258 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../../images/Screenshot 2025-11-10 154306.png">
+    <title>Chi tiết tin tức - Yến Nhi Tech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../../css/style.css">
+    <style>
+        .news-content img { max-width: 100%; height: auto; border-radius: 8px; margin: 16px 0; }
+        .news-content p { margin-bottom: 16px; line-height: 1.8; }
+        .news-content h2, .news-content h3 { font-weight: bold; margin: 24px 0 12px; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation Bar -->
+    <nav class="bg-gradient-to-r from-yellow-500 to-yellow-400 shadow-lg fixed top-0 left-0 right-0 z-50 w-full">
+        <div class="px-3 sm:px-4 lg:px-6">
+            <div class="flex items-center h-16 gap-2 sm:gap-3 lg:gap-4">
+                <a href="../../index.html" class="flex items-center gap-2 cursor-pointer whitespace-nowrap group flex-shrink-0 hover:scale-105 transition-all duration-300">
+                    <img src="../../images/Screenshot 2025-11-10 154306.png" alt="Yến Nhi Tech Logo" class="w-12 h-12 md:w-14 md:h-14 object-cover rounded-full shadow-lg">
+                    <div class="flex items-baseline gap-1">
+                        <span class="text-lg md:text-xl font-bold text-red-600 drop-shadow-md">Yến Nhi</span>
+                        <span class="text-xl md:text-2xl font-bold text-blue-500 drop-shadow-lg italic" style="font-family: 'Brush Script MT', 'Lucida Calligraphy', cursive;">Tech</span>
+                    </div>
+                </a>
+                <div class="hidden lg:flex items-center gap-6 ml-auto text-black">
+                    <a href="../../index.html" class="text-lg font-bold hover:text-red-600 transition">Trang chủ</a>
+                    <a href="products.html" class="text-lg font-bold hover:text-red-600 transition">Sản phẩm</a>
+                    <a href="news.html" class="text-lg font-bold text-red-600">Tin tức</a>
+                    <a href="promotions.html" class="text-lg font-bold hover:text-red-600 transition">Khuyến mãi</a>
+                    <a href="about.html" class="text-lg font-bold hover:text-red-600 transition">Giới thiệu</a>
+                    <a href="contact.html" class="text-lg font-bold hover:text-red-600 transition">Liên hệ</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-12">
+        <div class="max-w-4xl mx-auto px-4">
+            <!-- Breadcrumb -->
+            <nav class="mb-6">
+                <ol class="flex items-center gap-2 text-sm text-gray-600">
+                    <li><a href="../../index.html" class="hover:text-red-600">Trang chủ</a></li>
+                    <li><span class="mx-2">/</span></li>
+                    <li><a href="news.html" class="hover:text-red-600">Tin tức</a></li>
+                    <li><span class="mx-2">/</span></li>
+                    <li id="breadcrumb-title" class="text-gray-800 font-medium truncate max-w-xs">Đang tải...</li>
+                </ol>
+            </nav>
+
+            <!-- Article -->
+            <article id="newsDetail" class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <!-- Loading state -->
+                <div id="loadingState" class="p-8">
+                    <div class="animate-pulse">
+                        <div class="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
+                        <div class="h-4 bg-gray-200 rounded w-1/4 mb-6"></div>
+                        <div class="h-64 bg-gray-200 rounded mb-6"></div>
+                        <div class="space-y-3">
+                            <div class="h-4 bg-gray-200 rounded"></div>
+                            <div class="h-4 bg-gray-200 rounded"></div>
+                            <div class="h-4 bg-gray-200 rounded w-5/6"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content (hidden initially) -->
+                <div id="newsContent" class="hidden">
+                    <!-- Header Image -->
+                    <div class="relative h-80 md:h-96">
+                        <img id="newsImage" src="" alt="" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 right-0 p-6 text-white">
+                            <span id="newsTag" class="px-3 py-1 rounded-full text-xs font-bold mb-3 inline-block"></span>
+                            <h1 id="newsTitle" class="text-2xl md:text-3xl font-bold mb-2"></h1>
+                            <div class="flex items-center gap-4 text-sm opacity-90">
+                                <span id="newsCategory" class="flex items-center gap-1">📁 </span>
+                                <span id="newsDate" class="flex items-center gap-1">📅 </span>
+                                <span id="newsViews" class="flex items-center gap-1">👁️ </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Article Body -->
+                    <div class="p-6 md:p-8">
+                        <!-- Short Description -->
+                        <p id="newsShortDesc" class="text-lg text-gray-700 font-medium mb-6 pb-6 border-b border-gray-200"></p>
+                        
+                        <!-- Main Content -->
+                        <div id="newsBody" class="news-content text-gray-700 leading-relaxed"></div>
+
+                        <!-- Share Buttons -->
+                        <div class="mt-8 pt-6 border-t border-gray-200">
+                            <p class="font-bold text-gray-800 mb-3">Chia sẻ bài viết:</p>
+                            <div class="flex gap-3">
+                                <button onclick="shareOnFacebook()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.77 7.46H14.5v-1.9c0-.9.6-1.1 1-1.1h3V.5h-4.33C10.24.5 9.5 3.44 9.5 5.32v2.15h-3v4h3v12h5v-12h3.85l.42-4z"/></svg>
+                                    Facebook
+                                </button>
+                                <button onclick="copyLink()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                                    Sao chép link
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error state -->
+                <div id="errorState" class="hidden p-8 text-center">
+                    <div class="text-6xl mb-4">😢</div>
+                    <h2 class="text-xl font-bold text-gray-800 mb-2">Không tìm thấy tin tức</h2>
+                    <p class="text-gray-600 mb-4">Tin tức này có thể đã bị xóa hoặc không tồn tại.</p>
+                    <a href="news.html" class="inline-block bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-medium transition">← Quay lại trang tin tức</a>
+                </div>
+            </article>
+
+            <!-- Related News -->
+            <section id="relatedSection" class="mt-8 hidden">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                    <span>📰</span> Tin tức liên quan
+                </h2>
+                <div id="relatedNews" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+            </section>
+        </div>
+    </main>
+
+
+    <!-- Footer -->
+    <footer class="bg-yellow-100 text-gray-900 pt-12 pb-6">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="border-t border-gray-300 pt-6 text-center text-sm text-gray-600">
+                <p>© 2024 Yến Nhi Tech. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+        const NEWS_API_URL = 'http://localhost:3000/api/news';
+
+        // Get news ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const newsId = urlParams.get('id');
+
+        // Format date
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('vi-VN', {
+                day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+        }
+
+        // Get tag color
+        function getTagColor(color) {
+            const colors = {
+                'red': 'bg-red-600', 'blue': 'bg-blue-600', 'green': 'bg-green-600',
+                'yellow': 'bg-yellow-400 text-gray-800', 'purple': 'bg-purple-600', 'orange': 'bg-orange-600'
+            };
+            return colors[color] || 'bg-gray-600';
+        }
+
+        // Load news detail
+        async function loadNewsDetail() {
+            if (!newsId) {
+                showError();
+                return;
+            }
+
+            try {
+                const response = await fetch(`${NEWS_API_URL}/${newsId}`);
+                const result = await response.json();
+
+                if (!result.success || !result.data) {
+                    showError();
+                    return;
+                }
+
+                const news = result.data;
+                
+                // Update page title
+                document.title = `${news.tieu_de} - Yến Nhi Tech`;
+                document.getElementById('breadcrumb-title').textContent = news.tieu_de;
+
+                // Update content
+                document.getElementById('newsImage').src = news.hinh_anh || 'https://via.placeholder.com/800x400?text=No+Image';
+                document.getElementById('newsImage').alt = news.tieu_de;
+                document.getElementById('newsTag').textContent = news.tag || 'Tin tức';
+                document.getElementById('newsTag').className = `px-3 py-1 rounded-full text-xs font-bold mb-3 inline-block ${getTagColor(news.mau_tag)} text-white`;
+                document.getElementById('newsTitle').textContent = news.tieu_de;
+                document.getElementById('newsCategory').innerHTML = `📁 ${news.danh_muc || 'Công nghệ'}`;
+                document.getElementById('newsDate').innerHTML = `📅 ${formatDate(news.ngay_tao)}`;
+                document.getElementById('newsViews').innerHTML = `👁️ ${news.luot_xem || 0} lượt xem`;
+                document.getElementById('newsShortDesc').textContent = news.mo_ta_ngan || '';
+                document.getElementById('newsBody').innerHTML = news.noi_dung || '<p>Nội dung đang được cập nhật...</p>';
+
+                // Show content, hide loading
+                document.getElementById('loadingState').classList.add('hidden');
+                document.getElementById('newsContent').classList.remove('hidden');
+
+                // Load related news
+                if (news.related && news.related.length > 0) {
+                    loadRelatedNews(news.related);
+                }
+
+            } catch (error) {
+                console.error('Load news detail error:', error);
+                showError();
+            }
+        }
+
+        // Load related news
+        function loadRelatedNews(related) {
+            const container = document.getElementById('relatedNews');
+            container.innerHTML = related.map(news => `
+                <a href="news-detail.html?id=${news.ma_tin_tuc}" class="bg-white rounded-lg shadow-md overflow-hidden group hover:shadow-lg transition">
+                    <div class="relative h-32 overflow-hidden">
+                        <img src="${news.hinh_anh || 'https://via.placeholder.com/300x200'}" alt="${news.tieu_de}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                    </div>
+                    <div class="p-3">
+                        <p class="text-xs text-gray-500 mb-1">${news.danh_muc || 'Công nghệ'}</p>
+                        <h3 class="font-bold text-sm text-gray-800 line-clamp-2 group-hover:text-red-600 transition">${news.tieu_de}</h3>
+                    </div>
+                </a>
+            `).join('');
+            document.getElementById('relatedSection').classList.remove('hidden');
+        }
+
+        // Show error
+        function showError() {
+            document.getElementById('loadingState').classList.add('hidden');
+            document.getElementById('errorState').classList.remove('hidden');
+        }
+
+        // Share functions
+        function shareOnFacebook() {
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`, '_blank', 'width=600,height=400');
+        }
+
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                alert('Đã sao chép link!');
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadNewsDetail);
+    </script>
+    <!-- Chatbot Widget -->
+    <link rel="stylesheet" href="../../css/chatbot.css?v=20260613_light">
+    <script src="../js/chatbot.js?v=20250510"></script>
+
+    <!-- Search Suggestions -->
+    <script src="../js/search-suggestions.js?v=1"></script>
+</body>
+</html>

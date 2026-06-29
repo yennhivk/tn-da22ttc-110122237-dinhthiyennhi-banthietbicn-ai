@@ -1,0 +1,159 @@
+/* Seasonal Effects - Hoa Mai */
+
+/* Container cho hiệu ứng */
+.seasonal-effects {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9998;
+    overflow: hidden;
+}
+
+/* Hoa mai rơi */
+.hoa-mai {
+    position: absolute;
+    top: -50px;
+    animation: fall-mai linear infinite;
+    opacity: 0.9;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+/* Hoa mai hình ảnh rơi */
+.hoa-mai-image {
+    position: absolute;
+    top: -80px;
+    animation: fall-mai-image linear infinite;
+    opacity: 0.95;
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.15));
+    pointer-events: none;
+}
+
+@keyframes fall-mai-image {
+    0% {
+        transform: translateY(0) rotate(0deg) translateX(0);
+        opacity: 1;
+    }
+    25% {
+        transform: translateY(25vh) rotate(45deg) translateX(25px);
+    }
+    50% {
+        transform: translateY(50vh) rotate(90deg) translateX(-20px);
+    }
+    75% {
+        transform: translateY(75vh) rotate(135deg) translateX(15px);
+    }
+    100% {
+        transform: translateY(105vh) rotate(180deg) translateX(-10px);
+        opacity: 0.3;
+    }
+}
+
+@keyframes fall-mai {
+    0% {
+        transform: translateY(0) rotate(0deg) translateX(0);
+        opacity: 1;
+    }
+    25% {
+        transform: translateY(25vh) rotate(90deg) translateX(20px);
+    }
+    50% {
+        transform: translateY(50vh) rotate(180deg) translateX(-20px);
+    }
+    75% {
+        transform: translateY(75vh) rotate(270deg) translateX(15px);
+    }
+    100% {
+        transform: translateY(105vh) rotate(360deg) translateX(-10px);
+        opacity: 0.3;
+    }
+}
+
+/* Toggle button cho hiệu ứng */
+.effects-toggle {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    z-index: 10000;
+    background: linear-gradient(135deg, #FFD700, #FF6B6B);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    transition: all 0.3s ease;
+    pointer-events: auto;
+}
+
+.effects-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+
+.effects-toggle.paused {
+    background: linear-gradient(135deg, #6B7280, #4B5563);
+}
+
+
+/* Cành mai trang trí popup */
+.branch-left,
+.branch-right {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.branch-left {
+    left: -80px;
+}
+
+.branch-right {
+    right: -80px;
+}
+
+@media (max-width: 768px) {
+    .branch-left {
+        left: -50px;
+    }
+    .branch-right {
+        right: -50px;
+    }
+    .branch-left svg,
+    .branch-right svg {
+        width: 60px !important;
+    }
+}
+
+/* Animation cho hoa mai trên cành */
+.mai-flower {
+    animation: bloom 2s ease-in-out infinite;
+}
+
+@keyframes bloom {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.15);
+        opacity: 0.9;
+    }
+}
+
+/* Cập nhật popup-content để chứa cành mai */
+.popup-content {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

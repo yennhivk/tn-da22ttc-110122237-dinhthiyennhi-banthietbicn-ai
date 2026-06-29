@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ví dụ sử dụng Permission Checker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .demo-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">
+            📝 Ví dụ sử dụng Permission Checker
+        </h1>
+
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
+            <p class="text-blue-900 font-semibold">📢 Lưu ý:</p>
+            <p class="text-blue-800 text-sm mt-1">
+                File này là ví dụ minh họa. Để sử dụng trong trang thực tế, 
+                include file <code>permissions-checker.js</code> vào HTML của bạn.
+            </p>
+        </div>
+
+        <!-- Example 1: Ẩn/hiện button -->
+        <div class="demo-section">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">
+                1️⃣ Ẩn/hiện button theo quyền
+            </h2>
+            
+            <div class="mb-4">
+                <button id="btn-create-order" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    ➕ Tạo đơn hàng
+                </button>
+                <button id="btn-delete-order" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 ml-2">
+                    🗑️ Xóa đơn hàng
+                </button>
+            </div>
+
+            <div class="code-block">
+                <pre>// Ẩn/hiện button tạo đơn hàng
+permissionChecker.toggleButton('btn-create-order', 'create_orders');
+
+// Ẩn/hiện button xóa đơn hàng
+permissionChecker.toggleButton('btn-delete-order', 'delete_orders');</pre>
+            </div>
+        </div>
+
+        <!-- Example 2: Kiểm tra quyền trong code -->
+        <div class="demo-section">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">
+                2️⃣ Kiểm tra quyền trong JavaScript
+            </h2>
+            
+            <div class="mb-4">
+                <button onclick="testPermission()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+                    🧪 Test quyền
+                </button>
+                <div id="test-result" class="mt-4 p-4 bg-gray-50 rounded"></div>
+            </div>
+
+            <div class="code-block">
+                <pre>function testPermission() {
+    if (hasPermission('create_orders')) {
+        alert('✅ Bạn có quyền tạo đơn hàng');
+        // Thực hiện logic tạo đơn
+    } else {
+        alert('❌ Bạn không có quyền tạo đơn hàng');
+    }
+}</pre>
+            </div>
+        </div>
+
+        <!-- Example 3: Hiển thị menu có điều kiện -->
+        <div class="demo-section">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">
+                3️⃣ Menu điều kiện theo quyền
+            </h2>
+            
+            <div class="mb-4 space-y-2">
+                <div id="menu-orders" class="p-3 bg-blue-50 rounded">
+                    📦 Quản lý đơn hàng
+                </div>
+                <div id="menu-products" class="p-3 bg-green-50 rounded">
+                    📱 Quản lý sản phẩm
+                </div>
+                <div id="menu-reports" class="p-3 bg-purple-50 rounded">
+                    📊 Báo cáo tài chính
+                </div>
+                <div id="menu-settings" class="p-3 bg-red-50 rounded">
+                    ⚙️ Cài đặt hệ thống
+                </div>
+            </div>
+
+            <div class="code-block">
+                <pre>// Ẩn/hiện menu items
+permissionChecker.toggleElement('menu-orders', 'view_orders');
+permissionChecker.toggleElement('menu-products', 'view_products');
+permissionChecker.toggleElement('menu-reports', 'view_reports');
+permissionChecker.toggleElement('menu-settings', 'edit_settings');</pre>
+            </div>
+        </div>
+
+        <!-- Example 4: Badge quyền -->
+        <div class="demo-section">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">
+                4️⃣ Hiển thị badge quyền
+            </h2>
+            
+            <div id="permission-badges" class="mb-4 flex flex-wrap gap-2">
+                <!-- Badges will be inserted here -->
+            </div>
+
+            <div class="code-block">
+                <pre>// Tạo badges cho các quyền
+const badges = document.getElementById('permission-badges');
+badges.innerHTML = 
+    permissionChecker.createBadge('view_orders', 'Xem đơn') +
+    permissionChecker.createBadge('create_orders', 'Tạo đơn') +
+    permissionChecker.createBadge('edit_orders', 'Sửa đơn') +
+    permissionChecker.createBadge('delete_orders', 'Xóa đơn');</pre>
+            </div>
+        </div>
+
+        <!-- Example 5: API Usage -->
+        <div class="demo-section">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">
+                5️⃣ Các phương thức có sẵn
+            </h2>
+
+            <div class="code-block">
+                <pre>// Load quyền từ server
+await permissionChecker.load();
+
+// Kiểm tra 1 quyền
+if (permissionChecker.has('create_orders')) { ... }
+
+// Kiểm tra có ít nhất 1 quyền
+if (permissionChecker.hasAny(['view_orders', 'create_orders'])) { ... }
+
+// Kiểm tra có tất cả quyền
+if (permissionChecker.hasAll(['view_orders', 'edit_orders'])) { ... }
+
+// Ẩn/hiện element
+permissionChecker.toggleElement('elementId', 'permission_name');
+
+// Ẩn/hiện nhiều elements
+permissionChecker.toggleElements('.btn-delete', 'delete_permission');
+
+// Enable/disable button
+permissionChecker.toggleButton('btnId', 'permission_name');
+
+// Debug - xem tất cả quyền
+permissionChecker.debug();
+
+// Export quyền ra CSV
+permissionChecker.exportToCSV();
+
+// Clear cache
+permissionChecker.clear();
+
+// Helper functions (shorthand)
+if (hasPermission('create_orders')) { ... }
+if (hasAnyPermission(['perm1', 'perm2'])) { ... }
+if (hasAllPermissions(['perm1', 'perm2'])) { ... }</pre>
+            </div>
+        </div>
+
+        <!-- Example 6: Trong admin.html -->
+        <div class="demo-section">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">
+                6️⃣ Tích hợp vào admin.html
+            </h2>
+
+            <div class="code-block">
+                <pre>&lt;!-- Thêm vào head --&gt;
+&lt;script src="../js/permissions-checker.js"&gt;&lt;/script&gt;
+
+&lt;script&gt;
+// Sau khi load xong permissions
+window.addEventListener('load', async () => {
+    await permissionChecker.load();
+    
+    // Ẩn/hiện các chức năng theo quyền
+    setupPermissions();
+});
+
+function setupPermissions() {
+    // Ẩn/hiện buttons
+    permissionChecker.toggleButton('btn-add-product', 'add_product');
+    permissionChecker.toggleButton('btn-delete-product', 'delete_product');
+    
+    // Ẩn/hiện menu items
+    permissionChecker.toggleElement('menu-settings', 'edit_settings');
+    permissionChecker.toggleElement('menu-reports', 'view_reports');
+    
+    // Ẩn/hiện tất cả nút xóa
+    permissionChecker.toggleElements('.btn-delete', 'delete_permission');
+}
+
+// Kiểm tra trước khi thực hiện action
+async function deleteProduct(id) {
+    if (!hasPermission('delete_product')) {
+        alert('Bạn không có quyền xóa sản phẩm');
+        return;
+    }
+    
+    // Logic xóa sản phẩm
+    await apiCall('/admin/products/' + id, 'DELETE');
+}
+&lt;/script&gt;</pre>
+            </div>
+        </div>
+
+        <!-- Debug Panel -->
+        <div class="demo-section bg-gray-900 text-white">
+            <h2 class="text-xl font-bold mb-4">
+                🔍 Debug Panel
+            </h2>
+            <div class="space-y-2">
+                <button onclick="permissionChecker.debug()" class="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700">
+                    📋 Log permissions
+                </button>
+                <button onclick="permissionChecker.exportToCSV()" class="bg-green-600 px-4 py-2 rounded hover:bg-green-700 ml-2">
+                    💾 Export CSV
+                </button>
+                <button onclick="permissionChecker.clear()" class="bg-red-600 px-4 py-2 rounded hover:bg-red-700 ml-2">
+                    🗑️ Clear cache
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include Permission Checker -->
+    <script src="../js/permissions-checker.js"></script>
+
+    <!-- Demo Scripts -->
+    <script>
+        // Wait for permissions to load
+        setTimeout(async () => {
+            await permissionChecker.load();
+            
+            // Setup Example 1: Toggle buttons
+            permissionChecker.toggleButton('btn-create-order', 'create_orders');
+            permissionChecker.toggleButton('btn-delete-order', 'delete_orders');
+            
+            // Setup Example 3: Toggle menu items
+            permissionChecker.toggleElement('menu-orders', 'view_orders');
+            permissionChecker.toggleElement('menu-products', 'view_products');
+            permissionChecker.toggleElement('menu-reports', 'view_reports');
+            permissionChecker.toggleElement('menu-settings', 'edit_settings');
+            
+            // Setup Example 4: Create badges
+            const badges = document.getElementById('permission-badges');
+            badges.innerHTML = 
+                permissionChecker.createBadge('view_orders', 'Xem đơn') +
+                permissionChecker.createBadge('create_orders', 'Tạo đơn') +
+                permissionChecker.createBadge('edit_orders', 'Sửa đơn') +
+                permissionChecker.createBadge('delete_orders', 'Xóa đơn') +
+                permissionChecker.createBadge('view_products', 'Xem SP') +
+                permissionChecker.createBadge('add_product', 'Thêm SP') +
+                permissionChecker.createBadge('view_reports', 'Xem BC') +
+                permissionChecker.createBadge('edit_settings', 'Cài đặt');
+        }, 500);
+
+        function testPermission() {
+            const result = document.getElementById('test-result');
+            const perms = [
+                { key: 'create_orders', label: 'Tạo đơn hàng' },
+                { key: 'delete_orders', label: 'Xóa đơn hàng' },
+                { key: 'view_reports', label: 'Xem báo cáo' },
+                { key: 'edit_settings', label: 'Sửa cài đặt' }
+            ];
+
+            let html = '<div class="space-y-2">';
+            perms.forEach(perm => {
+                const has = hasPermission(perm.key);
+                const icon = has ? '✅' : '❌';
+                const color = has ? 'text-green-600' : 'text-red-600';
+                html += `<div class="${color} font-semibold">${icon} ${perm.label}: ${has ? 'Có quyền' : 'Không có quyền'}</div>`;
+            });
+            html += '</div>';
+
+            result.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

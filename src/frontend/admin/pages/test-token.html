@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Token</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6">🔐 Test Admin Token</h1>
+
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">LocalStorage Status</h2>
+            <div id="storage-info" class="space-y-2 font-mono text-sm"></div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">Actions</h2>
+            <div class="space-y-2">
+                <button onclick="syncTokens()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full">
+                    🔄 Đồng bộ tokens
+                </button>
+                <button onclick="clearAll()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 w-full">
+                    🗑️ Xóa tất cả tokens
+                </button>
+                <button onclick="testAPI()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 w-full">
+                    🧪 Test API với token
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold mb-4">API Test Result</h2>
+            <pre id="api-result" class="bg-gray-900 text-green-400 p-4 rounded overflow-auto max-h-96"></pre>
+        </div>
+    </div>
+
+    <script>
+        function displayStorageInfo() {
+            const info = document.getElementById('storage-info');
+            const adminToken = localStorage.getItem('adminToken');
+            const admin_token = localStorage.getItem('admin_token');
+            const admin_user = localStorage.getItem('admin_user');
+
+            let html = '<div class="space-y-3">';
+            
+            // adminToken
+            html += '<div class="p-3 bg-gray-50 rounded">';
+            html += '<div class="font-bold text-gray-700">adminToken:</div>';
+            if (adminToken) {
+                html += `<div class="text-green-600">✅ Có (${adminToken.length} chars)</div>`;
+                html += `<div class="text-xs text-gray-500 break-all mt-1">${adminToken.substring(0, 100)}...</div>`;
+            } else {
+                html += '<div class="text-red-600">❌ Không có</div>';
+            }
+            html += '</div>';
+
+            // admin_token
+            html += '<div class="p-3 bg-gray-50 rounded">';
+            html += '<div class="font-bold text-gray-700">admin_token:</div>';
+            if (admin_token) {
+                html += `<div class="text-green-600">✅ Có (${admin_token.length} chars)</div>`;
+                html += `<div class="text-xs text-gray-500 break-all mt-1">${admin_token.substring(0, 100)}...</div>`;
+            } else {
+                html += '<div class="text-red-600">❌ Không có</div>';
+            }
+            html += '</div>';
+
+            // admin_user
+            html += '<div class="p-3 bg-gray-50 rounded">';
+            html += '<div class="font-bold text-gray-700">admin_user:</div>';
+            if (admin_user) {
+                html += '<div class="text-green-600">✅ Có</div>';
+                try {
+                    const user = JSON.parse(admin_user);
+                    html += `<div class="text-xs text-gray-500 mt-1">${JSON.stringify(user, null, 2)}</div>`;
+                } catch (e) {
+                    html += `<div class="text-xs text-gray-500 mt-1">${admin_user}</div>`;
+                }
+            } else {
+                html += '<div class="text-red-600">❌ Không có</div>';
+            }
+            html += '</div>';
+
+            // Comparison
+            if (adminToken && admin_token) {
+                html += '<div class="p-3 bg-blue-50 rounded border border-blue-200">';
+                html += '<div class="font-bold text-blue-700">So sánh:</div>';
+                if (adminToken === admin_token) {
+                    html += '<div class="text-green-600">✅ Tokens giống nhau</div>';
+                } else {
+                    html += '<div class="text-red-600">⚠️ Tokens KHÁC NHAU!</div>';
+                }
+                html += '</div>';
+            }
+
+            html += '</div>';
+            info.innerHTML = html;
+        }
+
+        function syncTokens() {
+            const adminToken = localStorage.getItem('adminToken');
+            const admin_token = localStorage.getItem('admin_token');
+
+            if (adminToken && !admin_token) {
+                localStorage.setItem('admin_token', adminToken);
+                alert('✅ Đã copy adminToken → admin_token');
+            } else if (admin_token && !adminToken) {
+                localStorage.setItem('adminToken', admin_token);
+                alert('✅ Đã copy admin_token → adminToken');
+            } else if (adminToken && admin_token && adminToken !== admin_token) {
+                // Ưu tiên admin_token (từ OAuth)
+                localStorage.setItem('adminToken', admin_token);
+                alert('✅ Đã đồng bộ: adminToken = admin_token');
+            } else if (adminToken && admin_token) {
+                alert('ℹ️ Tokens đã giống nhau, không cần đồng bộ');
+            } else {
+                alert('❌ Không có token nào để đồng bộ');
+            }
+
+            displayStorageInfo();
+        }
+
+        function clearAll() {
+            if (confirm('Xóa tất cả tokens? Bạn sẽ cần đăng nhập lại.')) {
+                localStorage.removeItem('adminToken');
+                localStorage.removeItem('admin_token');
+                localStorage.removeItem('admin_user');
+                localStorage.removeItem('userPermissions');
+                alert('✅ Đã xóa tất cả tokens');
+                displayStorageInfo();
+            }
+        }
+
+        async function testAPI() {
+            const result = document.getElementById('api-result');
+            const token = localStorage.getItem('adminToken') || localStorage.getItem('admin_token');
+
+            if (!token) {
+                result.textContent = '❌ Không có token để test!\n\nVui lòng đăng nhập trước.';
+                return;
+            }
+
+            result.textContent = '🔄 Đang test API...';
+
+            try {
+                const response = await fetch('http://localhost:3000/api/admin/employees', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+
+                const data = await response.json();
+
+                let output = `Status: ${response.status} ${response.statusText}\n\n`;
+                output += 'Response:\n';
+                output += JSON.stringify(data, null, 2);
+
+                if (response.ok) {
+                    output = '✅ API TEST THÀNH CÔNG!\n\n' + output;
+                } else {
+                    output = '❌ API TEST THẤT BẠI!\n\n' + output;
+                }
+
+                result.textContent = output;
+            } catch (error) {
+                result.textContent = '❌ LỖI KẾT NỐI:\n\n' + error.message;
+            }
+        }
+
+        // Auto display on load
+        displayStorageInfo();
+
+        // Auto refresh every 2 seconds
+        setInterval(displayStorageInfo, 2000);
+    </script>
+</body>
+</html>
