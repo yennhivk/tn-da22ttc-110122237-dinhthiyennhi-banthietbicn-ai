@@ -1293,8 +1293,8 @@ function showInterestNotification(productName) {
     }, 6000);
 }
 
-// Ghi nhận hành vi XEM > 50s (Lượt Xem >50s)
-let view50sTimer = setTimeout(async () => {
+// Ghi nhận hành vi XEM > 30s (Lượt Xem >30s)
+let view30sTimer = setTimeout(async () => {
     const token = localStorage.getItem('token');
     const userStr = localStorage.getItem('user');
     const urlParams = new URLSearchParams(window.location.search);
@@ -1313,20 +1313,20 @@ let view50sTimer = setTimeout(async () => {
                     body: JSON.stringify({ 
                         userId: userId, 
                         productId: Number(productId), 
-                        actionType: 'view_50s', 
+                        actionType: 'view_30s', 
                         actionValue: 1 
                     })
                 }).then(() => {
-                    console.log(`👁️ [Recommendation] Tracked view >50s for Product ${productId}`);
+                    console.log(`👁️ [Recommendation] Tracked view >30s for Product ${productId}`);
                 }).catch(e => {});
             }
         } catch(e) {}
     }
-}, 50000); // 50s
+}, 30000); // 30s
 
-// Hủy timer nếu người dùng rời trang trước 50s
+// Hủy timer nếu người dùng rời trang trước 30s
 window.addEventListener('beforeunload', () => {
-    clearTimeout(view50sTimer);
+    clearTimeout(view30sTimer);
 });
 
 // Ghi nhận hành vi CLICK vào sản phẩm bằng cách lắng nghe click toàn cục trên các liên kết chi tiết sản phẩm (sản phẩm liên quan)

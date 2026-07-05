@@ -20,5 +20,5 @@ DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 
 # Recommendation settings
 MIN_INTERACTIONS = 3  # Số tương tác tối thiểu để đưa ra gợi ý
-KNN_NEIGHBORS = 10    # Số lượng neighbors cho KNN
+KNN_NEIGHBORS = 7     # Số lượng neighbors cho KNN
 TOP_N = 20            # Số sản phẩm gợi ý mặc định

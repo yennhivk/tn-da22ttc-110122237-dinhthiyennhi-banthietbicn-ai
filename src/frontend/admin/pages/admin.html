@@ -535,7 +535,11 @@
                 <!-- Tổng quan -->
                 <p class="px-4 text-xs text-blue-400 uppercase mb-2">Tổng quan</p>
                 <a href="#" onclick="showSection('dashboard')" class="sidebar-item active flex items-center gap-3 px-4 py-3" data-section="dashboard">📊 Dashboard</a>
-                <a href="#" onclick="showSection('financial-report')" class="sidebar-item flex items-center gap-3 px-4 py-3" data-section="financial-report">💰 Báo cáo tài chính</a>
+                <!-- Báo cáo tài chính -->
+                <p class="px-4 text-xs text-blue-400 uppercase mt-2 mb-2">Báo cáo tài chính</p>
+                <a href="#" onclick="showSection('revenue-report')" class="sidebar-item flex items-center gap-3 px-4 py-3" data-section="revenue-report">📈 Báo cáo Doanh thu</a>
+                <a href="#" onclick="showSection('expense-report')" class="sidebar-item flex items-center gap-3 px-4 py-3" data-section="expense-report">💸 Báo cáo Chi phí</a>
+                <a href="#" onclick="showSection('profit-report')" class="sidebar-item flex items-center gap-3 px-4 py-3" data-section="profit-report">💰 Báo cáo Lợi nhuận</a>
                 
                 <!-- Quản lý chi phí -->
                 <p class="px-4 text-xs text-blue-400 uppercase mt-6 mb-2">Quản lý chi phí</p>
@@ -618,12 +622,12 @@
                             <input type="date" id="financial-end-date">
                         </div>
                         
-                        <select id="financial-month" class="border-2 border-gray-200 rounded-xl px-4 py-2.5 focus:border-blue-500 focus:outline-none text-sm font-semibold text-slate-700 bg-white shadow-sm" onchange="loadFinancialReport()">
+                        <select id="financial-month" class="border-2 border-gray-200 rounded-xl px-4 py-2.5 focus:border-blue-500 focus:outline-none text-sm font-semibold text-slate-700 bg-white shadow-sm" onchange="reloadActiveFinancialSection()">
                             <option value="1">Tháng 1</option>
                             <option value="2">Tháng 2</option>
                             <option value="3">Tháng 3</option>
                             <option value="4">Tháng 4</option>
-                            <option value="5" selected>Tháng 5</option>
+                            <option value="5">Tháng 5</option>
                             <option value="6">Tháng 6</option>
                             <option value="7">Tháng 7</option>
                             <option value="8">Tháng 8</option>
@@ -632,13 +636,13 @@
                             <option value="11">Tháng 11</option>
                             <option value="12">Tháng 12</option>
                         </select>
-                        <select id="financial-year" class="border-2 border-gray-200 rounded-xl px-4 py-2.5 focus:border-blue-500 focus:outline-none text-sm font-semibold text-slate-700 bg-white shadow-sm" onchange="loadFinancialReport()">
+                        <select id="financial-year" class="border-2 border-gray-200 rounded-xl px-4 py-2.5 focus:border-blue-500 focus:outline-none text-sm font-semibold text-slate-700 bg-white shadow-sm" onchange="reloadActiveFinancialSection()">
                             <option value="2024">2024</option>
                             <option value="2025">2025</option>
                             <option value="2026" selected>2026</option>
                             <option value="2027">2027</option>
                         </select>
-                        <button onclick="loadFinancialReport()" class="bg-blue-600 hover:bg-blue-700 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold shadow-md hover:scale-105 transition-all" title="Làm mới dữ liệu">
+                        <button onclick="reloadActiveFinancialSection()" class="bg-blue-600 hover:bg-blue-700 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold shadow-md hover:scale-105 transition-all" title="Làm mới dữ liệu">
                             🔄
                         </button>
                     </div>
@@ -1003,74 +1007,16 @@
                     </div>
                 </section>
 
-                <!-- Financial Report Section -->
-                <section id="section-financial-report" class="content-section">
-                    <!-- Dynamic Subtitle Panel -->
-                    <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
-                        <div>
-                            <h3 class="text-2xl font-black text-slate-800">Báo cáo Tài chính</h3>
-                            <p class="text-sm text-slate-500 font-medium">Theo dõi doanh thu, chi phí và lợi nhuận định kỳ</p>
-                        </div>
-                    </div>
 
-                    <!-- 3 Cards Overview -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6 mb-6">
-                        <!-- Card 1: Tổng thu -->
-                        <div class="bg-white rounded-2xl shadow-xl p-6 relative overflow-hidden border border-slate-100/50 hover:shadow-2xl transition duration-300">
-                            <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-50 rounded-full opacity-60"></div>
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">TỔNG THU (DOANH THU)</p>
-                            <p class="text-3xl font-extrabold text-slate-800 mb-4" id="fin-total-revenue">0đ</p>
-                            <div>
-                                <span class="inline-flex items-center gap-1 bg-green-50 text-green-600 px-3 py-1 rounded-full text-[10px] font-bold">
-                                    ↑ Tiền mặt & Online
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Card 2: Tổng chi -->
-                        <div class="bg-white rounded-2xl shadow-xl p-6 relative overflow-hidden border border-slate-100/50 hover:shadow-2xl transition duration-300">
-                            <div class="absolute -right-6 -top-6 w-24 h-24 bg-red-50 rounded-full opacity-60"></div>
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">TỔNG CHI (GỐC HÀNG)</p>
-                            <p class="text-3xl font-extrabold text-slate-800 mb-4" id="fin-total-expense">0đ</p>
-                            <div>
-                                <span class="inline-flex items-center gap-1 bg-red-50 text-red-600 px-3 py-1 rounded-full text-[10px] font-bold">
-                                    ↓ Nhập nguyên liệu
-                                </span>
-                            </div>
-                        </div>
-
-                        <!-- Card 3: Lợi nhuận -->
-                        <div class="bg-white rounded-2xl shadow-xl p-6 relative overflow-hidden border border-slate-100/50 hover:shadow-2xl transition duration-300" id="fin-profit-card">
-                            <div class="absolute -right-6 -top-6 w-24 h-24 bg-emerald-50 rounded-full opacity-60" id="fin-profit-card-circle"></div>
-                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">LỢI NHUẬN DỰ TÍNH</p>
-                            <p class="text-3xl font-extrabold text-slate-800 mb-4" id="fin-profit">0đ</p>
-                            <div id="fin-profit-trend">
-                                <span class="inline-flex items-center gap-1 bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full text-[10px] font-bold">
-                                    ✔ Đang có lời
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Line Chart Section (Full Width) -->
-                    <div class="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-slate-100/50">
-                        <h4 class="text-lg font-extrabold text-slate-800 mb-4 flex items-center gap-2">
-                            📈 Biến động Thu - Chi hàng ngày
-                        </h4>
-                        <div class="relative w-full" style="height: 320px;">
-                            <canvas id="financial-trend-chart"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Hidden expense structure canvas to prevent Chart.js instantiate error -->
+                <!-- ===== REVENUE REPORT SECTION ===== -->
+                <section id="section-revenue-report" class="content-section">
+                    <!-- Hidden compat elements -->
                     <div class="hidden">
                         <canvas id="expense-structure-chart"></canvas>
-                        <!-- Backwards compatibility stats cards that might be queried -->
                         <p id="fin-profit-margin">0%</p>
                         <span id="fin-revenue-trend"></span>
                         <span id="fin-expense-trend"></span>
                         <span id="fin-margin-trend"></span>
-                        
                         <p id="customer-debt-total">0</p>
                         <p id="customer-debt-overdue">0</p>
                         <p id="customer-debt-current">0</p>
@@ -1079,42 +1025,91 @@
                         <p id="supplier-debt-current">0</p>
                         <div id="top-customer-debts"></div>
                         <div id="top-supplier-debts"></div>
-                        
                         <p id="kpi-roi">0%</p>
                         <p id="kpi-inventory-turnover">0</p>
                         <p id="kpi-avg-order">0</p>
                         <p id="kpi-completion-rate">0%</p>
+                        <!-- shared hidden elements for backwards compat -->
+                        <p id="fin-total-revenue">0đ</p>
+                        <p id="fin-total-expense">0đ</p>
+                        <p id="fin-profit">0đ</p>
+                        <div id="fin-profit-trend"></div>
+                        <div id="fin-profit-card"></div>
+                        <div id="fin-profit-card-circle"></div>
+                        <canvas id="financial-trend-chart"></canvas>
+                        <tbody id="transactions-table"></tbody>
                     </div>
 
-                    <!-- Daily Details Table -->
+                    <!-- Header cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <!-- Tổng doanh thu -->
+                        <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl shadow-xl p-6 relative overflow-hidden text-white">
+                            <div class="absolute -right-6 -top-6 w-28 h-28 bg-white/10 rounded-full"></div>
+                            <div class="absolute -right-2 -top-2 w-16 h-16 bg-white/10 rounded-full"></div>
+                            <p class="text-[10px] font-black uppercase tracking-wider text-blue-100 mb-2">TỔNG DOANH THU THÁNG</p>
+                            <p class="text-3xl font-extrabold mb-1" id="rev-total-month">0đ</p>
+                            <span class="inline-flex items-center gap-1 bg-white/20 text-white px-3 py-1 rounded-full text-[10px] font-bold">
+                                📈 Thu từ bán hàng
+                            </span>
+                        </div>
+                        <!-- Doanh thu trung bình / ngày -->
+                        <div class="bg-white rounded-2xl shadow-xl p-6 relative overflow-hidden border border-blue-100 hover:shadow-2xl transition duration-300">
+                            <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-50 rounded-full opacity-60"></div>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">DOANH THU TRUNG BÌNH / NGÀY</p>
+                            <p class="text-3xl font-extrabold text-slate-800 mb-4" id="rev-avg-day">0đ</p>
+                            <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-[10px] font-bold">
+                                📊 Tính trên ngày có phát sinh
+                            </span>
+                        </div>
+                        <!-- Số đơn / giao dịch -->
+                        <div class="bg-white rounded-2xl shadow-xl p-6 relative overflow-hidden border border-blue-100 hover:shadow-2xl transition duration-300">
+                            <div class="absolute -right-6 -top-6 w-24 h-24 bg-indigo-50 rounded-full opacity-60"></div>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">SỐ NGÀY CÓ DOANH THU</p>
+                            <p class="text-3xl font-extrabold text-slate-800 mb-4" id="rev-active-days">0 ngày</p>
+                            <span class="inline-flex items-center gap-1 bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full text-[10px] font-bold">
+                                📅 Trong tháng
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Biểu đồ doanh thu -->
+                    <div class="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-slate-100/50">
+                        <h4 class="text-lg font-extrabold text-slate-800 mb-4 flex items-center gap-2">
+                            📈 Biến động Doanh thu hàng ngày
+                        </h4>
+                        <div class="relative w-full" style="height: 300px;">
+                            <canvas id="revenue-trend-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Bảng chi tiết doanh thu -->
                     <div class="bg-white rounded-2xl shadow-xl p-6 border border-slate-100/50">
                         <div class="flex items-center justify-between mb-6">
                             <div class="flex items-center gap-3">
-                                <h4 class="text-lg font-extrabold text-slate-800">📋 Bảng chi tiết hàng ngày</h4>
-                                <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                                <h4 class="text-lg font-extrabold text-slate-800">📋 Chi tiết Doanh thu theo ngày</h4>
+                                <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
                                     Nhấn vào dòng để xem chi tiết
                                 </span>
                             </div>
-                            <button onclick="exportFinancialReport('excel')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg shadow-emerald-600/20 transition hover:-translate-y-0.5">
-                                📥 Xuất Báo cáo
+                            <button onclick="exportRevenueReport()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg transition hover:-translate-y-0.5">
+                                📥 Xuất Excel
                             </button>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full">
-                                <thead class="bg-gradient-to-r from-slate-700 to-slate-800 text-white text-xs uppercase tracking-wider">
+                                <thead class="bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs uppercase tracking-wider">
                                     <tr>
                                         <th class="px-6 py-4 text-left rounded-tl-xl">Ngày</th>
-                                        <th class="px-6 py-4 text-left">Doanh thu (Thu)</th>
-                                        <th class="px-6 py-4 text-left">Chi phí (Chi)</th>
-                                        <th class="px-6 py-4 text-left">Lợi nhuận</th>
-                                        <th class="px-6 py-4 text-center rounded-tr-xl">Trạng thái</th>
+                                        <th class="px-6 py-4 text-left">Doanh thu</th>
+                                        <th class="px-6 py-4 text-left">Số giao dịch</th>
+                                        <th class="px-6 py-4 text-center rounded-tr-xl">So với TB tháng</th>
                                     </tr>
                                 </thead>
-                                <tbody id="transactions-table">
+                                <tbody id="revenue-table">
                                     <tr>
-                                        <td colspan="5" class="text-center py-8 text-gray-500">
+                                        <td colspan="4" class="text-center py-8 text-gray-500">
                                             <div class="text-4xl mb-2">📊</div>
-                                            Đang tải dữ liệu báo cáo...
+                                            Đang tải dữ liệu...
                                         </td>
                                     </tr>
                                 </tbody>
@@ -1122,6 +1117,186 @@
                         </div>
                     </div>
                 </section>
+
+                <!-- ===== EXPENSE REPORT SECTION ===== -->
+                <section id="section-expense-report" class="content-section">
+                    <!-- Header cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <!-- Tổng chi phí -->
+                        <div class="bg-gradient-to-br from-red-500 to-red-600 rounded-2xl shadow-xl p-6 relative overflow-hidden text-white">
+                            <div class="absolute -right-6 -top-6 w-28 h-28 bg-white/10 rounded-full"></div>
+                            <div class="absolute -right-2 -top-2 w-16 h-16 bg-white/10 rounded-full"></div>
+                            <p class="text-[10px] font-black uppercase tracking-wider text-red-100 mb-2">TỔNG CHI PHÍ THÁNG</p>
+                            <p class="text-3xl font-extrabold mb-1" id="exp-total-month">0đ</p>
+                            <span class="inline-flex items-center gap-1 bg-white/20 text-white px-3 py-1 rounded-full text-[10px] font-bold">
+                                💸 Chi mua hàng & nhập kho
+                            </span>
+                        </div>
+                        <!-- Chi phí trung bình / ngày -->
+                        <div class="bg-white rounded-2xl shadow-xl p-6 relative overflow-hidden border border-red-100 hover:shadow-2xl transition duration-300">
+                            <div class="absolute -right-6 -top-6 w-24 h-24 bg-red-50 rounded-full opacity-60"></div>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">CHI PHÍ TRUNG BÌNH / NGÀY</p>
+                            <p class="text-3xl font-extrabold text-slate-800 mb-4" id="exp-avg-day">0đ</p>
+                            <span class="inline-flex items-center gap-1 bg-red-50 text-red-600 px-3 py-1 rounded-full text-[10px] font-bold">
+                                📊 Tính trên ngày có phát sinh
+                            </span>
+                        </div>
+                        <!-- Số ngày có chi phí -->
+                        <div class="bg-white rounded-2xl shadow-xl p-6 relative overflow-hidden border border-red-100 hover:shadow-2xl transition duration-300">
+                            <div class="absolute -right-6 -top-6 w-24 h-24 bg-orange-50 rounded-full opacity-60"></div>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">SỐ NGÀY CÓ CHI PHÍ</p>
+                            <p class="text-3xl font-extrabold text-slate-800 mb-4" id="exp-active-days">0 ngày</p>
+                            <span class="inline-flex items-center gap-1 bg-orange-50 text-orange-600 px-3 py-1 rounded-full text-[10px] font-bold">
+                                📅 Trong tháng
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Biểu đồ chi phí -->
+                    <div class="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-slate-100/50">
+                        <h4 class="text-lg font-extrabold text-slate-800 mb-4 flex items-center gap-2">
+                            💸 Biến động Chi phí hàng ngày
+                        </h4>
+                        <div class="relative w-full" style="height: 300px;">
+                            <canvas id="expense-trend-report-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Bảng chi tiết chi phí -->
+                    <div class="bg-white rounded-2xl shadow-xl p-6 border border-slate-100/50">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center gap-3">
+                                <h4 class="text-lg font-extrabold text-slate-800">📋 Chi tiết Chi phí theo ngày</h4>
+                                <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                                    Nhấn vào dòng để xem chi tiết
+                                </span>
+                            </div>
+                            <button onclick="exportExpenseReport()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg transition hover:-translate-y-0.5">
+                                📥 Xuất Excel
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gradient-to-r from-red-500 to-red-600 text-white text-xs uppercase tracking-wider">
+                                    <tr>
+                                        <th class="px-6 py-4 text-left rounded-tl-xl">Ngày</th>
+                                        <th class="px-6 py-4 text-left">Chi phí</th>
+                                        <th class="px-6 py-4 text-left">Số giao dịch</th>
+                                        <th class="px-6 py-4 text-center rounded-tr-xl">So với TB tháng</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="expense-report-table">
+                                    <tr>
+                                        <td colspan="4" class="text-center py-8 text-gray-500">
+                                            <div class="text-4xl mb-2">💸</div>
+                                            Đang tải dữ liệu...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===== PROFIT REPORT SECTION ===== -->
+                <section id="section-profit-report" class="content-section">
+                    <!-- Header cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <!-- Lợi nhuận tổng -->
+                        <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl shadow-xl p-6 relative overflow-hidden text-white" id="profit-main-card">
+                            <div class="absolute -right-6 -top-6 w-28 h-28 bg-white/10 rounded-full"></div>
+                            <div class="absolute -right-2 -top-2 w-16 h-16 bg-white/10 rounded-full"></div>
+                            <p class="text-[10px] font-black uppercase tracking-wider text-emerald-100 mb-2">LỢI NHUẬN THÁNG NÀY</p>
+                            <p class="text-3xl font-extrabold mb-1" id="prf-total-month">0đ</p>
+                            <span id="prf-status-badge" class="inline-flex items-center gap-1 bg-white/20 text-white px-3 py-1 rounded-full text-[10px] font-bold">
+                                ✔ Đang có lời
+                            </span>
+                        </div>
+                        <!-- Tổng doanh thu (context) -->
+                        <div class="bg-white rounded-2xl shadow-xl p-6 relative overflow-hidden border border-emerald-100 hover:shadow-2xl transition duration-300">
+                            <div class="absolute -right-6 -top-6 w-24 h-24 bg-blue-50 rounded-full opacity-60"></div>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">TỔNG DOANH THU</p>
+                            <p class="text-3xl font-extrabold text-blue-600 mb-4" id="prf-revenue-ref">0đ</p>
+                            <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-[10px] font-bold">
+                                📈 Thu từ bán hàng
+                            </span>
+                        </div>
+                        <!-- Tổng chi phí (context) -->
+                        <div class="bg-white rounded-2xl shadow-xl p-6 relative overflow-hidden border border-emerald-100 hover:shadow-2xl transition duration-300">
+                            <div class="absolute -right-6 -top-6 w-24 h-24 bg-red-50 rounded-full opacity-60"></div>
+                            <p class="text-[10px] font-black text-slate-400 uppercase tracking-wider mb-2">TỔNG CHI PHÍ</p>
+                            <p class="text-3xl font-extrabold text-red-500 mb-4" id="prf-expense-ref">0đ</p>
+                            <span class="inline-flex items-center gap-1 bg-red-50 text-red-600 px-3 py-1 rounded-full text-[10px] font-bold">
+                                💸 Chi mua hàng & nhập kho
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Công thức lợi nhuận -->
+                    <div class="bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl shadow-xl p-6 mb-6 text-white flex flex-wrap items-center justify-center gap-4 text-center">
+                        <div>
+                            <p class="text-xs text-slate-400 uppercase tracking-wider mb-1">Doanh thu</p>
+                            <p class="text-2xl font-extrabold text-blue-400" id="prf-formula-rev">0đ</p>
+                        </div>
+                        <span class="text-3xl font-black text-slate-400">−</span>
+                        <div>
+                            <p class="text-xs text-slate-400 uppercase tracking-wider mb-1">Chi phí</p>
+                            <p class="text-2xl font-extrabold text-red-400" id="prf-formula-exp">0đ</p>
+                        </div>
+                        <span class="text-3xl font-black text-slate-400">=</span>
+                        <div>
+                            <p class="text-xs text-slate-400 uppercase tracking-wider mb-1">Lợi nhuận</p>
+                            <p class="text-2xl font-extrabold" id="prf-formula-prf">0đ</p>
+                        </div>
+                    </div>
+
+                    <!-- Biểu đồ lợi nhuận -->
+                    <div class="bg-white rounded-2xl shadow-xl p-6 mb-6 border border-slate-100/50">
+                        <h4 class="text-lg font-extrabold text-slate-800 mb-4 flex items-center gap-2">
+                            💰 Biến động Lợi nhuận hàng ngày
+                        </h4>
+                        <div class="relative w-full" style="height: 300px;">
+                            <canvas id="profit-trend-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Bảng chi tiết lợi nhuận -->
+                    <div class="bg-white rounded-2xl shadow-xl p-6 border border-slate-100/50">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center gap-3">
+                                <h4 class="text-lg font-extrabold text-slate-800">📋 Chi tiết Lợi nhuận theo ngày</h4>
+                                <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                                    Nhấn vào dòng để xem chi tiết
+                                </span>
+                            </div>
+                            <button onclick="exportProfitReport()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 shadow-lg transition hover:-translate-y-0.5">
+                                📥 Xuất Excel
+                            </button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white text-xs uppercase tracking-wider">
+                                    <tr>
+                                        <th class="px-6 py-4 text-left rounded-tl-xl">Ngày</th>
+                                        <th class="px-6 py-4 text-left">Doanh thu</th>
+                                        <th class="px-6 py-4 text-left">Chi phí</th>
+                                        <th class="px-6 py-4 text-left">Lợi nhuận</th>
+                                        <th class="px-6 py-4 text-center rounded-tr-xl">Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="profit-table">
+                                    <tr>
+                                        <td colspan="5" class="text-center py-8 text-gray-500">
+                                            <div class="text-4xl mb-2">💰</div>
+                                            Đang tải dữ liệu...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
 
                 <!-- Daily Expenses Section -->
                 <section id="section-daily-expenses" class="content-section">
@@ -1186,17 +1361,7 @@
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Loại chi phí <span class="text-red-500">*</span></label>
                                 <select id="expense-type" required class="w-full border-2 border-gray-300 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none">
-                                    <option value="">-- Chọn loại chi phí --</option>
-                                    <option value="tien_dien">⚡ Tiền điện</option>
-                                    <option value="tien_nuoc">💧 Tiền nước</option>
-                                    <option value="thue_mat_bang">🏢 Thuê mặt bằng</option>
-                                    <option value="van_chuyen">🚚 Vận chuyển</option>
-                                    <option value="luong_nhan_vien">👨‍💼 Lương nhân viên</option>
-                                    <option value="marketing">📢 Marketing</option>
-                                    <option value="bao_tri">🔧 Bảo trì</option>
-                                    <option value="van_phong_pham">📎 Văn phòng phẩm</option>
-                                    <option value="phat_sinh">💰 Chi phí phát sinh</option>
-                                    <option value="khac">📋 Khác</option>
+                                    <option value="">-- Đang tải... --</option>
                                 </select>
                             </div>
                             
@@ -1238,16 +1403,6 @@
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Loại chi phí</label>
                                 <select id="filter-expense-type" class="w-full border-2 border-gray-300 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none">
                                     <option value="">Tất cả</option>
-                                    <option value="tien_dien">⚡ Tiền điện</option>
-                                    <option value="tien_nuoc">💧 Tiền nước</option>
-                                    <option value="thue_mat_bang">🏢 Thuê mặt bằng</option>
-                                    <option value="van_chuyen">🚚 Vận chuyển</option>
-                                    <option value="luong_nhan_vien">👨‍💼 Lương nhân viên</option>
-                                    <option value="marketing">📢 Marketing</option>
-                                    <option value="bao_tri">🔧 Bảo trì</option>
-                                    <option value="van_phong_pham">📎 Văn phòng phẩm</option>
-                                    <option value="phat_sinh">💰 Chi phí phát sinh</option>
-                                    <option value="khac">📋 Khác</option>
                                 </select>
                             </div>
                             
@@ -3140,20 +3295,16 @@
                     <div class="bg-white rounded-xl shadow-lg p-5">
                         <div class="overflow-x-auto">
                             <table class="w-full">
-                                <thead class="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+                                <thead class="bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm">
                                     <tr>
-                                        <th class="px-4 py-3 text-left rounded-tl-lg" style="min-width: 150px; width: 150px;">Ảnh</th>
-                                        <th class="px-4 py-3 text-left">Mã SP</th>
-                                        <th class="px-4 py-3 text-left">Tên sản phẩm</th>
-                                        <th class="px-4 py-3 text-left">Barcode</th>
-                                        <th class="px-4 py-3 text-center">Trọng lượng</th>
-                                        <th class="px-4 py-3 text-right">Giá nhập</th>
-                                        <th class="px-4 py-3 text-right">Giá bán</th>
-                                        <th class="px-4 py-3 text-center">Tồn kho</th>
-                                        <th class="px-4 py-3 text-center">Đã bán</th>
-                                        <th class="px-4 py-3 text-center">Ngày thêm</th>
-                                        <th class="px-4 py-3 text-center">Trạng thái</th>
-                                        <th class="px-4 py-3 text-center rounded-tr-lg">Thao tác</th>
+                                        <th class="px-3 py-3 text-left rounded-tl-lg w-20">Ảnh</th>
+                                        <th class="px-3 py-3 text-left">Sản phẩm</th>
+                                        <th class="px-3 py-3 text-right">Giá nhập</th>
+                                        <th class="px-3 py-3 text-right">Giá bán</th>
+                                        <th class="px-3 py-3 text-center">Tồn kho</th>
+                                        <th class="px-3 py-3 text-center">Đã bán</th>
+                                        <th class="px-3 py-3 text-center">Trạng thái</th>
+                                        <th class="px-3 py-3 text-center rounded-tr-lg">Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody id="products-table"></tbody>
@@ -3968,9 +4119,9 @@
                         <div class="flex flex-wrap gap-3 text-xs font-bold">
                             <span class="bg-white/20 px-3 py-1.5 rounded-lg border border-white/10 shadow-sm">🛒 Mua: x40</span>
                             <span class="bg-white/20 px-3 py-1.5 rounded-lg border border-white/10 shadow-sm">👆 Click: x20</span>
-                            <span class="bg-white/20 px-3 py-1.5 rounded-lg border border-white/10 shadow-sm">👁️ Xem (>50s): x20</span>
+                            <span class="bg-white/20 px-3 py-1.5 rounded-lg border border-white/10 shadow-sm">👁️ Xem (>30s): x20</span>
                             <span class="bg-white/20 px-3 py-1.5 rounded-lg border border-white/10 shadow-sm">🔍 Tìm kiếm: x10</span>
-                            <span class="bg-white/20 px-3 py-1.5 rounded-lg border border-white/10 shadow-sm">⭐ Đánh giá: x6</span>
+                            <span class="bg-white/20 px-3 py-1.5 rounded-lg border border-white/10 shadow-sm">⭐ Đánh giá: x10</span>
                         </div>
                     </div>
 
@@ -3984,7 +4135,7 @@
                                         <th class="px-6 py-4">Sản Phẩm</th>
                                         <th class="px-6 py-4 text-center">Lượt Mua</th>
                                         <th class="px-6 py-4 text-center">Lượt Click</th>
-                                        <th class="px-6 py-4 text-center">Lượt Xem (>50s)</th>
+                                        <th class="px-6 py-4 text-center">Lượt Xem (>30s)</th>
                                         <th class="px-6 py-4 text-center">Lượt Tìm</th>
                                         <th class="px-6 py-4 text-center">Đánh Giá</th>
                                         <th class="px-6 py-4 text-center">Điểm Phổ Biến (Score)</th>
@@ -5527,8 +5678,8 @@
                     </div>
                 </div>
                 
-                <!-- Modal Action Buttons (Premium 3D Glossy Style) -->
-                <div class="flex gap-4 pt-4 border-t border-slate-200/80">
+                <!-- Modal Action Buttons (Premium 3D Glossy Style - Sticky Footer) -->
+                <div class="sticky bottom-0 bg-slate-50/95 py-4 border-t border-slate-200/80 flex gap-4 backdrop-blur-sm z-10 -mx-6 -mb-6 px-6">
                     <button type="submit" class="flex-1 btn-3d-primary py-3 font-bold tracking-wide flex items-center justify-center gap-2 cursor-pointer">
                         💾 Lưu cấu hình sản phẩm
                     </button>

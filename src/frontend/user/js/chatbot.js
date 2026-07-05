@@ -464,7 +464,10 @@ Hãy trả lời ngắn gọn (tối đa 3-4 câu), thân thiện và sử dụn
         const div = document.createElement('div');
         div.className = `chat-message ${type}-message`;
         
+        const correctProductDetailPath = isInPages ? 'product-detail.html' : 'user/pages/product-detail.html';
         let formattedText = text
+            .replace(/\/frontend\/pages\/product-detail\.html/g, correctProductDetailPath)
+            .replace(/\/user\/pages\/product-detail\.html/g, correctProductDetailPath)
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
             .replace(/\n/g, '<br>');
         

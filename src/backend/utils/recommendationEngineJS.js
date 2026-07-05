@@ -32,7 +32,7 @@ class RecommendationEngineJS {
                    LoaiTuongTac as action_type, GiaTri as action_value
             FROM user_interactions
             WHERE ThoiGian >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
-              AND LoaiTuongTac = 'purchase'
+              AND LoaiTuongTac IN ('purchase', 'preference', 'cart', 'wishlist', 'view', 'click')
             UNION ALL
             SELECT dh.ma_tai_khoan as user_id, ctdh.ma_san_pham as product_id,
                    'purchase' as action_type, 5 * ctdh.so_luong as action_value
@@ -42,7 +42,12 @@ class RecommendationEngineJS {
               AND dh.trang_thai_don_hang IN ('hoan_thanh', 'dang_giao', 'cho_xac_nhan', 'da_xac_nhan')
         `);
         const scores = { 
-            'purchase': 5.0
+            'purchase': 5.0,
+            'preference': 4.0,
+            'cart': 3.0,
+            'wishlist': 2.5,
+            'view': 1.0,
+            'click': 1.0
         };
         const matrix = {};
         interactions.forEach(item => {
@@ -183,30 +188,25 @@ class RecommendationEngineJS {
     
     static async getContentBasedRecommendations(userId, limit = 10) {
         try {
-            const categories = new Set();
+            // Tách biệt 2 nguồn danh mục:
+            // - categoriesFromSurvey: từ khảo sát onboarding → áp dụng lọc ngân sách
+            // - categoriesFromInteraction: từ hành vi thực (view/click/cart) → KHÔNG lọc ngân sách
+            const categoriesFromSurvey = new Set();
+            const categoriesFromInteraction = new Set();
             const brands = new Set();
-            let budgetRange = null;
+            // Ngân sách từ khảo sát CHỈ dùng khi seed preference ban đầu,
+            // KHÔNG dùng làm bộ lọc cứng trong CB filtering — khảo sát chỉ là gợi ý sở thích
             let purpose = null;
 
-            // 1. Lấy dữ liệu từ khảo sát cá nhân hóa
+            // 1. Lấy dữ liệu từ khảo sát cá nhân hóa (chỉ lấy mục đích và danh mục/thương hiệu)
             const [surveyRows] = await db.query(
-                'SELECT muc_dich_su_dung, phan_khuc_ngan_sach, danh_muc_quan_tam, thuong_hieu_yeu_thich FROM thong_tin_ca_nhan_hoa WHERE ma_tai_khoan = ? LIMIT 1',
+                'SELECT muc_dich_su_dung, danh_muc_quan_tam, thuong_hieu_yeu_thich FROM thong_tin_ca_nhan_hoa WHERE ma_tai_khoan = ? LIMIT 1',
                 [userId]
             );
 
             if (surveyRows.length > 0) {
                 const s = surveyRows[0];
                 purpose = s.muc_dich_su_dung || null;
-                if (s.phan_khuc_ngan_sach) {
-                    const map = {
-                        'Dưới 5 triệu':   { min: 0,         max: 5_000_000 },
-                        '5 - 10 triệu':   { min: 5_000_000, max: 10_000_000 },
-                        '10 - 20 triệu':  { min: 10_000_000, max: 20_000_000 },
-                        '20 - 35 triệu':  { min: 20_000_000, max: 35_000_000 },
-                        'Trên 35 triệu':  { min: 35_000_000, max: 999_999_999 }
-                    };
-                    budgetRange = map[s.phan_khuc_ngan_sach];
-                }
 
                 const parseJson = v => {
                     if (!v) return [];
@@ -236,55 +236,66 @@ class RecommendationEngineJS {
                 surveyCats.forEach(sc => {
                     const mappedName = categoryMap[sc] || sc;
                     const match = dbCats.find(c => (c.ten_danh_muc || '').toLowerCase().includes(mappedName.toLowerCase()) || mappedName.toLowerCase().includes((c.ten_danh_muc || '').toLowerCase()));
-                    if (match) categories.add(match.ma_danh_muc);
+                    if (match) categoriesFromSurvey.add(match.ma_danh_muc);
                 });
 
                 surveyBrands.forEach(b => brands.add(b));
             }
 
-            // 2. Lấy danh mục và thương hiệu từ lịch sử tương tác
+            // 2. Lấy danh mục và thương hiệu từ hành vi tương tác THỰC TẾ (view/click/cart)
+            // Loại trừ 'preference' vì đây là do survey seed tạo ra, không phải hành vi thực
             const [interactRows] = await db.query(`
                 SELECT sp.ma_danh_muc, sp.thuong_hieu, COUNT(*) as count
                 FROM user_interactions ui
                 JOIN san_pham sp ON ui.MaSP = sp.ma_san_pham
-                WHERE ui.MaND = ? AND ui.LoaiTuongTac IN ('click', 'view', 'view_50s', 'purchase', 'preference')
+                WHERE ui.MaND = ? AND ui.LoaiTuongTac IN ('click', 'view', 'view_50s', 'view_30s', 'cart', 'purchase')
                 GROUP BY sp.ma_danh_muc, sp.thuong_hieu
             `, [userId]);
 
             interactRows.forEach(row => {
-                if (row.ma_danh_muc) categories.add(row.ma_danh_muc);
+                if (row.ma_danh_muc) categoriesFromInteraction.add(row.ma_danh_muc);
                 if (row.thuong_hieu) brands.add(row.thuong_hieu);
             });
 
-            // Nếu không có bất kỳ sở thích hay tương tác nào (kể cả ngân sách và mục đích sử dụng), trả về mảng rỗng
-            if (categories.size === 0 && brands.size === 0 && !budgetRange && !purpose) {
+            // Gộp tất cả danh mục (survey + tương tác thực)
+            const allCategories = new Set([...categoriesFromSurvey, ...categoriesFromInteraction]);
+
+            if (allCategories.size === 0 && brands.size === 0 && !purpose) {
                 return [];
             }
 
             const brandsArray = brands.size > 0 ? Array.from(brands) : [''];
             const selectParams = [brandsArray];
-            if (purpose) {
-                selectParams.push(purpose);
-            }
+            if (purpose) selectParams.push(purpose);
 
-            // 4. Tìm kiếm sản phẩm phù hợp
+            // Query duy nhất — KHÔNG lọc ngân sách — khảo sát chỉ là gợi ý sở thích
+            // interaction_score: ưu tiên SP user đã view/click thực tế lên đầu pool
             let sql = `
                 SELECT sp.ma_san_pham, sp.ten_san_pham, sp.gia, sp.thuong_hieu, sp.mo_ta,
                        a.duong_dan_anh AS anh_chinh, dm.ten_danh_muc,
                        CASE WHEN sp.thuong_hieu IN (?) THEN 2 ELSE 1 END as brand_score,
-                       ${purpose ? 'CASE WHEN sp.muc_dich_su_dung = ? THEN 3 ELSE 1 END' : '1'} as purpose_score
+                       ${purpose ? 'CASE WHEN sp.muc_dich_su_dung = ? THEN 3 ELSE 1 END' : '1'} as purpose_score,
+                       COALESCE((
+                           SELECT SUM(CASE
+                               WHEN ui2.LoaiTuongTac IN ('view_50s','view_30s') THEN 3
+                               WHEN ui2.LoaiTuongTac = 'view' THEN 2
+                               WHEN ui2.LoaiTuongTac IN ('click','cart') THEN 4
+                               ELSE 0 END)
+                           FROM user_interactions ui2
+                           WHERE ui2.MaSP = sp.ma_san_pham AND ui2.MaND = ?
+                             AND ui2.LoaiTuongTac IN ('click','view','view_50s','view_30s','cart')
+                       ), 0) AS interaction_score
                 FROM san_pham sp
                 LEFT JOIN anh_san_pham a ON sp.ma_san_pham = a.ma_san_pham AND a.la_anh_chinh = 1
                 LEFT JOIN danh_muc_san_pham dm ON sp.ma_danh_muc = dm.ma_danh_muc
                 WHERE sp.trang_thai = 'hien_thi'
             `;
-            
-            const sqlParams = [];
+            const sqlParams = [userId];
             const conditions = [];
 
-            if (categories.size > 0) {
+            if (allCategories.size > 0) {
                 conditions.push('sp.ma_danh_muc IN (?)');
-                sqlParams.push(Array.from(categories));
+                sqlParams.push(Array.from(allCategories));
             }
 
             conditions.push(`
@@ -300,20 +311,18 @@ class RecommendationEngineJS {
                 sql += ' AND ' + conditions.join(' AND ');
             }
 
-            if (budgetRange) {
-                sql += ' AND sp.gia BETWEEN ? AND ?';
-                sqlParams.push(budgetRange.min, budgetRange.max);
-            }
-
-            sql += ' ORDER BY purpose_score DESC, brand_score DESC, sp.ngay_tao DESC LIMIT ?';
+            // Sắp xếp: sản phẩm đã tương tác thực tế lên đầu, sau đó theo sở thích, thương hiệu, mới nhất
+            sql += ' ORDER BY interaction_score DESC, purpose_score DESC, brand_score DESC, sp.ngay_tao DESC LIMIT ?';
 
             const [recommendations] = await db.query(sql, [...selectParams, ...sqlParams, limit]);
             return recommendations;
+
         } catch (error) {
             console.error('CB error:', error);
             return [];
         }
     }
+
 
     static async getChatBasedRecommendations(userId, limit = 10) {
         try {
@@ -657,11 +666,15 @@ class RecommendationEngineJS {
             }
 
             // 4. Món phổ biến (Trending): Điền vào chỗ trống để đạt đủ limit
+            // Hạn chế thêm tối đa 10 sản phẩm phổ biến làm fallback khi limit lớn để tránh ô nhiễm nhãn Bán chạy
+            let popAdded = 0;
+            const maxPopFallback = limit > 10 ? 10 : limit;
             for (const p of pop) {
-                if (combined.length >= limit) break;
+                if (combined.length >= limit || popAdded >= maxPopFallback) break;
                 if (!seen.has(p.ma_san_pham)) {
                     seen.add(p.ma_san_pham);
                     combined.push(p);
+                    popAdded++;
                 }
             }
 

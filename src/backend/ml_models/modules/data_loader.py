@@ -40,7 +40,7 @@ class DataLoader:
         return pd.read_sql(query, self.conn)
     
     def load_user_interactions(self):
-        """Load tương tác người dùng (purchases, preferences)"""
+        """Load tương tác người dùng (purchases, preferences, views, cart, v.v.)"""
         query = """
         SELECT 
             ui.MaND as user_id,
@@ -50,7 +50,7 @@ class DataLoader:
             ui.ThoiGian as timestamp
         FROM user_interactions ui
         WHERE ui.ThoiGian >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
-          AND ui.LoaiTuongTac IN ('purchase', 'preference')
+          AND ui.LoaiTuongTac IN ('purchase', 'preference', 'cart', 'view', 'click', 'search', 'chatbot_view', 'wishlist', 'rating')
         ORDER BY ui.ThoiGian DESC
         """
         return pd.read_sql(query, self.conn)

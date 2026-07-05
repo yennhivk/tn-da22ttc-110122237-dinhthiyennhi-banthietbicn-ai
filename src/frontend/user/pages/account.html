@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -65,6 +65,9 @@
                     <nav class="space-y-2">
                         <a href="#" class="block py-2 px-4 bg-orange-50 text-orange-600 rounded-lg font-medium">Thông tin tài khoản</a>
                         <a href="order-history.html" class="block py-2 px-4 text-blue-800 hover:bg-blue-50 rounded-lg">Đơn hàng của tôi</a>
+                        <button onclick="window.openPreferenceModal && window.openPreferenceModal(true)" class="w-full text-left py-2 px-4 text-blue-800 hover:bg-blue-50 rounded-lg flex items-center gap-2">
+                            <span>💖</span> Quản lý sở thích
+                        </button>
                         <button onclick="handleLogout()" class="w-full text-left py-2 px-4 text-red-500 hover:bg-red-50 rounded-lg">Đăng xuất</button>
                     </nav>
                 </div>
@@ -797,8 +800,11 @@
         // Update cart badge on page load
         updateCartBadge();
     </script>
+    <!-- Onboarding Preference Modal -->
+    <script src="../js/preference-modal.js?v=1"></script>
+
     <!-- Chatbot Widget -->
-    <link rel="stylesheet" href="../../css/chatbot.css?v=20260613_light">
+    <link class="chatbot-style" rel="stylesheet" href="../../css/chatbot.css?v=20260613_light">
     <script src="../js/chatbot.js?v=20250510"></script>
 
     <!-- Search Suggestions -->

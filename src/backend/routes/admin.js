@@ -1380,14 +1380,68 @@ router.get('/orders/:id', authenticateToken, requireAdmin, async (req, res) => {
 router.put('/orders/:id/status', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { trang_thai } = req.body;
+        const orderId = req.params.id;
         const validStatuses = ['dang_xu_ly', 'dang_giao', 'hoan_thanh', 'da_huy'];
 
         if (!validStatuses.includes(trang_thai)) {
             return res.status(400).json({ success: false, message: 'Trạng thái không hợp lệ' });
         }
 
-        await db.query(`UPDATE don_hang SET trang_thai_don_hang = ? WHERE ma_don_hang = ?`, 
-            [trang_thai, req.params.id]);
+        await db.query(`UPDATE don_hang SET trang_thai_don_hang = ? WHERE ma_don_hang = ?`,
+            [trang_thai, orderId]);
+
+        // ── Ghi nhận hành vi purchase khi đơn HOÀN THÀNH ──────────────────────
+        // Đây là thời điểm chính xác nhất để ghi 'purchase' vào recommendation engine
+        if (trang_thai === 'hoan_thanh') {
+            try {
+                const RecommendationEngine = require('../utils/recommendationEngineJS');
+
+                // Lấy thông tin user + sản phẩm trong đơn hàng
+                const [orderItems] = await db.query(`
+                    SELECT dh.ma_tai_khoan, ctdh.ma_san_pham, ctdh.so_luong
+                    FROM don_hang dh
+                    JOIN chi_tiet_don_hang ctdh ON dh.ma_don_hang = ctdh.ma_don_hang
+                    WHERE dh.ma_don_hang = ?
+                `, [orderId]);
+
+                for (const item of orderItems) {
+                    await RecommendationEngine.trackUserAction(
+                        item.ma_tai_khoan,
+                        item.ma_san_pham,
+                        'purchase',
+                        5
+                    );
+                }
+                console.log(`✅ [Recommendation] Tracked purchase for Order #${orderId} (${orderItems.length} items)`);
+            } catch (trackErr) {
+                console.error('❌ Lỗi ghi nhận purchase khi hoàn thành đơn:', trackErr);
+            }
+        }
+
+        // ── Xóa purchase nếu đơn bị HỦY (dọn data sai nếu có) ────────────────
+        if (trang_thai === 'da_huy') {
+            try {
+                const [orderItems] = await db.query(`
+                    SELECT dh.ma_tai_khoan, ctdh.ma_san_pham
+                    FROM don_hang dh
+                    JOIN chi_tiet_don_hang ctdh ON dh.ma_don_hang = ctdh.ma_don_hang
+                    WHERE dh.ma_don_hang = ?
+                `, [orderId]);
+
+                for (const item of orderItems) {
+                    await db.query(`
+                        DELETE FROM user_interactions
+                        WHERE MaND = ? AND MaSP = ? AND LoaiTuongTac = 'purchase'
+                          AND ThoiGian >= (
+                              SELECT ngay_tao FROM don_hang WHERE ma_don_hang = ? LIMIT 1
+                          )
+                    `, [item.ma_tai_khoan, item.ma_san_pham, orderId]);
+                }
+                console.log(`🗑️ [Recommendation] Cleaned up purchase interactions for canceled Order #${orderId}`);
+            } catch (cleanErr) {
+                console.error('❌ Lỗi dọn dẹp purchase khi hủy đơn:', cleanErr);
+            }
+        }
 
         res.json({ success: true, message: 'Cập nhật trạng thái đơn hàng thành công' });
     } catch (error) {
@@ -4963,7 +5017,7 @@ router.get('/personalization', authenticateToken, requireAdmin, async (req, res)
             JOIN tai_khoan tk ON ui.MaND = tk.ma_tai_khoan
             JOIN san_pham sp ON ui.MaSP = sp.ma_san_pham
             LEFT JOIN danh_muc_san_pham dm ON sp.ma_danh_muc = dm.ma_danh_muc
-            WHERE ui.LoaiTuongTac IN ('preference', 'view', 'cart', 'purchase', 'search')
+            WHERE ui.LoaiTuongTac IN ('preference', 'click', 'view', 'view_30s', 'view_50s', 'cart', 'purchase', 'search')
             ORDER BY ui.ThoiGian DESC
             LIMIT 200
         `);
@@ -4975,7 +5029,7 @@ router.get('/personalization', authenticateToken, requireAdmin, async (req, res)
             email: p.email,
             so_dien_thoai: p.so_dien_thoai,
             loai: p.LoaiTuongTac === 'preference' ? 'form' : p.LoaiTuongTac,
-            noi_dung: p.LoaiTuongTac === 'preference' ? `Sở thích chọn từ khảo sát: "${p.ten_san_pham}" hãng ${p.thuong_hieu}` : p.LoaiTuongTac === 'view' ? `Đã xem: ${p.ten_san_pham}` : p.LoaiTuongTac === 'cart' ? `Thêm vào giỏ: ${p.ten_san_pham}` : `Tìm/Mua: ${p.ten_san_pham}`,
+            noi_dung: p.LoaiTuongTac === 'preference' ? `Sở thích chọn từ khảo sát: "${p.ten_san_pham}" hãng ${p.thuong_hieu}` : p.LoaiTuongTac === 'click' ? `Đã click: ${p.ten_san_pham}` : p.LoaiTuongTac === 'view' ? `Đã xem: ${p.ten_san_pham}` : p.LoaiTuongTac === 'view_30s' ? `Đã xem >30s: ${p.ten_san_pham}` : p.LoaiTuongTac === 'view_50s' ? `Đã xem >50s: ${p.ten_san_pham}` : p.LoaiTuongTac === 'cart' ? `Thêm vào giỏ: ${p.ten_san_pham}` : p.LoaiTuongTac === 'purchase' ? `Đã mua: ${p.ten_san_pham}` : `Tìm kiếm: ${p.ten_san_pham}`,
             sentiment: 'positive',
             ngay_tao: p.ThoiGian,
             ten_danh_muc: p.ten_danh_muc,
@@ -5369,6 +5423,15 @@ router.get('/personalization', authenticateToken, requireAdmin, async (req, res)
                        MAX(ui.ThoiGian) as last_time
                 FROM user_interactions ui
                 WHERE ui.LoaiTuongTac = 'purchase'
+                  AND EXISTS (
+                      -- Safety net: chỉ tính purchase từ đơn hàng đã xác nhận, loại trừ đơn bị hủy
+                      SELECT 1
+                      FROM don_hang dh
+                      JOIN chi_tiet_don_hang ctdh ON dh.ma_don_hang = ctdh.ma_don_hang
+                      WHERE dh.ma_tai_khoan = ui.MaND
+                        AND ctdh.ma_san_pham = ui.MaSP
+                        AND dh.trang_thai_don_hang IN ('hoan_thanh', 'dang_giao', 'da_xac_nhan')
+                  )
                 GROUP BY ui.MaND, ui.MaSP, ui.LoaiTuongTac
             `);
 
@@ -5571,15 +5634,13 @@ router.get('/personalization', authenticateToken, requireAdmin, async (req, res)
                     const recommendedForA = bPids
                         .filter(pid => !aPurchases.has(Number(pid)) && bPurchases.has(Number(pid)))
                         .map(pid => buildInteractedProduct(uidB, pid))
-                        .filter(Boolean)
-                        .slice(0, 6);
+                        .filter(Boolean);
 
                     // SP của A (đã mua) mà B chưa có → gợi ý cho B
                     const recommendedForB = aPids
                         .filter(pid => !bPurchases.has(Number(pid)) && aPurchases.has(Number(pid)))
                         .map(pid => buildInteractedProduct(uidA, pid))
-                        .filter(Boolean)
-                        .slice(0, 6);
+                        .filter(Boolean);
 
                     // SP cả 2 cùng MUA (giao của 2 purchase list)
                     const purA = purchasesByUser[uidA] || [];

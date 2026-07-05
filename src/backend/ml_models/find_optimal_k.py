@@ -23,10 +23,17 @@ def find_optimal_k(min_k=3, max_k=51, step=2):
     
     # Load dữ liệu
     data_loader = DataLoader()
-    interactions_df = data_loader.load_interactions()
+    if not data_loader.connect():
+        print("❌ Không thể kết nối database!")
+        return 5
+        
+    try:
+        interactions_df = data_loader.load_user_interactions()
+    finally:
+        data_loader.close()
     
     if len(interactions_df) < 100:
-        print("⚠️ Dữ liệu quá ít, sử dụng K mặc định = 5")
+        print(f"⚠️ Dữ liệu quá ít ({len(interactions_df)} tương tác), sử dụng K mặc định = 5")
         return 5
     
     # Các giá trị K cần thử
@@ -115,7 +122,14 @@ def quick_estimate_k():
     Ước lượng nhanh K dựa trên quy tắc căng bậc hai
     """
     data_loader = DataLoader()
-    interactions_df = data_loader.load_interactions()
+    if not data_loader.connect():
+        print("❌ Không thể kết nối database!")
+        return 5
+        
+    try:
+        interactions_df = data_loader.load_user_interactions()
+    finally:
+        data_loader.close()
     
     n_samples = len(interactions_df)
     estimated_k = int(np.sqrt(n_samples))

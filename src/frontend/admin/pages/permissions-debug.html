@@ -67,6 +67,10 @@
     <script>
         const API_BASE_URL = 'http://localhost:3000';
 
+        function getToken() {
+            return localStorage.getItem('admin_token') || localStorage.getItem('adminToken');
+        }
+
         function log(elementId, message, isError = false) {
             const element = document.getElementById(elementId);
             const timestamp = new Date().toLocaleTimeString();
@@ -80,7 +84,7 @@
                 
                 const response = await fetch(API_BASE_URL + '/api/admin/employees', {
                     headers: {
-                        'Authorization': 'Bearer ' + localStorage.getItem('adminToken')
+                        'Authorization': 'Bearer ' + getToken()
                     }
                 });
                 
@@ -97,7 +101,7 @@
         }
 
         function checkToken() {
-            const token = localStorage.getItem('adminToken');
+            const token = getToken();
             
             if (!token) {
                 log('token-result', '❌ No admin token found!\n\nPlease login first at:\nhttp://localhost:3001/admin/pages/admin-login.html', true);
@@ -124,7 +128,7 @@
                 
                 const response = await fetch(API_BASE_URL + '/api/admin/employees', {
                     headers: {
-                        'Authorization': 'Bearer ' + localStorage.getItem('adminToken')
+                        'Authorization': 'Bearer ' + getToken()
                     }
                 });
                 
@@ -176,7 +180,7 @@
                 
                 const response = await fetch(API_BASE_URL + '/api/admin/employees/' + id, {
                     headers: {
-                        'Authorization': 'Bearer ' + localStorage.getItem('adminToken')
+                        'Authorization': 'Bearer ' + getToken()
                     }
                 });
                 

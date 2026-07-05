@@ -1100,7 +1100,7 @@
 
 
     <!-- San pham danh cho ban Section -->
-    <section id="personalized-products-section" class="py-8 md:py-12 bg-white">
+    <section id="personalized-products-section" class="py-8 md:py-12 bg-white hidden">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
                 <div>
@@ -2065,9 +2065,38 @@
             const fullStars = Math.floor(ratingValue);
             const starString = '⭐'.repeat(fullStars);
 
+            // Recommended Badge
+            let badgeHtml = '';
+            if (product.recommendation_type) {
+                let badgeText = 'Gợi ý';
+                let badgeColor = 'bg-red-600';
+                if (product.recommendation_type === 'collaborative') {
+                    badgeText = '👥 Hợp sở thích';
+                    badgeColor = 'bg-indigo-600';
+                } else if (product.recommendation_type === 'preference') {
+                    badgeText = '🎯 Theo sở thích';
+                    badgeColor = 'bg-teal-600';
+                } else if (product.recommendation_type === 'chat_based') {
+                    badgeText = '💬 Chatbot gợi ý';
+                    badgeColor = 'bg-blue-600';
+                } else if (product.recommendation_type === 'popular') {
+                    badgeText = '🔥 Bán chạy';
+                    badgeColor = 'bg-amber-600';
+                }
+                const scoreText = product.match_score ? ` (${product.match_score}%)` : '';
+                badgeHtml = `
+                    <div class="absolute top-3 right-3 z-10">
+                        <span class="${badgeColor} text-white text-[10px] sm:text-xs font-bold px-2 py-1 rounded-lg shadow-md flex items-center gap-1">
+                            ${badgeText}${scoreText}
+                        </span>
+                    </div>
+                `;
+            }
+
             return `
                 <div class="bg-white rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 border border-slate-100 relative group flex flex-col h-full transform hover:-translate-y-1 ${outOfStockClass}">
                     ${outOfStockOverlay}
+                    ${badgeHtml}
                     <!-- Freeship Badge -->
                     <div class="absolute top-3 left-3 z-10">
                         <div class="bg-red-600 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg">
@@ -2160,44 +2189,37 @@
         }
 
         async function loadPersonalizedProducts() {
+            const section = document.getElementById('personalized-products-section');
             const container = document.getElementById('personalizedProductsGrid');
-            const kicker = document.getElementById('personalized-products-kicker');
-            if (!container) return;
+            if (!container || !section) return;
 
+            const userId = getCurrentUserId();
 
+            // Chưa đăng nhập thì ẩn toàn bộ section
+            if (!userId) {
+                section.classList.add('hidden');
+                return;
+            }
 
             try {
-                const userId = getCurrentUserId();
+                const response = await fetch(`${API_BASE_URL}/recommendations/user/${userId}?limit=8`);
+                const result = await response.json();
                 let products = [];
 
-                if (userId) {
-                    const response = await fetch(`${API_BASE_URL}/recommendations/user/${userId}?limit=8`);
-                    const result = await response.json();
-                    if (result.success && Array.isArray(result.data)) {
-                        products = result.data;
-                    }
+                if (result.success && Array.isArray(result.data)) {
+                    products = result.data;
                 }
 
-                if (!products.length) {
-                    const response = await fetch(`${API_BASE_URL}/products?limit=8`);
-                    const result = await response.json();
-                    if (result.success && Array.isArray(result.data)) {
-                        products = result.data.slice(0, 8);
-                        if (kicker) kicker.textContent = userId ? 'Sản phẩm nổi bật' : 'Đăng nhập để cá nhân hóa tốt hơn';
-                    }
+                if (products.length) {
+                    container.innerHTML = products.map(renderPersonalizedProductCard).join('');
+                    section.classList.remove('hidden');
+                } else {
+                    // Đã đăng nhập nhưng chưa có dữ liệu gợi ý
+                    section.classList.add('hidden');
                 }
-
-                if (!products.length && typeof featuredProducts !== 'undefined') {
-                    products = featuredProducts.slice(0, 8);
-                    if (kicker) kicker.textContent = 'Sản phẩm nổi bật';
-                }
-
-                container.innerHTML = products.length
-                    ? products.map(renderPersonalizedProductCard).join('')
-                    : '<div class="col-span-full bg-gray-50 rounded-lg border border-gray-200 p-8 text-center text-gray-500">Chưa có sản phẩm phù hợp.</div>';
             } catch (error) {
                 console.error('Error loading personalized products:', error);
-                container.innerHTML = '<div class="col-span-full bg-gray-50 rounded-lg border border-gray-200 p-8 text-center text-gray-500">Không thể tải sản phẩm gợi ý lúc này.</div>';
+                section.classList.add('hidden');
             }
         }
 

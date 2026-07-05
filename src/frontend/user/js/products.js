@@ -556,7 +556,7 @@ async function loadPersonalizedProductsOnProductPage() {
         let products = [];
 
         if (userId) {
-            const response = await fetch(`${API_URL}/recommendations/user/${userId}?limit=6`);
+            const response = await fetch(`${API_URL}/recommendations/user/${userId}?limit=100`);
             const result = await response.json();
             if (result.success && Array.isArray(result.data)) {
                 products = result.data.map(p => ({ ...p, isRecommended: true }));
@@ -793,13 +793,32 @@ function createProductCard(product) {
             </div>
             
             <!-- Recommended Badge -->
-            ${product.isRecommended ? `
-            <div class="absolute top-2 right-2 z-10">
-                <span class="bg-red-600 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg shadow-md flex items-center gap-1">
-                    ✨ Gợi ý cho bạn
-                </span>
-            </div>
-            ` : ''}
+            ${product.isRecommended || product.recommendation_type ? (() => {
+                let badgeText = 'Gợi ý cho bạn';
+                let badgeColor = 'bg-red-600';
+                const type = product.recommendation_type;
+                if (type === 'collaborative') {
+                    badgeText = '👥 Hợp sở thích';
+                    badgeColor = 'bg-indigo-600';
+                } else if (type === 'preference') {
+                    badgeText = '🎯 Theo sở thích';
+                    badgeColor = 'bg-teal-600';
+                } else if (type === 'chat_based') {
+                    badgeText = '💬 Chatbot gợi ý';
+                    badgeColor = 'bg-blue-600';
+                } else if (type === 'popular') {
+                    badgeText = '🔥 Bán chạy';
+                    badgeColor = 'bg-amber-600';
+                }
+                const scoreText = product.match_score ? ` (${product.match_score}%)` : '';
+                return `
+                <div class="absolute top-2 right-2 z-10">
+                    <span class="${badgeColor} text-white text-[10px] sm:text-xs font-bold px-2 py-1 rounded-lg shadow-md flex items-center gap-1">
+                        ${badgeText}${scoreText}
+                    </span>
+                </div>
+                `;
+            })() : ''}
             
             <!-- Product Image -->
             <div class="relative p-4 bg-gray-50 ${isOutOfStock ? 'cursor-not-allowed' : 'cursor-pointer'} overflow-hidden" ${isOutOfStock ? '' : `onclick="viewProduct(${product.ma_san_pham})"`}>

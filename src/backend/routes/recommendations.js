@@ -718,6 +718,7 @@ router.get('/popularity-stats', async (req, res) => {
                 COALESCE(SUM(CASE WHEN ui.LoaiTuongTac = 'view_50s' THEN 1 ELSE 0 END), 0) AS luot_xem_50s,
                 COALESCE(SUM(CASE WHEN ui.LoaiTuongTac = 'search' THEN 1 ELSE 0 END), 0) AS luot_tim,
                 COALESCE(avg_rating.diem_danh_gia, 0.0) AS diem_danh_gia,
+                COALESCE(avg_rating.so_luong_danh_gia, 0) AS so_luong_danh_gia,
                 GROUP_CONCAT(DISTINCT CONCAT(tk.ten_dang_nhap, ':', COALESCE(tk.hinh_anh, '')) ORDER BY ui.ThoiGian DESC) AS recent_interactions
             FROM san_pham sp
             LEFT JOIN danh_muc_san_pham dm ON sp.ma_danh_muc = dm.ma_danh_muc
@@ -725,14 +726,28 @@ router.get('/popularity-stats', async (req, res) => {
             LEFT JOIN user_interactions ui ON sp.ma_san_pham = ui.MaSP
             LEFT JOIN tai_khoan tk ON ui.MaND = tk.ma_tai_khoan
             LEFT JOIN (
-                SELECT ma_san_pham, ROUND(AVG(so_sao), 1) AS diem_danh_gia
+                SELECT ma_san_pham,
+                       ROUND(AVG(so_sao), 2) AS diem_danh_gia,
+                       COUNT(*) AS so_luong_danh_gia
                 FROM danh_gia
                 WHERE trang_thai = 1
                 GROUP BY ma_san_pham
             ) avg_rating ON sp.ma_san_pham = avg_rating.ma_san_pham
             WHERE sp.trang_thai = 'hien_thi'
-            GROUP BY sp.ma_san_pham, sp.ten_san_pham, sp.gia, sp.thuong_hieu, sp.ma_danh_muc, dm.ten_danh_muc, a.duong_dan_anh, avg_rating.diem_danh_gia
+            GROUP BY sp.ma_san_pham, sp.ten_san_pham, sp.gia, sp.thuong_hieu, sp.ma_danh_muc, dm.ten_danh_muc, a.duong_dan_anh, avg_rating.diem_danh_gia, avg_rating.so_luong_danh_gia
         `);
+
+        // ── Bayesian Average cho điểm đánh giá ──────────────────────────────
+        // Công thức: bayesian = (v*R + m*C) / (v + m)
+        //   v = số lượng đánh giá của sản phẩm
+        //   R = điểm trung bình của sản phẩm (1-5 sao)
+        //   m = ngưỡng tối thiểu đánh giá cần thiết (5 reviews)
+        //   C = điểm trung bình toàn hệ thống
+        const m = 5; // ngưỡng tối thiểu
+        const ratedProducts = products.filter(p => Number(p.so_luong_danh_gia) > 0);
+        const C = ratedProducts.length > 0
+            ? ratedProducts.reduce((sum, p) => sum + Number(p.diem_danh_gia), 0) / ratedProducts.length
+            : 3.0; // mặc định 3.0 nếu chưa có đánh giá nào
 
         products.forEach(p => {
             p.luot_mua = Number(p.luot_mua);
@@ -740,9 +755,17 @@ router.get('/popularity-stats', async (req, res) => {
             p.luot_xem_50s = Number(p.luot_xem_50s);
             p.luot_tim = Number(p.luot_tim);
             p.diem_danh_gia = Number(p.diem_danh_gia || 0);
-            
-            // Calculate popularity score
-            p.popularity_score = parseFloat(((p.luot_mua * 40) + (p.luot_click * 20) + (p.luot_xem_50s * 20) + (p.luot_tim * 10) + (p.diem_danh_gia * 6)).toFixed(1));
+            p.so_luong_danh_gia = Number(p.so_luong_danh_gia || 0);
+
+            // Bayesian Average rating (thang 0-5)
+            // Sản phẩm càng nhiều đánh giá thì điểm càng gần điểm thực, ít đánh giá thì kéo về C
+            const v = p.so_luong_danh_gia;
+            const R = p.diem_danh_gia;
+            p.bayesian_rating = parseFloat(((v * R + m * C) / (v + m)).toFixed(2));
+
+            // Calculate popularity score (tổng trọng số = 100)
+            // Mua: x40 | Click: x20 | Xem(>30s): x20 | Tìm kiếm: x10 | Đánh giá (Bayesian): x10
+            p.popularity_score = parseFloat(((p.luot_mua * 40) + (p.luot_click * 20) + (p.luot_xem_50s * 20) + (p.luot_tim * 10) + (p.bayesian_rating * 10)).toFixed(1));
             
             // Parse recent interactions
             p.recent_users = [];

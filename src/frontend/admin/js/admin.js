@@ -327,7 +327,9 @@
 
             const titles = { 
                 dashboard: 'Báo cáo bán hàng',
-                'financial-report': 'Báo cáo tài chính',
+                'revenue-report': 'Báo cáo Doanh thu',
+                'expense-report': 'Báo cáo Chi phí',
+                'profit-report': 'Báo cáo Lợi nhuận',
                 'daily-expenses': 'Chi phí hàng ngày',
                 'expense-types': 'Quản lý loại chi phí',
                 'pos-machines': 'Bán hàng tại quầy',
@@ -363,7 +365,9 @@
             
             const subtitles = {
                 dashboard: 'Tổng quan hoạt động kinh doanh',
-                'financial-report': 'Tổng hợp doanh thu, chi phí và lợi nhuận',
+                'revenue-report': 'Thống kê số tiền thu được từ việc bán hàng theo tháng',
+                'expense-report': 'Thống kê số tiền chi ra để nhập hàng và mua vào theo tháng',
+                'profit-report': 'Lợi nhuận = Doanh thu − Chi phí, theo dõi kết quả kinh doanh',
                 'daily-expenses': 'Ghi nhận và theo dõi chi phí hàng ngày',
                 'expense-types': 'Quản lý danh mục loại chi phí',
                 'pos-machines': 'Hệ thống lập hóa đơn và thanh toán trực tiếp',
@@ -399,7 +403,8 @@
             document.getElementById('header-controls-financial').classList.add('hidden');
             
             // Show appropriate controls
-            if (actualSection === 'financial-report') {
+            const financialSections = ['revenue-report', 'expense-report', 'profit-report', 'financial-report'];
+            if (financialSections.includes(actualSection)) {
                 document.getElementById('header-controls-financial').classList.remove('hidden');
             } else {
                 document.getElementById('header-controls-default').classList.remove('hidden');
@@ -409,8 +414,12 @@
                 initializeDateFilter();
                 loadDashboard();
             }
-            else if (actualSection === 'financial-report') loadFinancialReport();
+            else if (actualSection === 'revenue-report')  { initFinancialMonthYear(); loadRevenueReport(); }
+            else if (actualSection === 'expense-report')  { initFinancialMonthYear(); loadExpenseReport(); }
+            else if (actualSection === 'profit-report')   { initFinancialMonthYear(); loadProfitReport(); }
+            else if (actualSection === 'financial-report'){ initFinancialMonthYear(); loadFinancialReport(); }
             else if (actualSection === 'daily-expenses') loadDailyExpenses();
+
             else if (actualSection === 'expense-types') loadExpenseTypes();
             else if (actualSection === 'pos-machines') loadPOSMachines();
             else if (actualSection === 'order-placement') loadPreOrders();
@@ -1419,7 +1428,7 @@
             const category = document.getElementById('product-category-filter').value;
             const status = document.getElementById('product-status-filter')?.value || '';
             
-            const data = await apiCall(`/admin/products?search=${encodeURIComponent(search)}&category=${encodeURIComponent(category)}&status=${encodeURIComponent(status)}`);
+            const data = await apiCall(`/admin/products?search=${encodeURIComponent(search)}&category=${encodeURIComponent(category)}&status=${encodeURIComponent(status)}&_=${Date.now()}`);
             
             if (data.success) {
                 const products = data.data;
@@ -1458,40 +1467,40 @@
                     };
                     
                     return `
-                    <tr class="border-b hover:bg-blue-50 transition">
-                        <td class="px-4 py-3" style="min-width: 150px; width: 150px;">
-                            <img src="${getImageUrl(p.anh_chinh)}" class="w-32 h-32 object-cover rounded-lg shadow" onerror="this.src=PLACEHOLDER_IMG">
+                    <tr class="border-b hover:bg-blue-50/50 transition">
+                        <td class="px-3 py-2 w-20">
+                            <img src="${getImageUrl(p.anh_chinh)}" class="w-16 h-16 object-cover rounded-lg shadow-sm" onerror="this.src=PLACEHOLDER_IMG">
                         </td>
-                        <td class="px-4 py-3">
-                            <span class="font-mono text-sm text-gray-600">${p.ma_san_pham_code || '-'}</span>
+                        <td class="px-3 py-2">
+                            <div class="font-bold text-slate-800 text-sm">${p.ten_san_pham}</div>
+                            <div class="flex flex-wrap gap-1.5 mt-1 text-[11px]">
+                                <span class="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-mono">Code: ${p.ma_san_pham_code || '-'}</span>
+                                <span class="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-mono">BC: ${p.barcode || '-'}</span>
+                                <span class="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-semibold">${p.trong_luong_kg ? parseFloat(p.trong_luong_kg).toFixed(2) + ' kg' : '0.50 kg'}</span>
+                            </div>
                         </td>
-                        <td class="px-4 py-3 font-semibold text-gray-800">${p.ten_san_pham}</td>
-                        <td class="px-4 py-3">
-                            <span class="font-mono text-sm text-gray-600">${p.barcode || '-'}</span>
-                        </td>
-                        <td class="px-4 py-3 text-center font-semibold text-gray-700">${p.trong_luong_kg ? parseFloat(p.trong_luong_kg).toFixed(2) + ' kg' : '0.50 kg'}</td>
-                        <td class="px-4 py-3 text-right text-blue-600">${formatPrice(p.gia_nhap || 0)}</td>
-                        <td class="px-4 py-3 text-right font-bold text-green-600">${formatPrice(p.gia)}</td>
-                        <td class="px-4 py-3 text-center">
-                            <span class="font-bold ${p.so_luong === 0 ? 'text-red-500' : p.so_luong <= 5 ? 'text-amber-500' : 'text-gray-700'}">
+                        <td class="px-3 py-2 text-right text-blue-600 text-sm font-semibold">${formatPrice(p.gia_nhap || 0)}</td>
+                        <td class="px-3 py-2 text-right font-bold text-green-600 text-sm">${formatPrice(p.gia)}</td>
+                        <td class="px-3 py-2 text-center">
+                            <span class="font-bold text-sm ${p.so_luong === 0 ? 'text-red-500' : p.so_luong <= 5 ? 'text-amber-500' : 'text-slate-700'}">
                                 ${p.so_luong}
                             </span>
                         </td>
-                        <td class="px-4 py-3 text-center">
-                            <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium">
+                        <td class="px-3 py-2 text-center">
+                            <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full text-xs font-semibold">
                                 ${p.so_luong_ban || 0}
                             </span>
                         </td>
-                        <td class="px-4 py-3 text-center">
-                            <span class="text-sm text-gray-600 whitespace-nowrap">📅 ${formatDate(p.ngay_tao)}</span>
+                        <td class="px-3 py-2 text-center">
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap ${p.trang_thai === 'hien_thi' ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'}">
+                                ${p.trang_thai === 'hien_thi' ? '✓ Hiển thị' : '✗ Ẩn'}
+                            </span>
+                            <div class="text-[10px] text-gray-500 mt-1 whitespace-nowrap">📅 ${formatDate(p.ngay_tao)}</div>
                         </td>
-                        <td class="px-4 py-3 text-center">
-                            <span class="px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap ${p.trang_thai === 'hien_thi' ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'}">${p.trang_thai === 'hien_thi' ? '✓ Hiển thị' : '✗ Ẩn'}</span>
-                        </td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center justify-center gap-2">
-                                <button onclick="editProduct(${p.ma_san_pham})" class="text-blue-600 hover:text-blue-800 hover:scale-110 transition-transform" title="Sửa">✏️</button>
-                                <button onclick="deleteProduct(${p.ma_san_pham})" class="text-red-600 hover:text-red-800 hover:scale-110 transition-transform" title="Xóa">🗑️</button>
+                        <td class="px-3 py-2">
+                            <div class="flex items-center justify-center gap-3">
+                                <button onclick="editProduct(${p.ma_san_pham})" class="text-blue-600 hover:text-blue-800 hover:scale-110 transition-transform p-1 text-base" title="Sửa">✏️</button>
+                                <button onclick="deleteProduct(${p.ma_san_pham})" class="text-red-600 hover:text-red-800 hover:scale-110 transition-transform p-1 text-base" title="Xóa">🗑️</button>
                             </div>
                         </td>
                     </tr>
@@ -4433,6 +4442,9 @@
 
         async function loadDailyExpenses() {
             try {
+                // Load expense types cho dropdown trước
+                await populateExpenseTypeDropdowns();
+
                 const response = await fetch(`${API_URL}/admin/daily-expenses`, {
                     headers: { 'Authorization': `Bearer ${adminToken}` }
                 });
@@ -4449,6 +4461,73 @@
                 showExpenseError();
             }
         }
+
+        // Load danh sách loại chi phí từ DB và populate 2 dropdown
+        async function populateExpenseTypeDropdowns() {
+            try {
+                const response = await fetch(`${API_URL}/admin/expense-types`, {
+                    headers: { 'Authorization': `Bearer ${adminToken}` }
+                });
+                const data = await response.json();
+                if (!data.success) return;
+
+                const types = data.data.types || [];
+                // Chỉ lấy loại đang active
+                const activeTypes = types.filter(t => t.trang_thai === 1);
+
+                // Nhóm icon mặc định nếu DB không có
+                const defaultIcon = '📋';
+
+                // --- Dropdown form thêm mới ---
+                const formSelect = document.getElementById('expense-type');
+                if (formSelect) {
+                    formSelect.innerHTML = '<option value="">-- Chọn loại chi phí --</option>' +
+                        activeTypes.map(t =>
+                            `<option value="${t.ma_loai}">${t.icon || defaultIcon} ${t.ten_hien_thi}</option>`
+                        ).join('');
+                }
+
+                // --- Dropdown bộ lọc ---
+                const filterSelect = document.getElementById('filter-expense-type');
+                if (filterSelect) {
+                    filterSelect.innerHTML = '<option value="">Tất cả</option>' +
+                        activeTypes.map(t =>
+                            `<option value="${t.ma_loai}">${t.icon || defaultIcon} ${t.ten_hien_thi}</option>`
+                        ).join('');
+                }
+            } catch (err) {
+                console.error('populateExpenseTypeDropdowns error:', err);
+                // Nếu lỗi, fallback về danh sách tĩnh đúng với DB
+                const fallbackOptions = [
+                    { value: 'tien_dien',       label: '⚡ Tiền điện' },
+                    { value: 'tien_nuoc',        label: '💧 Tiền nước' },
+                    { value: 'thue_mat_bang',    label: '🏢 Thuê mặt bằng' },
+                    { value: 'luong_nhan_vien',  label: '👨‍💼 Lương nhân viên' },
+                    { value: 'van_chuyen',       label: '🚚 Vận chuyển' },
+                    { value: 'bao_tri',          label: '🔧 Bảo trì' },
+                    { value: 'van_phong_pham',   label: '📎 Văn phòng phẩm' },
+                    { value: 'phat_sinh_khac',   label: '💰 Chi phí phát sinh khác' },
+                    { value: 'quang_cao_online', label: '📢 Quảng cáo online' },
+                    { value: 'quang_cao_offline',label: '📰 Quảng cáo offline' },
+                    { value: 'khuyen_mai',       label: '🎁 Khuyến mãi' },
+                    { value: 'dien_thoai_internet', label: '📞 Điện thoại & Internet' },
+                    { value: 'bao_hiem',         label: '🛡️ Bảo hiểm' },
+                    { value: 'thue_phi',         label: '💳 Thuế & Phí' },
+                    { value: 'dao_tao',          label: '📚 Đào tạo' },
+                ];
+                const formSelect = document.getElementById('expense-type');
+                if (formSelect) {
+                    formSelect.innerHTML = '<option value="">-- Chọn loại chi phí --</option>' +
+                        fallbackOptions.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
+                }
+                const filterSelect = document.getElementById('filter-expense-type');
+                if (filterSelect) {
+                    filterSelect.innerHTML = '<option value="">Tất cả</option>' +
+                        fallbackOptions.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
+                }
+            }
+        }
+
 
         function updateExpenseStats(stats) {
             document.getElementById('expense-today').textContent = formatPrice(stats.today || 0);
@@ -7367,9 +7446,41 @@
 
         // ==================== FINANCIAL REPORT FUNCTIONS ====================
         
+        // Khởi tạo dropdown tháng/năm về tháng hiện tại
+        function initFinancialMonthYear() {
+            const now = new Date();
+            const currentMonth = String(now.getMonth() + 1); // 1-12
+            const currentYear  = String(now.getFullYear());
+
+            const monthEl = document.getElementById('financial-month');
+            const yearEl  = document.getElementById('financial-year');
+            if (monthEl) monthEl.value = currentMonth;
+            if (yearEl)  yearEl.value  = currentYear;
+        }
+
+        // Dispatcher: gọi đúng hàm load tùy section đang active
+        function reloadActiveFinancialSection() {
+            const sections = ['revenue-report', 'expense-report', 'profit-report', 'financial-report'];
+            for (const s of sections) {
+                const el = document.getElementById('section-' + s);
+                if (el && el.classList.contains('active')) {
+                    if      (s === 'revenue-report')  loadRevenueReport();
+                    else if (s === 'expense-report')  loadExpenseReport();
+                    else if (s === 'profit-report')   loadProfitReport();
+                    else                              loadFinancialReport();
+                    return;
+                }
+            }
+            // Fallback nếu không tìm được section active
+            loadFinancialReport();
+        }
+
         let financialCharts = {
             trend: null,
-            expense: null
+            expense: null,
+            revenueReport: null,
+            expenseReport: null,
+            profitReport: null
         };
         let currentTransactions = [];
 
@@ -7457,6 +7568,368 @@
                     tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-red-500">Lỗi khi tải dữ liệu</td></tr>';
                 }
             }
+        }
+
+        // ============================================================
+        // HELPER: fetch & build dailyData for any financial section
+        // ============================================================
+        async function fetchFinancialDailyData() {
+            const monthEl = document.getElementById('financial-month');
+            const yearEl  = document.getElementById('financial-year');
+            if (!monthEl || !yearEl) return null;
+
+            const month = monthEl.value;
+            const year  = yearEl.value;
+            const startDate = `${year}-${month.padStart(2,'0')}-01`;
+            const lastDay   = new Date(year, month, 0).getDate();
+            const endDate   = `${year}-${month.padStart(2,'0')}-${String(lastDay).padStart(2,'0')}`;
+
+            const params = new URLSearchParams({ period: 'custom', startDate, endDate });
+            const response = await fetch(`${API_URL}/admin/financial-report?${params}`, {
+                headers: { 'Authorization': `Bearer ${adminToken}` }
+            });
+            const data = await response.json();
+            if (!data.success) return null;
+
+            const transactions = data.data.transactions || [];
+            const dailyData = {};
+            for (let d = 1; d <= lastDay; d++) {
+                const dayKey = `${year}-${month.padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                dailyData[dayKey] = { date: dayKey, dateFormatted: `${d}/${month}/${year}`, revenue: 0, expense: 0, profit: 0, revCount: 0, expCount: 0 };
+            }
+            transactions.forEach(t => {
+                const tDate   = new Date(t.date);
+                const offset  = tDate.getTimezoneOffset() * 60000;
+                const tDateKey = new Date(tDate.getTime() - offset).toISOString().split('T')[0];
+                if (dailyData[tDateKey]) {
+                    if (t.type === 'revenue') {
+                        dailyData[tDateKey].revenue += parseFloat(t.amount || 0);
+                        dailyData[tDateKey].revCount++;
+                    } else {
+                        dailyData[tDateKey].expense += parseFloat(t.amount || 0);
+                        dailyData[tDateKey].expCount++;
+                    }
+                    dailyData[tDateKey].profit = dailyData[tDateKey].revenue - dailyData[tDateKey].expense;
+                }
+            });
+            return dailyData;
+        }
+
+        // ============================================================
+        // BÁO CÁO DOANH THU
+        // ============================================================
+        async function loadRevenueReport() {
+            try {
+                const dailyData = await fetchFinancialDailyData();
+                if (!dailyData) return;
+
+                const days = Object.values(dailyData);
+                const totalRevenue   = days.reduce((s, d) => s + d.revenue, 0);
+                const activeDays     = days.filter(d => d.revenue > 0);
+                const avgDay         = activeDays.length > 0 ? totalRevenue / activeDays.length : 0;
+
+                // Update cards
+                const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+                setEl('rev-total-month', formatPrice(totalRevenue));
+                setEl('rev-avg-day',    formatPrice(avgDay));
+                setEl('rev-active-days', activeDays.length + ' ngày');
+
+                // Chart
+                if (financialCharts.revenueReport) financialCharts.revenueReport.destroy();
+                const ctx = document.getElementById('revenue-trend-chart');
+                if (ctx) {
+                    const sorted = Object.keys(dailyData).sort();
+                    const labels  = sorted.map(k => String(parseInt(k.split('-')[2])).padStart(2,'0'));
+                    const revData = sorted.map(k => dailyData[k].revenue);
+                    financialCharts.revenueReport = new Chart(ctx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels,
+                            datasets: [{
+                                label: 'Doanh thu',
+                                data: revData,
+                                backgroundColor: revData.map(v => v > 0 ? 'rgba(59,130,246,0.75)' : 'rgba(59,130,246,0.15)'),
+                                borderColor: '#3b82f6',
+                                borderWidth: 1.5,
+                                borderRadius: 6,
+                                hoverBackgroundColor: '#2563eb'
+                            }]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: '#1e293b',
+                                    callbacks: { label: ctx => ' ' + formatPrice(ctx.parsed.y) }
+                                }
+                            },
+                            scales: {
+                                x: { grid: { display: false } },
+                                y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { callback: v => formatPrice(v) } }
+                            }
+                        }
+                    });
+                }
+
+                // Table
+                const tbody = document.getElementById('revenue-table');
+                if (tbody) {
+                    const sorted = activeDays.sort((a,b) => b.date.localeCompare(a.date));
+                    if (sorted.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500"><div class="text-4xl mb-2">📊</div>Không có doanh thu trong tháng này</td></tr>`;
+                    } else {
+                        tbody.innerHTML = sorted.map(day => {
+                            const ratio = avgDay > 0 ? day.revenue / avgDay : 0;
+                            const pct   = (ratio * 100).toFixed(0);
+                            const barColor = ratio >= 1 ? 'bg-blue-500' : 'bg-blue-300';
+                            const badge    = ratio >= 1
+                                ? `<span class="text-blue-700 font-bold">↑ ${pct}%</span>`
+                                : `<span class="text-slate-500">${pct}%</span>`;
+                            return `
+                            <tr class="border-b hover:bg-blue-50 cursor-pointer transition-all" onclick="viewDailyDetail('${day.date}')">
+                                <td class="px-6 py-4 font-semibold text-slate-700">${day.dateFormatted}</td>
+                                <td class="px-6 py-4 font-extrabold text-blue-600">${formatPrice(day.revenue)}</td>
+                                <td class="px-6 py-4 text-slate-600">${day.revCount} giao dịch</td>
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex items-center gap-2 justify-center">
+                                        <div class="w-20 h-2 bg-slate-100 rounded-full overflow-hidden">
+                                            <div class="${barColor} h-2 rounded-full" style="width:${Math.min(ratio*100,100)}%"></div>
+                                        </div>
+                                        ${badge}
+                                    </div>
+                                </td>
+                            </tr>`;
+                        }).join('');
+                    }
+                }
+            } catch(e) {
+                console.error('loadRevenueReport error:', e);
+            }
+        }
+
+        function exportRevenueReport() {
+            if (typeof exportFinancialReport === 'function') exportFinancialReport('excel');
+            else alert('Chức năng xuất Excel đang được phát triển.');
+        }
+
+        // ============================================================
+        // BÁO CÁO CHI PHÍ
+        // ============================================================
+        async function loadExpenseReport() {
+            try {
+                const dailyData = await fetchFinancialDailyData();
+                if (!dailyData) return;
+
+                const days = Object.values(dailyData);
+                const totalExpense = days.reduce((s, d) => s + d.expense, 0);
+                const activeDays   = days.filter(d => d.expense > 0);
+                const avgDay       = activeDays.length > 0 ? totalExpense / activeDays.length : 0;
+
+                const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+                setEl('exp-total-month', formatPrice(totalExpense));
+                setEl('exp-avg-day',     formatPrice(avgDay));
+                setEl('exp-active-days', activeDays.length + ' ngày');
+
+                // Chart
+                if (financialCharts.expenseReport) financialCharts.expenseReport.destroy();
+                const ctx = document.getElementById('expense-trend-report-chart');
+                if (ctx) {
+                    const sorted  = Object.keys(dailyData).sort();
+                    const labels  = sorted.map(k => String(parseInt(k.split('-')[2])).padStart(2,'0'));
+                    const expData = sorted.map(k => dailyData[k].expense);
+                    financialCharts.expenseReport = new Chart(ctx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels,
+                            datasets: [{
+                                label: 'Chi phí',
+                                data: expData,
+                                backgroundColor: expData.map(v => v > 0 ? 'rgba(239,68,68,0.75)' : 'rgba(239,68,68,0.12)'),
+                                borderColor: '#ef4444',
+                                borderWidth: 1.5,
+                                borderRadius: 6,
+                                hoverBackgroundColor: '#dc2626'
+                            }]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: '#1e293b',
+                                    callbacks: { label: ctx => ' ' + formatPrice(ctx.parsed.y) }
+                                }
+                            },
+                            scales: {
+                                x: { grid: { display: false } },
+                                y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { callback: v => formatPrice(v) } }
+                            }
+                        }
+                    });
+                }
+
+                // Table
+                const tbody = document.getElementById('expense-report-table');
+                if (tbody) {
+                    const sorted = activeDays.sort((a,b) => b.date.localeCompare(a.date));
+                    if (sorted.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-gray-500"><div class="text-4xl mb-2">💸</div>Không có chi phí trong tháng này</td></tr>`;
+                    } else {
+                        tbody.innerHTML = sorted.map(day => {
+                            const ratio    = avgDay > 0 ? day.expense / avgDay : 0;
+                            const pct      = (ratio * 100).toFixed(0);
+                            const barColor = ratio >= 1 ? 'bg-red-500' : 'bg-red-300';
+                            const badge    = ratio >= 1
+                                ? `<span class="text-red-600 font-bold">↑ ${pct}%</span>`
+                                : `<span class="text-slate-500">${pct}%</span>`;
+                            return `
+                            <tr class="border-b hover:bg-red-50 cursor-pointer transition-all" onclick="viewDailyDetail('${day.date}')">
+                                <td class="px-6 py-4 font-semibold text-slate-700">${day.dateFormatted}</td>
+                                <td class="px-6 py-4 font-extrabold text-red-600">${formatPrice(day.expense)}</td>
+                                <td class="px-6 py-4 text-slate-600">${day.expCount} giao dịch</td>
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex items-center gap-2 justify-center">
+                                        <div class="w-20 h-2 bg-slate-100 rounded-full overflow-hidden">
+                                            <div class="${barColor} h-2 rounded-full" style="width:${Math.min(ratio*100,100)}%"></div>
+                                        </div>
+                                        ${badge}
+                                    </div>
+                                </td>
+                            </tr>`;
+                        }).join('');
+                    }
+                }
+            } catch(e) {
+                console.error('loadExpenseReport error:', e);
+            }
+        }
+
+        function exportExpenseReport() {
+            if (typeof exportFinancialReport === 'function') exportFinancialReport('excel');
+            else alert('Chức năng xuất Excel đang được phát triển.');
+        }
+
+        // ============================================================
+        // BÁO CÁO LỢI NHUẬN
+        // ============================================================
+        async function loadProfitReport() {
+            try {
+                const dailyData = await fetchFinancialDailyData();
+                if (!dailyData) return;
+
+                const days         = Object.values(dailyData);
+                const totalRevenue = days.reduce((s, d) => s + d.revenue, 0);
+                const totalExpense = days.reduce((s, d) => s + d.expense, 0);
+                const totalProfit  = totalRevenue - totalExpense;
+
+                const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+                setEl('prf-total-month',  formatPrice(totalProfit));
+                setEl('prf-revenue-ref',  formatPrice(totalRevenue));
+                setEl('prf-expense-ref',  formatPrice(totalExpense));
+                setEl('prf-formula-rev',  formatPrice(totalRevenue));
+                setEl('prf-formula-exp',  formatPrice(totalExpense));
+                setEl('prf-formula-prf',  formatPrice(totalProfit));
+
+                // Profit card color & badge
+                const mainCard = document.getElementById('profit-main-card');
+                const badge    = document.getElementById('prf-status-badge');
+                const prfEl    = document.getElementById('prf-formula-prf');
+                if (totalProfit >= 0) {
+                    if (mainCard) mainCard.className = 'bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl shadow-xl p-6 relative overflow-hidden text-white';
+                    if (badge)    badge.textContent = '✔ Đang có lời';
+                    if (prfEl)    prfEl.className   = 'text-2xl font-extrabold text-emerald-400';
+                } else {
+                    if (mainCard) mainCard.className = 'bg-gradient-to-br from-red-500 to-red-600 rounded-2xl shadow-xl p-6 relative overflow-hidden text-white';
+                    if (badge)    badge.textContent = '✘ Đang bị lỗ';
+                    if (prfEl)    prfEl.className   = 'text-2xl font-extrabold text-red-400';
+                }
+
+                // Chart – line chart showing profit per day
+                if (financialCharts.profitReport) financialCharts.profitReport.destroy();
+                const ctx = document.getElementById('profit-trend-chart');
+                if (ctx) {
+                    const sorted     = Object.keys(dailyData).sort();
+                    const labels     = sorted.map(k => String(parseInt(k.split('-')[2])).padStart(2,'0'));
+                    const profitData = sorted.map(k => dailyData[k].profit);
+                    financialCharts.profitReport = new Chart(ctx.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels,
+                            datasets: [{
+                                label: 'Lợi nhuận',
+                                data: profitData,
+                                borderColor: '#10b981',
+                                backgroundColor: ctx2 => {
+                                    const g = ctx2.chart.ctx.createLinearGradient(0, 0, 0, 300);
+                                    g.addColorStop(0, 'rgba(16,185,129,0.25)');
+                                    g.addColorStop(1, 'rgba(16,185,129,0.01)');
+                                    return g;
+                                },
+                                borderWidth: 3,
+                                pointRadius: 4,
+                                pointBackgroundColor: profitData.map(v => v >= 0 ? '#10b981' : '#ef4444'),
+                                pointBorderColor: '#fff',
+                                pointBorderWidth: 2,
+                                tension: 0.35,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true, maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: '#1e293b',
+                                    callbacks: {
+                                        label: c => ' Lợi nhuận: ' + formatPrice(c.parsed.y),
+                                        labelTextColor: c => c.parsed.y >= 0 ? '#34d399' : '#f87171'
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: { grid: { display: false } },
+                                y: {
+                                    grid: { color: '#f1f5f9' },
+                                    ticks: { callback: v => formatPrice(v) }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // Table
+                const tbody = document.getElementById('profit-table');
+                if (tbody) {
+                    const activeDays = days.filter(d => d.revenue > 0 || d.expense > 0)
+                                          .sort((a,b) => b.date.localeCompare(a.date));
+                    if (activeDays.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500"><div class="text-4xl mb-2">💰</div>Không có dữ liệu trong tháng này</td></tr>`;
+                    } else {
+                        tbody.innerHTML = activeDays.map(day => {
+                            const profitCls = day.profit >= 0 ? 'text-emerald-600 font-extrabold' : 'text-red-600 font-extrabold';
+                            const badge     = day.profit >= 0
+                                ? `<span class="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full text-xs font-black">LỜI</span>`
+                                : `<span class="bg-red-50 text-red-700 px-3 py-1 rounded-full text-xs font-black">LỖ</span>`;
+                            return `
+                            <tr class="border-b hover:bg-emerald-50 cursor-pointer transition-all hover:scale-[1.003]" onclick="viewDailyDetail('${day.date}')">
+                                <td class="px-6 py-4 font-semibold text-slate-700">${day.dateFormatted}</td>
+                                <td class="px-6 py-4 font-bold text-blue-600">${formatPrice(day.revenue)}</td>
+                                <td class="px-6 py-4 font-bold text-red-500">${formatPrice(day.expense)}</td>
+                                <td class="px-6 py-4 ${profitCls}">${formatPrice(day.profit)}</td>
+                                <td class="px-6 py-4 text-center">${badge}</td>
+                            </tr>`;
+                        }).join('');
+                    }
+                }
+            } catch(e) {
+                console.error('loadProfitReport error:', e);
+            }
+        }
+
+        function exportProfitReport() {
+            if (typeof exportFinancialReport === 'function') exportFinancialReport('excel');
+            else alert('Chức năng xuất Excel đang được phát triển.');
         }
 
         function updateFinancialSummary(summary) {
@@ -9697,8 +10170,13 @@ function renderPersonalization() {
         const customerName = p.ten_dang_nhap || 'Khách';
         const customerId = p.ma_tai_khoan;
 
-        // --- 2. Liên hệ: Phone number fallback to email ---
-        const contactInfo = p.so_dien_thoai || p.email || '-';
+        // --- 2. Liên hệ: Show both phone and email
+        let contactInfo = '';
+        if (p.so_dien_thoai && p.email) {
+            contactInfo = `<div>${p.so_dien_thoai}</div><div class="text-[11px] text-gray-500">${p.email}</div>`;
+        } else {
+            contactInfo = p.so_dien_thoai || p.email || '-';
+        }
 
         // --- 3. Nhu cầu khai báo (Summary view with detail button) ---
         const hasSurvey = p.da_hoan_thanh_khao_sat;
@@ -9734,7 +10212,7 @@ function renderPersonalization() {
         declaredHtml += '</div>';
 
         // --- 4. Sở thích từ click (Implicit) ---
-        const implicitActs = p.activities.filter(a => ['view', 'cart', 'search'].includes(a.loai));
+        const implicitActs = p.activities.filter(a => ['click', 'view', 'view_30s', 'view_50s', 'cart', 'search'].includes(a.loai));
         let implicitHtml = '<span class="italic text-gray-400">Chưa click nào</span>';
         if (implicitActs.length > 0) {
             const categoryCounts = {};
@@ -9758,6 +10236,7 @@ function renderPersonalization() {
                 implicitHtml += '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 whitespace-nowrap">' + emoji + ' ' + cat + ' (' + count + ' click)</span>';
             });
             implicitHtml += '</div>';
+            implicitHtml += '<button onclick="openPersonalizationActivityDetail(' + p.ma_tai_khoan + ')" class="mt-2 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-semibold rounded-md transition-colors">📄 Xem toàn bộ</button>';
         }
 
         // --- 5. Sản phẩm quan tâm nhất ---
@@ -9773,7 +10252,7 @@ function renderPersonalization() {
             if (sortedProds.length > 0) {
                 const [bestProdName, count] = sortedProds[0];
                 const truncatedName = bestProdName.length > 30 ? bestProdName.substring(0, 30) + '...' : bestProdName;
-                topProductHtml = '<div class="font-semibold text-gray-800 text-xs" title="' + bestProdName + '">' + truncatedName + '</div><div class="text-xs text-orange-500 mt-1">🔥 Xem ' + count + ' lần</div>';
+                topProductHtml = '<div class="font-semibold text-gray-800 text-xs" title="' + bestProdName + '">' + truncatedName + '</div><div class="text-xs text-orange-500 mt-1">🔥 Xem ' + count + ' lần</div><button onclick="openPersonalizationActivityDetail(' + p.ma_tai_khoan + ')" class="mt-2 px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold rounded-md transition-colors">📄 Xem toàn bộ</button>';
             }
         }
 
@@ -9822,7 +10301,7 @@ function renderPersonalization() {
                 
                 reviewsHtml += '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold ' + colorClass + '">' + item.aspect + ' (' + item.avg + ')</span>';
             });
-            reviewsHtml += '</div>';
+            reviewsHtml += '</div><button onclick="openPersonalizationActivityDetail(' + p.ma_tai_khoan + ')" class="mt-2 px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold rounded-md transition-colors">📄 Xem toàn bộ</button>';
         }
 
         // --- 7. AI học từ Chatbot ---
@@ -9856,12 +10335,12 @@ function renderPersonalization() {
                 sortedKeywords.slice(0, 2).forEach(([key, val]) => {
                     chatbotHtml += '<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold text-purple-600 bg-purple-50 border border-purple-100">💬 ' + key + ' (+' + val.toFixed(1) + ')</span>';
                 });
-                chatbotHtml += '<button onclick="inspectUserProfile(' + customerId + ')" class="mt-1 text-xs text-blue-600 hover:text-blue-800 font-bold flex items-center gap-1">🔍 Xem chi tiết (' + chatActs.length + ')</button>';
+                chatbotHtml += '<button onclick="openPersonalizationActivityDetail(' + customerId + ')" class="mt-1 text-xs text-purple-700 hover:text-purple-900 font-bold flex items-center gap-1">📄 Xem toàn bộ (' + chatActs.length + ')</button>';
                 chatbotHtml += '</div>';
             } else {
                 chatbotHtml = '<div class="flex flex-col items-center gap-1">' +
                     '<span class="italic text-gray-400 text-xs">Không tìm thấy từ khóa</span>' +
-                    '<button onclick="inspectUserProfile(' + customerId + ')" class="text-xs text-blue-600 hover:text-blue-800 font-bold">🔍 Xem chi tiết (' + chatActs.length + ')</button>' +
+                    '<button onclick="openPersonalizationActivityDetail(' + customerId + ')" class="text-xs text-purple-700 hover:text-purple-900 font-bold">📄 Xem toàn bộ (' + chatActs.length + ')</button>' +
                 '</div>';
             }
         }
@@ -9890,6 +10369,194 @@ function inspectUserProfile(userId) {
     
     // Toggle view to logs
     togglePersonalizationView('logs');
+}
+
+function openPersonalizationActivityDetail(userId) {
+    if (!persRawData) return;
+    const profile = persRawData.userProfiles.find(p => p.ma_tai_khoan === userId);
+    if (!profile) {
+        alert('Không tìm thấy dữ liệu người dùng');
+        return;
+    }
+
+    const escapeHtml = (s) => String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    const formatDate = (value) => {
+        try {
+            return new Intl.DateTimeFormat('vi-VN', {
+                dateStyle: 'short',
+                timeStyle: 'short'
+            }).format(new Date(value));
+        } catch (e) {
+            return value || '-';
+        }
+    };
+
+    const implicitActs = (profile.activities || []).filter(a => ['click', 'view', 'view_30s', 'view_50s', 'cart', 'search'].includes(a.loai));
+    const topProductMap = {};
+    const topProductActs = (profile.activities || []).filter(a => ['view', 'view_30s', 'view_50s', 'cart'].includes(a.loai));
+    topProductActs.forEach(a => {
+        const name = (a.noi_dung || '').replace('Đã xem: ', '').replace('Đã xem >30s: ', '').replace('Đã xem >50s: ', '').replace('Thêm vào giỏ: ', '').replace(/"/g, '');
+        if (!name) return;
+        if (!topProductMap[name]) {
+            topProductMap[name] = { name, count: 0, lastType: a.loai, lastDate: a.ngay_tao, category: a.ten_danh_muc || 'Khác', brand: a.thuong_hieu || '-' };
+        }
+        topProductMap[name].count += 1;
+        if (new Date(a.ngay_tao) > new Date(topProductMap[name].lastDate)) {
+            topProductMap[name].lastType = a.loai;
+            topProductMap[name].lastDate = a.ngay_tao;
+        }
+    });
+    const topProducts = Object.values(topProductMap).sort((a, b) => b.count - a.count || new Date(b.lastDate) - new Date(a.lastDate));
+
+    const reviewActs = (profile.activities || []).filter(a => a.loai === 'review');
+    const chatActs = (profile.activities || []).filter(a => a.loai === 'chatbot');
+
+    const implicitHtml = implicitActs.length
+        ? implicitActs.map(a => `
+            <li class="p-3 rounded-lg border border-emerald-100 bg-emerald-50/60">
+                <div class="flex flex-wrap items-center gap-2 mb-1">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-600 text-white">${escapeHtml(a.loai)}</span>
+                    <span class="text-xs text-slate-500">${formatDate(a.ngay_tao)}</span>
+                </div>
+                <div class="text-sm text-slate-800 font-medium">${escapeHtml(a.noi_dung)}</div>
+                <div class="text-xs text-slate-500 mt-1">${escapeHtml(a.ten_danh_muc || '')}${a.thuong_hieu ? ' • ' + escapeHtml(a.thuong_hieu) : ''}</div>
+            </li>`).join('')
+        : '<li class="text-sm text-slate-400 italic">Chưa có dữ liệu click/xem/giỏ/tìm kiếm</li>';
+
+    const productsHtml = topProducts.length
+        ? topProducts.map(item => `
+            <li class="p-3 rounded-lg border border-orange-100 bg-orange-50/60">
+                <div class="flex items-center justify-between gap-3 mb-1">
+                    <div class="font-semibold text-slate-900 text-sm">${escapeHtml(item.name)}</div>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-orange-600 text-white">${item.count} lần</span>
+                </div>
+                <div class="text-xs text-slate-500">${escapeHtml(item.category)} • ${escapeHtml(item.brand)} • ${formatDate(item.lastDate)}</div>
+            </li>`).join('')
+        : '<li class="text-sm text-slate-400 italic">Chưa có dữ liệu xem/giỏ hàng</li>';
+
+    const reviewsHtml = reviewActs.length
+        ? reviewActs.map(r => `
+            <li class="p-3 rounded-lg border border-blue-100 bg-blue-50/60">
+                <div class="flex flex-wrap items-center gap-2 mb-1">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold ${r.sentiment === 'positive' ? 'bg-green-600 text-white' : r.sentiment === 'negative' ? 'bg-rose-600 text-white' : 'bg-slate-600 text-white'}">${escapeHtml(r.sentiment || 'neutral')}</span>
+                    <span class="text-xs text-slate-500">${formatDate(r.ngay_tao)}</span>
+                </div>
+                <div class="text-sm font-semibold text-slate-900">${escapeHtml(r.noi_dung)}</div>
+                <div class="text-xs text-slate-500 mt-1">${escapeHtml(r.binh_luan || '')}</div>
+            </li>`).join('')
+        : '<li class="text-sm text-slate-400 italic">Chưa có dữ liệu đánh giá</li>';
+
+    const chatHtml = chatActs.length
+        ? chatActs.map(c => `
+            <li class="p-3 rounded-lg border border-purple-100 bg-purple-50/60">
+                <div class="flex flex-wrap items-center gap-2 mb-1">
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-purple-600 text-white">chatbot</span>
+                    <span class="text-xs text-slate-500">${formatDate(c.ngay_tao)}</span>
+                </div>
+                <div class="text-sm text-slate-800 font-medium">${escapeHtml(c.noi_dung)}</div>
+            </li>`).join('')
+        : '<li class="text-sm text-slate-400 italic">Chưa có dữ liệu chatbot</li>';
+
+    const modalHtml = `
+        <div id="personalizationActivityModal" class="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm" onclick="closePersonalizationActivityDetail()">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[92vh] overflow-hidden m-4" onclick="event.stopPropagation()">
+                <div class="sticky top-0 bg-gradient-to-r from-indigo-700 to-slate-800 text-white px-6 py-5 flex items-center justify-between border-b-4 border-amber-500">
+                    <div>
+                        <h3 class="text-xl font-black tracking-tight flex items-center gap-2">
+                            <span class="text-2xl">📚</span>
+                            Danh sách dữ liệu sở thích đầy đủ
+                        </h3>
+                        <p class="text-sm text-slate-300 mt-1 font-medium">${escapeHtml(profile.ten_dang_nhap || 'Khách')} <span class="text-slate-400">(ID: ${profile.ma_tai_khoan})</span></p>
+                    </div>
+                    <button onclick="closePersonalizationActivityDetail()" class="text-white hover:bg-white/10 rounded-xl p-2 transition-all active:scale-95">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="p-6 overflow-y-auto max-h-[calc(92vh-88px)] bg-gradient-to-b from-slate-50 to-white space-y-5">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div class="rounded-xl border border-emerald-100 bg-emerald-50 p-4">
+                            <div class="text-xs uppercase font-bold text-emerald-700">Implicit</div>
+                            <div class="text-2xl font-black text-emerald-900 mt-1">${implicitActs.length}</div>
+                            <div class="text-xs text-emerald-700">Click / xem / giỏ / tìm kiếm</div>
+                        </div>
+                        <div class="rounded-xl border border-orange-100 bg-orange-50 p-4">
+                            <div class="text-xs uppercase font-bold text-orange-700">Quan tâm nhất</div>
+                            <div class="text-2xl font-black text-orange-900 mt-1">${topProducts.length}</div>
+                            <div class="text-xs text-orange-700">Sản phẩm có tương tác nhiều</div>
+                        </div>
+                        <div class="rounded-xl border border-blue-100 bg-blue-50 p-4">
+                            <div class="text-xs uppercase font-bold text-blue-700">Đánh giá</div>
+                            <div class="text-2xl font-black text-blue-900 mt-1">${reviewActs.length}</div>
+                            <div class="text-xs text-blue-700">AI học từ review</div>
+                        </div>
+                        <div class="rounded-xl border border-purple-100 bg-purple-50 p-4">
+                            <div class="text-xs uppercase font-bold text-purple-700">Chatbot</div>
+                            <div class="text-2xl font-black text-purple-900 mt-1">${chatActs.length}</div>
+                            <div class="text-xs text-purple-700">AI học từ hội thoại</div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
+                        <section class="bg-white border border-emerald-100 rounded-2xl p-5 shadow-sm">
+                            <div class="flex items-center justify-between gap-3 mb-4">
+                                <div>
+                                    <h4 class="font-black text-slate-900 text-lg">Sở thích từ click (Implicit)</h4>
+                                    <p class="text-xs text-slate-500">Tất cả hành vi click / xem / giỏ / tìm kiếm</p>
+                                </div>
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">${implicitActs.length} mục</span>
+                            </div>
+                            <ul class="space-y-2 max-h-[320px] overflow-y-auto pr-1">${implicitHtml}</ul>
+                        </section>
+
+                        <section class="bg-white border border-orange-100 rounded-2xl p-5 shadow-sm">
+                            <div class="flex items-center justify-between gap-3 mb-4">
+                                <div>
+                                    <h4 class="font-black text-slate-900 text-lg">Sản phẩm quan tâm nhất</h4>
+                                    <p class="text-xs text-slate-500">Danh sách sản phẩm được xem / thêm giỏ nhiều nhất</p>
+                                </div>
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-700">${topProducts.length} SP</span>
+                            </div>
+                            <ul class="space-y-2 max-h-[320px] overflow-y-auto pr-1">${productsHtml}</ul>
+                        </section>
+
+                        <section class="bg-white border border-blue-100 rounded-2xl p-5 shadow-sm">
+                            <div class="flex items-center justify-between gap-3 mb-4">
+                                <div>
+                                    <h4 class="font-black text-slate-900 text-lg">AI học từ đánh giá</h4>
+                                    <p class="text-xs text-slate-500">Tất cả review và nội dung bình luận</p>
+                                </div>
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700">${reviewActs.length} review</span>
+                            </div>
+                            <ul class="space-y-2 max-h-[320px] overflow-y-auto pr-1">${reviewsHtml}</ul>
+                        </section>
+
+                        <section class="bg-white border border-purple-100 rounded-2xl p-5 shadow-sm">
+                            <div class="flex items-center justify-between gap-3 mb-4">
+                                <div>
+                                    <h4 class="font-black text-slate-900 text-lg">AI học từ Chatbot</h4>
+                                    <p class="text-xs text-slate-500">Tất cả câu hỏi và nội dung chatbot đã trả lời</p>
+                                </div>
+                                <span class="px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-700">${chatActs.length} chat</span>
+                            </div>
+                            <ul class="space-y-2 max-h-[320px] overflow-y-auto pr-1">${chatHtml}</ul>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+    document.getElementById('personalizationActivityModal')?.remove();
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+function closePersonalizationActivityDetail() {
+    const modal = document.getElementById('personalizationActivityModal');
+    if (modal) modal.remove();
 }
 
 // ==========================================

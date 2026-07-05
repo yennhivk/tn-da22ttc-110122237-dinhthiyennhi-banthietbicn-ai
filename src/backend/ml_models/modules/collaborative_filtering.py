@@ -4,11 +4,19 @@ from sklearn.neighbors import NearestNeighbors
 from scipy.sparse import csr_matrix
 import joblib
 import os
+import sys
+
+# Import cấu hình KNN từ config.py (nằm ở thư mục cha)
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+try:
+    from config import KNN_NEIGHBORS
+except ImportError:
+    KNN_NEIGHBORS = 10  # Giá trị dự phòng nếu không import được config
 
 class CollaborativeFiltering:
     """Lọc cộng tác sử dụng KNN"""
     
-    def __init__(self, n_neighbors=10):
+    def __init__(self, n_neighbors=KNN_NEIGHBORS):
         self.n_neighbors = n_neighbors
         self.model = None
         self.user_item_matrix = None
@@ -90,8 +98,15 @@ class CollaborativeFiltering:
         
         # Train KNN model - Đảm bảo n_neighbors không vượt quá số user hiện có
         n_users = self.user_item_matrix.shape[0]
+        n_items = self.user_item_matrix.shape[1]
         self.current_n_neighbors = min(self.n_neighbors, n_users)
-        
+
+        # Log rõ ràng về K đang được sử dụng
+        if self.current_n_neighbors < self.n_neighbors:
+            print(f"⚠️  K cấu hình = {self.n_neighbors}, nhưng chỉ có {n_users} user → tự động điều chỉnh K = {self.current_n_neighbors}")
+        else:
+            print(f"ℹ️  K cấu hình = {self.n_neighbors}, số user = {n_users} → sử dụng K = {self.current_n_neighbors}")
+
         self.model = NearestNeighbors(
             n_neighbors=self.current_n_neighbors,
             metric='cosine',
@@ -99,7 +114,7 @@ class CollaborativeFiltering:
         )
         self.model.fit(self.user_item_matrix)
         
-        print(f"✅ Collaborative Filtering trained with {self.user_item_matrix.shape[0]} users and {self.user_item_matrix.shape[1]} items")
+        print(f"✅ Collaborative Filtering trained: {n_users} users | {n_items} items | K = {self.current_n_neighbors}")
         
     def get_recommendations(self, user_id, n_recommendations=10, exclude_interacted=True):
         """Lấy gợi ý sản phẩm cho user"""

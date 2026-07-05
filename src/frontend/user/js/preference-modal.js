@@ -15,7 +15,7 @@
         checkAndShowModal();
     }
 
-    async function checkAndShowModal() {
+    window.openPreferenceModal = async function(force = false) {
         const token = localStorage.getItem('token');
         const userStr = localStorage.getItem('user');
 
@@ -34,9 +34,11 @@
         // Dọn flag cũ
         localStorage.removeItem(`yennhi_pref_survey_completed_${userId}`);
 
-        // User đã bấm Bỏ qua trong phiên này → đăng nhập tab mới sẽ hiện lại
-        const isSurveySkipped = sessionStorage.getItem(`yennhi_pref_survey_skipped_${userId}`);
-        if (isSurveySkipped === 'true') return;
+        // User đã bấm Bỏ qua trong phiên này → đăng nhập tab mới sẽ hiện lại (trừ khi forced)
+        if (!force) {
+            const isSurveySkipped = sessionStorage.getItem(`yennhi_pref_survey_skipped_${userId}`);
+            if (isSurveySkipped === 'true') return;
+        }
 
         // Nguồn sự thật: DB - Check chi tiết từng trường
         let surveyStatus = null;
@@ -60,11 +62,15 @@
             localStorage.setItem('user', JSON.stringify(user));
         } catch (e) {}
 
-        // Nếu đã hoàn thành đủ 4 trường → không hiện modal
-        if (surveyStatus.completed) return;
+        // Nếu đã hoàn thành đủ 4 trường và không phải forced → không hiện modal
+        if (surveyStatus.completed && !force) return;
 
-        setTimeout(() => {
-            renderPreferenceModal(userId, surveyStatus);
+        renderPreferenceModal(userId, surveyStatus);
+    };
+
+    async function checkAndShowModal() {
+        setTimeout(async () => {
+            await window.openPreferenceModal(false);
         }, 1500);
     }
 

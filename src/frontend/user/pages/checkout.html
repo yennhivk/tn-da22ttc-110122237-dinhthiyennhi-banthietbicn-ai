@@ -461,11 +461,11 @@
                             <div class="grid md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-gray-700 font-semibold mb-2">Họ và tên *</label>
-                                    <input type="text" id="hoTen" name="hoTen" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg bg-gray-100 text-gray-700 cursor-not-allowed" placeholder="Nguyễn Văn A" readonly>
+                                    <input type="text" id="hoTen" name="hoTen" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 bg-white" placeholder="Nguyễn Văn A">
                                 </div>
                                 <div>
                                     <label class="block text-gray-700 font-semibold mb-2">Số điện thoại *</label>
-                                    <input type="tel" id="soDienThoai" name="soDienThoai" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg bg-gray-100 text-gray-700 cursor-not-allowed" placeholder="0123456789" readonly>
+                                    <input type="tel" id="soDienThoai" name="soDienThoai" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 bg-white" placeholder="0123456789">
                                 </div>
                                 <div class="md:col-span-2">
                                     <label class="block text-gray-700 font-semibold mb-2">Email *</label>
@@ -473,52 +473,16 @@
                                 </div>
                                 <!-- ========== ĐỊA CHỈ GIAO HÀNG ========== -->
                                 <div class="md:col-span-2">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <label class="block text-gray-700 font-semibold">Địa chỉ giao hàng *</label>
-                                        <button type="button" id="editAddressBtn" onclick="toggleAltAddress()" class="flex items-center gap-2 px-3 py-1.5 text-sm bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold rounded-lg transition border border-blue-200">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                            </svg>
-                                            Sửa
-                                        </button>
-                                    </div>
-                                    
-                                    <!-- Hiển thị địa chỉ mặc định -->
-                                    <div id="defaultAddressDisplay" class="relative w-full px-4 py-3 border-2 border-green-200 rounded-lg bg-green-50 text-gray-700">
-                                        <div class="flex items-start gap-2">
-                                            <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                            </svg>
-                                            <div class="flex-1">
-                                                <p id="displayAddress" class="text-sm leading-relaxed">Đang tải địa chỉ...</p>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <label class="block text-gray-700 font-semibold mb-2">Địa chỉ giao hàng *</label>
                                     
                                     <!-- Hidden textarea để lưu địa chỉ cho form submit -->
                                     <textarea id="diaChi" name="diaChi" required class="hidden"></textarea>
 
-                                    <!-- Form thay đổi địa chỉ (ẩn mặc định) -->
-                                    <div id="altAddressPanel" class="hidden mt-4 p-4 bg-blue-50/50 border-2 border-blue-300 rounded-lg space-y-4">
-                                        <div class="flex items-center justify-between mb-2">
-                                            <p class="text-sm text-blue-700 font-semibold flex items-center gap-2">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                </svg>
-                                                Giao đến địa chỉ khác
-                                            </p>
-                                            <button type="button" onclick="toggleAltAddress()" class="text-gray-500 hover:text-gray-700">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                        
+                                    <!-- Form địa chỉ trực tiếp bằng dropdowns -->
+                                    <div id="altAddressPanel" class="p-4 bg-white border-2 border-gray-200 rounded-lg space-y-4 shadow-sm">
                                         <p class="text-xs text-blue-600 flex items-center gap-1">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                            Hệ thống sẽ tự động tính phí ship dựa trên địa chỉ bạn nhập.
+                                            Vui lòng chọn địa chỉ bằng dropdown để tính chính xác phí giao hàng.
                                         </p>
 
                                         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -536,7 +500,7 @@
                                             </div>
                                             <div>
                                                 <label class="block text-sm font-semibold text-gray-700 mb-1">Phường / Xã *</label>
-                                                <select id="altWard" class="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed" disabled>
+                                                <select id="altWard" onchange="autoUpdateDiaChiText()" class="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 bg-white disabled:bg-gray-100 disabled:cursor-not-allowed" disabled>
                                                     <option value="">— Chọn phường/xã —</option>
                                                 </select>
                                             </div>
@@ -544,17 +508,7 @@
 
                                         <div>
                                             <label class="block text-sm font-semibold text-gray-700 mb-1">Số nhà, tên đường *</label>
-                                            <input type="text" id="altStreet" class="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500" placeholder="VD: 126 Nguyễn Thiện Thành">
-                                        </div>
-
-                                        <div class="flex flex-wrap gap-2">
-                                            <button type="button" onclick="applyAltAddress()" class="flex-1 min-w-[180px] bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-lg transition flex items-center justify-center gap-2">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                                Áp dụng & tính phí ship
-                                            </button>
-                                            <button type="button" onclick="resetAltAddress()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2.5 px-4 rounded-lg transition">
-                                                Khôi phục địa chỉ mặc định
-                                            </button>
+                                            <input type="text" id="altStreet" oninput="autoUpdateDiaChiText()" class="w-full px-3 py-2.5 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500" placeholder="VD: 126 Nguyễn Thiện Thành">
                                         </div>
 
                                         <div id="altAddressStatus" class="hidden text-sm rounded-lg p-3"></div>
@@ -799,39 +753,7 @@
         // ============================================================
         // Dùng dữ liệu địa chỉ cục bộ từ vietnam-address.js (không cần API ngoài)
 
-        // Backup state để có thể "khôi phục địa chỉ tài khoản"
-        const accountAddressBackup = {
-            text: '',
-            latitude: null,
-            longitude: null,
-            saved: false
-        };
 
-        function toggleAltAddress() {
-            const panel = document.getElementById('altAddressPanel');
-            const isHidden = panel.classList.contains('hidden');
-            
-            if (isHidden) {
-                // Mở form thay đổi địa chỉ
-                panel.classList.remove('hidden');
-                
-                // Lần đầu mở: load tỉnh
-                if (!document.getElementById('altProvince').dataset.loaded) {
-                    loadProvinces();
-                }
-                
-                // Backup địa chỉ tài khoản nếu chưa lưu
-                if (!accountAddressBackup.saved) {
-                    accountAddressBackup.text = document.getElementById('diaChi').value;
-                    accountAddressBackup.latitude = userLatitude;
-                    accountAddressBackup.longitude = userLongitude;
-                    accountAddressBackup.saved = true;
-                }
-            } else {
-                // Đóng form
-                panel.classList.add('hidden');
-            }
-        }
 
         function loadProvinces() {
             const select = document.getElementById('altProvince');
@@ -858,12 +780,17 @@
             wardSelect.disabled = true;
 
             const provinceName = provinceSelect.value;
-            if (!provinceName || !vietnamAddress[provinceName]) return;
+            if (!provinceName || !vietnamAddress[provinceName]) {
+                autoUpdateDiaChiText();
+                return;
+            }
 
             const districts = Object.keys(vietnamAddress[provinceName]).sort();
             districtSelect.innerHTML = '<option value="">— Chọn quận/huyện —</option>' +
                 districts.map(d => `<option value="${d}" data-name="${d}">${d}</option>`).join('');
             districtSelect.disabled = false;
+            
+            autoUpdateDiaChiText();
         }
 
         function onDistrictChange() {
@@ -876,12 +803,17 @@
 
             const provinceName = provinceSelect.value;
             const districtName = districtSelect.value;
-            if (!provinceName || !districtName) return;
+            if (!provinceName || !districtName) {
+                autoUpdateDiaChiText();
+                return;
+            }
 
             const wards = (vietnamAddress[provinceName]?.[districtName] || []).slice().sort();
             wardSelect.innerHTML = '<option value="">— Chọn phường/xã —</option>' +
                 wards.map(w => `<option value="${w}" data-name="${w}">${w}</option>`).join('');
             wardSelect.disabled = false;
+            
+            autoUpdateDiaChiText();
         }
 
         function showAltStatus(message, type = 'info') {
@@ -898,98 +830,65 @@
             el.classList.remove('hidden');
         }
 
-        async function applyAltAddress() {
-            const province = document.getElementById('altProvince');
-            const district = document.getElementById('altDistrict');
-            const ward     = document.getElementById('altWard');
-            const street   = document.getElementById('altStreet').value.trim();
+        let shippingTimeout = null;
+        async function autoUpdateDiaChiText() {
+            const provinceSelect = document.getElementById('altProvince');
+            const districtSelect = document.getElementById('altDistrict');
+            const wardSelect = document.getElementById('altWard');
+            const streetInput = document.getElementById('altStreet');
 
-            const provinceName = province.options[province.selectedIndex]?.dataset.name || '';
-            const districtName = district.options[district.selectedIndex]?.dataset.name || '';
-            const wardName     = ward.options[ward.selectedIndex]?.dataset.name || '';
+            if (!provinceSelect || !districtSelect || !wardSelect || !streetInput) return;
 
-            if (!provinceName || !districtName || !wardName) {
-                showAltStatus('⚠️ Vui lòng chọn đầy đủ Tỉnh / Quận / Phường.', 'warning');
-                return;
-            }
-            
-            if (!street) {
-                showAltStatus('⚠️ Vui lòng nhập số nhà, tên đường.', 'warning');
-                return;
-            }
+            const province = provinceSelect.value;
+            const district = districtSelect.value;
+            const ward = wardSelect.value;
+            const street = streetInput.value.trim();
 
-            // Build địa chỉ đầy đủ
-            const fullAddress = [street, wardName, districtName, provinceName].filter(Boolean).join(', ');
-
-            // Đẩy vào ô diaChi hidden
+            // Tạo địa chỉ đầy đủ ghép từ các dropdown
+            const fullAddress = [street, ward, district, province].filter(Boolean).join(', ');
             document.getElementById('diaChi').value = fullAddress;
-            
-            // Cập nhật hiển thị địa chỉ
-            document.getElementById('displayAddress').textContent = fullAddress;
 
-            // Xóa tọa độ cũ — buộc backend geocode lại
-            userLatitude = null;
-            userLongitude = null;
-
-            showAltStatus('⏳ Đang tính phí ship cho địa chỉ mới...', 'info');
-
-            // Tính lại phí ship — lấy subtotal & discount hiện tại
-            const subtotal = parseFloat((document.getElementById('subtotal').textContent || '0').replace(/[^0-9]/g, '')) || 0;
-            const promoEl  = document.getElementById('promoDiscount');
-            const discountAmount = promoEl ? Math.abs(parseFloat(promoEl.textContent.replace(/[^0-9]/g, ''))) || 0 : 0;
-
-            try {
-                await calculateAndDisplayShipping(subtotal, discountAmount);
-                showAltStatus(`✅ Đã áp dụng địa chỉ: <b>${fullAddress}</b>. Phí ship đã cập nhật.`, 'success');
-                
-                // Đóng form sau khi áp dụng thành công
-                setTimeout(() => {
-                    toggleAltAddress();
-                }, 1500);
-            } catch (err) {
-                showAltStatus('❌ Không tính được phí ship. Vui lòng thử lại.', 'error');
-            }
-        }
-
-        async function resetAltAddress() {
-            if (!accountAddressBackup.saved) {
-                showAltStatus('Chưa có địa chỉ tài khoản để khôi phục.', 'warning');
-                return;
-            }
-            document.getElementById('diaChi').value = accountAddressBackup.text;
-            
-            // Cập nhật hiển thị địa chỉ
-            document.getElementById('displayAddress').textContent = accountAddressBackup.text;
-            
-            userLatitude = accountAddressBackup.latitude;
-            userLongitude = accountAddressBackup.longitude;
-
-            // Reset dropdown
-            document.getElementById('altProvince').value = '';
-            const districtSel = document.getElementById('altDistrict');
-            districtSel.innerHTML = '<option value="">— Chọn quận/huyện —</option>';
-            districtSel.disabled = true;
-            const wardSel = document.getElementById('altWard');
-            wardSel.innerHTML = '<option value="">— Chọn phường/xã —</option>';
-            wardSel.disabled = true;
-            document.getElementById('altStreet').value = '';
-
-            showAltStatus('⏳ Đang tính lại phí ship cho địa chỉ mặc định...', 'info');
-
-            const subtotal = parseFloat((document.getElementById('subtotal').textContent || '0').replace(/[^0-9]/g, '')) || 0;
-            const promoEl  = document.getElementById('promoDiscount');
-            const discountAmount = promoEl ? Math.abs(parseFloat(promoEl.textContent.replace(/[^0-9]/g, ''))) || 0 : 0;
-
-            try {
-                await calculateAndDisplayShipping(subtotal, discountAmount);
-                showAltStatus('✅ Đã khôi phục địa chỉ mặc định.', 'success');
-                
-                // Đóng form sau khi khôi phục thành công
-                setTimeout(() => {
-                    toggleAltAddress();
-                }, 1500);
-            } catch (_) {
-                showAltStatus('❌ Lỗi khi tính lại phí ship.', 'error');
+            if (province && district && ward && street) {
+                clearTimeout(shippingTimeout);
+                shippingTimeout = setTimeout(async () => {
+                    // Đồng bộ tọa độ nếu trùng khớp địa chỉ mặc định trong profile
+                    const user = JSON.parse(localStorage.getItem('user'));
+                    const userId = user ? user.ma_tai_khoan : null;
+                    const savedAddresses = JSON.parse(localStorage.getItem(`addresses_${userId}`) || '[]');
+                    const defaultAddress = savedAddresses.find(addr => addr.isDefault);
+                    
+                    if (defaultAddress && 
+                        defaultAddress.city === province && 
+                        defaultAddress.district === district && 
+                        defaultAddress.ward === ward && 
+                        defaultAddress.fullAddress === street) {
+                        userLatitude = defaultAddress.latitude ? parseFloat(defaultAddress.latitude) : null;
+                        userLongitude = defaultAddress.longitude ? parseFloat(defaultAddress.longitude) : null;
+                        console.log('[autoUpdateDiaChiText] Trùng địa chỉ mặc định, khôi phục tọa độ:', userLatitude, userLongitude);
+                    } else {
+                        userLatitude = null;
+                        userLongitude = null;
+                    }
+                    
+                    showAltStatus('⏳ Đang tính toán phí ship cho địa chỉ mới...', 'info');
+                    
+                    const subtotal = parseFloat((document.getElementById('subtotal')?.textContent || '0').replace(/[^0-9]/g, '')) || 0;
+                    const promoEl = document.getElementById('promoDiscount');
+                    const discountAmount = promoEl ? Math.abs(parseFloat(promoEl.textContent.replace(/[^0-9]/g, ''))) || 0 : 0;
+                    
+                    try {
+                        await calculateAndDisplayShipping(subtotal, discountAmount);
+                        showAltStatus('✅ Đã áp dụng địa chỉ và cập nhật phí ship thành công.', 'success');
+                    } catch (err) {
+                        showAltStatus('❌ Không tính được phí ship cho địa chỉ này. Vui lòng kiểm tra lại.', 'error');
+                    }
+                }, 600);
+            } else {
+                showAltStatus('⚠️ Vui lòng chọn và điền đầy đủ địa chỉ giao hàng để tính phí ship.', 'warning');
+                const shippingEl = document.getElementById('shippingFee');
+                if (shippingEl) {
+                    shippingEl.innerHTML = '<span class="text-orange-600 text-sm">⚠️ Chưa điền đủ địa chỉ</span>';
+                }
             }
         }
 
@@ -1220,6 +1119,9 @@
 
         // Load địa chỉ mặc định
         function loadDefaultAddress(userId) {
+            // Tải danh sách tỉnh/TP vào select altProvince trước
+            loadProvinces();
+
             const addresses = JSON.parse(localStorage.getItem(`addresses_${userId}`) || '[]');
             const defaultAddress = addresses.find(addr => addr.isDefault);
             
@@ -1236,53 +1138,56 @@
                     userLongitude = parseFloat(defaultAddress.longitude);
                     console.log('[loadDefaultAddress] ✅ User coordinates loaded:', userLatitude, userLongitude);
                 } else {
+                    userLatitude = null;
+                    userLongitude = null;
                     console.warn('[loadDefaultAddress] ⚠️ No coordinates found in default address');
                 }
                 
-                // Tạo địa chỉ đầy đủ từ các phần riêng lẻ
-                let fullAddressText = '';
-                if (defaultAddress.fullAddress) {
-                    fullAddressText = defaultAddress.fullAddress;
-                }
-                if (defaultAddress.ward && defaultAddress.ward !== 'Chưa có thông tin') {
-                    fullAddressText += (fullAddressText ? ', ' : '') + defaultAddress.ward;
-                }
-                if (defaultAddress.district && defaultAddress.district !== 'Chưa có thông tin') {
-                    fullAddressText += (fullAddressText ? ', ' : '') + defaultAddress.district;
-                }
-                if (defaultAddress.city && defaultAddress.city !== 'Chưa có thông tin') {
-                    fullAddressText += (fullAddressText ? ', ' : '') + defaultAddress.city;
-                }
-                
-                // Điền địa chỉ đầy đủ vào hidden textarea
-                if (fullAddressText) {
-                    document.getElementById('diaChi').value = fullAddressText;
+                // Điền thông tin vào các trường dropdown và ô nhập phố
+                const provinceSelect = document.getElementById('altProvince');
+                const districtSelect = document.getElementById('altDistrict');
+                const wardSelect = document.getElementById('altWard');
+                const streetInput = document.getElementById('altStreet');
+
+                if (defaultAddress.city) {
+                    provinceSelect.value = defaultAddress.city;
                     
-                    // Hiển thị địa chỉ trong box xanh
-                    document.getElementById('displayAddress').textContent = fullAddressText;
-                } else {
-                    document.getElementById('displayAddress').textContent = 'Chưa có địa chỉ mặc định. Vui lòng bấm "Sửa" để thêm địa chỉ giao hàng.';
+                    // Nạp quận/huyện
+                    try {
+                        const districts = Object.keys(vietnamAddress[defaultAddress.city] || {}).sort();
+                        districtSelect.innerHTML = '<option value="">— Chọn quận/huyện —</option>' +
+                            districts.map(name => `<option value="${name}">${name}</option>`).join('');
+                        districtSelect.disabled = false;
+                        
+                        if (defaultAddress.district) {
+                            districtSelect.value = defaultAddress.district;
+                            
+                            // Nạp phường/xã
+                            const wards = (vietnamAddress[defaultAddress.city][defaultAddress.district] || []).sort();
+                            wardSelect.innerHTML = '<option value="">— Chọn phường/xã —</option>' +
+                                wards.map(name => `<option value="${name}">${name}</option>`).join('');
+                            wardSelect.disabled = false;
+                            
+                            if (defaultAddress.ward) {
+                                wardSelect.value = defaultAddress.ward;
+                            }
+                        }
+                    } catch (err) {
+                        console.error('[loadDefaultAddress prefill error]', err);
+                    }
                 }
                 
-                // Tự động tính phí ship nếu có tọa độ
-                if (userLatitude && userLongitude && fullAddressText) {
-                    console.log('[loadDefaultAddress] Triggering shipping fee calculation...');
-                    // Đợi một chút để đảm bảo subtotal đã được tính
-                    setTimeout(() => {
-                        const subtotal = parseFloat((document.getElementById('subtotal')?.textContent || '0').replace(/[^0-9]/g, '')) || 0;
-                        const promoEl = document.getElementById('promoDiscount');
-                        const discountAmount = promoEl ? Math.abs(parseFloat(promoEl.textContent.replace(/[^0-9]/g, ''))) || 0 : 0;
-                        calculateAndDisplayShipping(subtotal, discountAmount);
-                    }, 500);
+                if (defaultAddress.fullAddress) {
+                    streetInput.value = defaultAddress.fullAddress;
                 }
+                
+                // Đồng bộ địa chỉ và tính phí giao hàng
+                autoUpdateDiaChiText();
             } else {
-                // Không có địa chỉ mặc định
-                document.getElementById('displayAddress').innerHTML = '<span class="text-orange-600 font-semibold">⚠️ Chưa có địa chỉ mặc định. Vui lòng bấm "Sửa" để thêm địa chỉ giao hàng.</span>';
-                
                 // Hiển thị thông báo phí ship chưa có
                 const shippingEl = document.getElementById('shippingFee');
                 if (shippingEl) {
-                    shippingEl.innerHTML = '<span class="text-orange-600 text-sm">⚠️ Chưa có địa chỉ giao hàng</span>';
+                    shippingEl.innerHTML = '<span class="text-orange-600 text-sm">⚠️ Vui lòng chọn địa chỉ giao hàng</span>';
                 }
             }
         }

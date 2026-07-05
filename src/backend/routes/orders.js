@@ -174,15 +174,16 @@ router.post('/create', async (req, res) => {
         
         await connection.commit();
         
-        // Ghi nhận hành vi mua hàng phục vụ cho thuật toán gợi ý
+        // Ghi nhận hành vi ĐẶT HÀNG (cart_checkout) — chưa phải purchase thực sự
+        // purchase thực sự sẽ được ghi khi admin cập nhật đơn sang 'hoan_thanh'
         try {
             const RecommendationEngine = require('../utils/recommendationEngineJS');
             for (const item of productDetails) {
-                await RecommendationEngine.trackUserAction(ma_nguoi_dung, item.ma_san_pham, 'purchase', 5);
+                await RecommendationEngine.trackUserAction(ma_nguoi_dung, item.ma_san_pham, 'cart_checkout', 3);
             }
-            console.log(`🛒 [Recommendation] Tracked purchase for User ${ma_nguoi_dung} on ${productDetails.length} items`);
+            console.log(`🛒 [Recommendation] Tracked cart_checkout for User ${ma_nguoi_dung} on ${productDetails.length} items`);
         } catch (trackError) {
-            console.error('❌ Lỗi ghi nhận hành vi mua hàng:', trackError);
+            console.error('❌ Lỗi ghi nhận hành vi đặt hàng:', trackError);
         }
         
         res.json({
