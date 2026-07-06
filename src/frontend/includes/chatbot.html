@@ -135,14 +135,8 @@
 }
 
 @keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 .chatbot-header {
@@ -194,13 +188,8 @@
     max-width: 85%;
 }
 
-.bot-message {
-    margin-right: auto;
-}
-
-.user-message {
-    margin-left: auto;
-}
+.bot-message  { margin-right: auto; }
+.user-message { margin-left: auto; }
 
 .message-content {
     padding: 12px 16px;
@@ -222,6 +211,17 @@
     border-bottom-right-radius: 4px;
 }
 
+/* Thẻ sản phẩm bên trong tin nhắn bot */
+.message-content img {
+    max-width: 100%;
+    border-radius: 6px;
+}
+
+.message-content a {
+    color: #0052cc;
+    text-decoration: underline;
+}
+
 .message-time {
     display: block;
     font-size: 11px;
@@ -230,9 +230,7 @@
     padding: 0 4px;
 }
 
-.user-message .message-time {
-    text-align: right;
-}
+.user-message .message-time { text-align: right; }
 
 .quick-replies {
     padding: 8px 16px;
@@ -278,9 +276,7 @@
     transition: border-color 0.2s;
 }
 
-#chatbot-input:focus {
-    border-color: #f59e0b;
-}
+#chatbot-input:focus { border-color: #f59e0b; }
 
 .chatbot-send-btn {
     width: 44px;
@@ -296,14 +292,8 @@
     transition: all 0.2s;
 }
 
-.chatbot-send-btn:hover {
-    transform: scale(1.05);
-}
-
-.chatbot-send-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
+.chatbot-send-btn:hover   { transform: scale(1.05); }
+.chatbot-send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* Typing indicator */
 .typing-indicator {
@@ -320,52 +310,32 @@
     animation: typing 1.4s infinite;
 }
 
-.typing-indicator span:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.typing-indicator span:nth-child(3) {
-    animation-delay: 0.4s;
-}
+.typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
 
 @keyframes typing {
-    0%, 60%, 100% {
-        transform: translateY(0);
-    }
-    30% {
-        transform: translateY(-8px);
-    }
+    0%, 60%, 100% { transform: translateY(0); }
+    30%           { transform: translateY(-8px); }
 }
 
 /* Mobile responsive */
 @media (max-width: 480px) {
-    #chatbot-container {
-        bottom: 10px;
-        right: 10px;
-    }
-    
+    #chatbot-container { bottom: 10px; right: 10px; }
     .chatbot-window {
         width: calc(100vw - 20px);
         height: calc(100vh - 100px);
         bottom: 70px;
         right: -10px;
     }
-    
-    .chatbot-toggle {
-        width: 55px;
-        height: 55px;
-    }
+    .chatbot-toggle { width: 55px; height: 55px; }
 }
 
-.hidden {
-    display: none !important;
-}
+.hidden { display: none !important; }
 </style>
 
 <!-- Chatbot Script -->
 <script>
-(function() {
-    // Wait for DOM to be ready
+(function () {
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initChatbot);
     } else {
@@ -373,36 +343,41 @@
     }
 
     function initChatbot() {
-        const toggle = document.getElementById('chatbot-toggle');
-        const window_ = document.getElementById('chatbot-window');
-        const minimize = document.getElementById('chatbot-minimize');
-        const input = document.getElementById('chatbot-input');
-        const sendBtn = document.getElementById('chatbot-send');
-        const messages = document.getElementById('chatbot-messages');
-        const quickReplies = document.querySelectorAll('.quick-reply-btn');
-        const chatIcon = document.getElementById('chat-icon');
-        const closeIcon = document.getElementById('close-icon');
-        const avatarImg = document.getElementById('chatbot-avatar-img');
+        const toggle      = document.getElementById('chatbot-toggle');
+        const window_     = document.getElementById('chatbot-window');
+        const minimize    = document.getElementById('chatbot-minimize');
+        const input       = document.getElementById('chatbot-input');
+        const sendBtn     = document.getElementById('chatbot-send');
+        const messages    = document.getElementById('chatbot-messages');
+        const quickReplies= document.querySelectorAll('.quick-reply-btn');
+        const chatIcon    = document.getElementById('chat-icon');
+        const closeIcon   = document.getElementById('close-icon');
+        const avatarImg   = document.getElementById('chatbot-avatar-img');
 
-        // Set avatar image - adjust path based on page location
         const isInPages = window.location.pathname.includes('/pages/');
-        avatarImg.src = isInPages ? '../images/Screenshot 2025-11-10 154306.png' : 'images/Screenshot 2025-11-10 154306.png';
+        avatarImg.src   = isInPages
+            ? '../images/Screenshot 2025-11-10 154306.png'
+            : 'images/Screenshot 2025-11-10 154306.png';
+
+        // ── Lịch sử hội thoại gửi lên API ────────────────────────────────────
+        let conversationHistory = [
+            {
+                role: 'system',
+                content: 'Bạn là trợ lý ảo thân thiện của cửa hàng công nghệ "Yến Nhi Tech". Hãy trả lời ngắn gọn và hữu ích bằng tiếng Việt.'
+            }
+        ];
 
         let isOpen = false;
 
-        // Toggle chat window
+        // ── Toggle / Minimize ─────────────────────────────────────────────────
         toggle.addEventListener('click', () => {
             isOpen = !isOpen;
             window_.classList.toggle('hidden', !isOpen);
             chatIcon.classList.toggle('hidden', isOpen);
             closeIcon.classList.toggle('hidden', !isOpen);
-            
-            if (isOpen) {
-                input.focus();
-            }
+            if (isOpen) input.focus();
         });
 
-        // Minimize button
         minimize.addEventListener('click', () => {
             isOpen = false;
             window_.classList.add('hidden');
@@ -410,31 +385,67 @@
             closeIcon.classList.add('hidden');
         });
 
-        // Send message
-        function sendMessage() {
+        // ── Gửi tin nhắn ──────────────────────────────────────────────────────
+        async function sendMessage() {
             const text = input.value.trim();
             if (!text) return;
 
-            addMessage(text, 'user');
-            input.value = '';
-
-            // Show typing indicator
+            addMessage(text, 'user', false);
+            input.value  = '';
+            sendBtn.disabled = true;
             showTyping();
 
-            // Simulate bot response
-            setTimeout(() => {
+            conversationHistory.push({ role: 'user', content: text });
+
+            try {
+                const token = localStorage.getItem('token') || sessionStorage.getItem('token') || '';
+
+                // Giới hạn lịch sử gửi lên: giữ system + tối đa 6 tin nhắn gần nhất
+                const MAX_SEND = 6;
+                const sysMsgs  = conversationHistory.filter(m => m.role === 'system');
+                const chatMsgs = conversationHistory.filter(m => m.role !== 'system');
+                const trimmedHistory = [...sysMsgs, ...chatMsgs.slice(-MAX_SEND)];
+
+                const res = await fetch('http://localhost:3000/api/chatbot/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                    },
+                    body: JSON.stringify({ messages: trimmedHistory })
+                });
+
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+                const data  = await res.json();
+                const aiMsg = data.choices && data.choices[0] && data.choices[0].message;
+
+                if (aiMsg && aiMsg.content) {
+                    hideTyping();
+                    // Render HTML: thẻ sản phẩm có ảnh + nút MUA NGAY từ server
+                    addMessage(aiMsg.content, 'bot', true);
+                    // Chỉ lưu text thuần vào lịch sử (không lưu HTML card)
+                    const cleanText = aiMsg.content.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim()
+                                   || 'Tôi đã tìm thấy thông tin cho bạn.';
+                    conversationHistory.push({ role: 'assistant', content: cleanText });
+                } else {
+                    throw new Error('Phản hồi rỗng từ server');
+                }
+            } catch (err) {
                 hideTyping();
-                const response = getBotResponse(text);
-                addMessage(response, 'bot');
-            }, 1000 + Math.random() * 1000);
+                addMessage(
+                    '⚠️ Xin lỗi, tôi đang gặp sự cố kết nối. Vui lòng thử lại hoặc liên hệ hotline <strong>1900 1234</strong>.',
+                    'bot', true
+                );
+                console.error('Chatbot API error:', err);
+            } finally {
+                sendBtn.disabled = false;
+            }
         }
 
         sendBtn.addEventListener('click', sendMessage);
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendMessage();
-        });
+        input.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
 
-        // Quick replies
         quickReplies.forEach(btn => {
             btn.addEventListener('click', () => {
                 input.value = btn.dataset.message;
@@ -442,85 +453,58 @@
             });
         });
 
-        // Add message to chat
-        function addMessage(text, type) {
+        // ── Thêm tin nhắn vào khung chat ──────────────────────────────────────
+        // renderHTML = true  → innerHTML (bot: hỗ trợ thẻ sản phẩm có ảnh)
+        // renderHTML = false → textContent (user: an toàn XSS)
+        function addMessage(content, type, renderHTML) {
             const div = document.createElement('div');
             div.className = `chat-message ${type}-message`;
-            
-            const time = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-            
-            div.innerHTML = `
-                <div class="message-content">
-                    <p>${text}</p>
-                </div>
-                <span class="message-time">${time}</span>
-            `;
-            
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+
+            if (renderHTML) {
+                // Chuyển đổi Markdown link [Tên](URL) thành thẻ HTML <a>
+                let formatted = content.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, text, url) => {
+                    let correctUrl = url;
+                    // Sửa lỗi URL bị thiếu gạch chéo hoặc sai thư mục
+                    if (correctUrl.includes('localhost:3000product-detail.html')) {
+                        correctUrl = correctUrl.replace('localhost:3000product-detail.html', 'localhost:3000/user/pages/product-detail.html');
+                    } else if (correctUrl.includes('product-detail.html') && !correctUrl.includes('/user/pages/')) {
+                        correctUrl = correctUrl.replace('product-detail.html', 'user/pages/product-detail.html');
+                    }
+                    return `<a href="${correctUrl}" target="_blank" style="color: #d97706; font-weight: bold; text-decoration: underline;">${text}</a>`;
+                });
+                contentDiv.innerHTML = formatted.replace(/\n/g, '<br>');
+            } else {
+                const p = document.createElement('p');
+                p.textContent = content;
+                contentDiv.appendChild(p);
+            }
+
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'message-time';
+            timeSpan.textContent = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+
+            div.appendChild(contentDiv);
+            div.appendChild(timeSpan);
             messages.appendChild(div);
             messages.scrollTop = messages.scrollHeight;
         }
 
-        // Typing indicator
+        // ── Typing indicator ───────────────────────────────────────────────────
         function showTyping() {
-            const typing = document.createElement('div');
-            typing.id = 'typing-indicator';
-            typing.className = 'chat-message bot-message';
-            typing.innerHTML = `
-                <div class="message-content typing-indicator">
-                    <span></span><span></span><span></span>
-                </div>
-            `;
-            messages.appendChild(typing);
+            const el = document.createElement('div');
+            el.id = 'typing-indicator';
+            el.className = 'chat-message bot-message';
+            el.innerHTML = `<div class="message-content typing-indicator"><span></span><span></span><span></span></div>`;
+            messages.appendChild(el);
             messages.scrollTop = messages.scrollHeight;
         }
 
         function hideTyping() {
-            const typing = document.getElementById('typing-indicator');
-            if (typing) typing.remove();
-        }
-
-        // Bot responses
-        function getBotResponse(text) {
-            const lower = text.toLowerCase();
-            
-            if (lower.includes('sản phẩm') || lower.includes('mới') || lower.includes('điện thoại') || lower.includes('laptop')) {
-                return '📱 Chúng tôi có nhiều sản phẩm mới nhất từ các thương hiệu hàng đầu như Apple, Samsung, Xiaomi... Bạn có thể xem tại trang <a href="' + (isInPages ? '' : 'pages/') + 'products.html" class="text-yellow-600 underline">Sản phẩm</a> nhé!';
-            }
-            
-            if (lower.includes('khuyến mãi') || lower.includes('giảm giá') || lower.includes('sale')) {
-                return '🎁 Hiện tại chúng tôi đang có nhiều chương trình khuyến mãi hấp dẫn! Giảm đến 50% cho nhiều sản phẩm. Xem chi tiết tại <a href="' + (isInPages ? '' : 'pages/') + 'promotions.html" class="text-yellow-600 underline">Khuyến mãi</a>!';
-            }
-            
-            if (lower.includes('đơn hàng') || lower.includes('kiểm tra') || lower.includes('giao hàng')) {
-                return '📦 Để kiểm tra đơn hàng, bạn vui lòng đăng nhập và vào mục <a href="' + (isInPages ? '' : 'pages/') + 'order-history.html" class="text-yellow-600 underline">Đơn hàng của tôi</a>. Nếu cần hỗ trợ thêm, hãy liên hệ hotline: <strong>1900 1234</strong>';
-            }
-            
-            if (lower.includes('hỗ trợ') || lower.includes('giúp') || lower.includes('vấn đề')) {
-                return '🆘 Tôi sẵn sàng hỗ trợ bạn! Bạn có thể:<br>• Gọi hotline: <strong>1900 1234</strong><br>• Email: support@yennhitech.vn<br>• Hoặc mô tả vấn đề của bạn, tôi sẽ cố gắng giúp đỡ!';
-            }
-            
-            if (lower.includes('giá') || lower.includes('bao nhiêu')) {
-                return '💰 Giá sản phẩm tùy thuộc vào từng mẫu. Bạn có thể xem giá chi tiết tại trang <a href="' + (isInPages ? '' : 'pages/') + 'products.html" class="text-yellow-600 underline">Sản phẩm</a>. Chúng tôi cam kết giá tốt nhất thị trường!';
-            }
-            
-            if (lower.includes('bảo hành')) {
-                return '🛡️ Tất cả sản phẩm tại Yến Nhi Tech đều được bảo hành chính hãng:<br>• Điện thoại: 12-24 tháng<br>• Laptop: 12-36 tháng<br>• Phụ kiện: 6-12 tháng';
-            }
-            
-            if (lower.includes('địa chỉ') || lower.includes('cửa hàng') || lower.includes('ở đâu')) {
-                return '📍 Địa chỉ cửa hàng:<br><strong>Yến Nhi Tech</strong><br>74-76 Lê Lợi, Phường 2, Trà Vinh<br>Mở cửa: 8:00 - 21:00 hàng ngày';
-            }
-            
-            if (lower.includes('xin chào') || lower.includes('hello') || lower.includes('hi')) {
-                return 'Xin chào bạn! 👋 Rất vui được hỗ trợ bạn. Bạn cần tôi giúp gì ạ?';
-            }
-            
-            if (lower.includes('cảm ơn') || lower.includes('thank')) {
-                return 'Không có gì ạ! 😊 Rất vui được hỗ trợ bạn. Nếu cần thêm gì, đừng ngại hỏi nhé!';
-            }
-            
-            // Default response
-            return 'Cảm ơn bạn đã liên hệ! 😊 Tôi chưa hiểu rõ câu hỏi của bạn. Bạn có thể hỏi về:<br>• Sản phẩm mới<br>• Khuyến mãi<br>• Đơn hàng<br>• Bảo hành<br>Hoặc gọi hotline <strong>1900 1234</strong> để được hỗ trợ trực tiếp!';
+            const el = document.getElementById('typing-indicator');
+            if (el) el.remove();
         }
     }
 })();

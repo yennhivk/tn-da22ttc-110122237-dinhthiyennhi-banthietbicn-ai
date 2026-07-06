@@ -1695,7 +1695,8 @@
         function getArticleImageUrl(imagePath) {
             if (!imagePath) return 'https://via.placeholder.com/500x300?text=No+Image';
             if (imagePath.startsWith('http')) return imagePath;
-            return `${API_BASE.replace('/api', '')}${imagePath}`;
+            const cleanPath = imagePath.startsWith('/') ? imagePath : '/' + imagePath;
+            return `${API_BASE.replace('/api', '')}${cleanPath}`;
         }
 
         // Get category display info

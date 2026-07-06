@@ -3,55 +3,6 @@ const db = require('../config/database');
 const RecommendationEngine = require('../utils/recommendationEngineJS');
 const router = express.Router();
 
-router.get('/search/suggestions', async (req, res) => {
-    try {
-        const { q, limit } = req.query;
-        if (!q) {
-            return res.json({ success: true, data: [] });
-        }
-
-        const queryStr = `%${q}%`;
-        const limitNum = parseInt(limit) || 8;
-
-        const [products] = await db.query(`
-            SELECT 
-                sp.ma_san_pham,
-                sp.ten_san_pham,
-                sp.thuong_hieu,
-                sp.gia,
-                (SELECT duong_dan_anh FROM anh_san_pham WHERE ma_san_pham = sp.ma_san_pham AND la_anh_chinh = 1 LIMIT 1) as anh_chinh
-            FROM san_pham sp
-            LEFT JOIN danh_muc_san_pham dm ON sp.ma_danh_muc = dm.ma_danh_muc
-            WHERE sp.trang_thai = 'hien_thi' 
-              AND (sp.ten_san_pham LIKE ? OR dm.ten_danh_muc LIKE ? OR sp.thuong_hieu LIKE ? OR EXISTS (SELECT 1 FROM anh_san_pham a WHERE a.ma_san_pham = sp.ma_san_pham AND a.duong_dan_anh LIKE ?))
-            ORDER BY sp.ten_san_pham LIKE ? DESC, sp.ten_san_pham ASC
-            LIMIT ?
-        `, [queryStr, queryStr, queryStr, '%' + q.replace(/\s+/g, '%') + '%', `${q}%`, limitNum]);
-
-        // Ghi nhận lịch sử tìm kiếm cho ML
-        try {
-            const token = req.headers.authorization?.split(' ')[1];
-            if (token && products.length > 0) {
-                const jwt = require('jsonwebtoken');
-                const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
-                const userId = decoded.ma_tai_khoan;
-                if (userId) {
-                    const topMatches = products.slice(0, 3);
-                    for (const p of topMatches) {
-                        await RecommendationEngine.trackUserAction(userId, p.ma_san_pham, 'search', 1.5);
-                    }
-                }
-            }
-        } catch (err) {}
-        
-        res.json({ success: true, data: products });
-    } catch (error) {
-        console.error('Search suggestions error:', error);
-        res.status(500).json({ success: false, message: 'Lỗi server' });
-    }
-});
-
-
 // ==========================================
 // SEARCH SUGGESTIONS API
 // ==========================================
@@ -76,10 +27,10 @@ router.get('/search/suggestions', async (req, res) => {
             FROM san_pham sp
             LEFT JOIN danh_muc_san_pham dm ON sp.ma_danh_muc = dm.ma_danh_muc
             WHERE sp.trang_thai = 'hien_thi' 
-              AND (sp.ten_san_pham LIKE ? OR dm.ten_danh_muc LIKE ? OR sp.thuong_hieu LIKE ? OR EXISTS (SELECT 1 FROM anh_san_pham a WHERE a.ma_san_pham = sp.ma_san_pham AND a.duong_dan_anh LIKE ?))
+              AND (sp.ten_san_pham LIKE ? OR dm.ten_danh_muc LIKE ? OR sp.thuong_hieu LIKE ?)
             ORDER BY sp.ten_san_pham LIKE ? DESC, sp.ten_san_pham ASC
             LIMIT ?
-        `, [queryStr, queryStr, queryStr, '%' + q.replace(/\s+/g, '%') + '%', `${q}%`, limitNum]);
+        `, [queryStr, queryStr, queryStr, `${q}%`, limitNum]);
 
         // Ghi nhận lịch sử tìm kiếm cho ML
         try {
@@ -217,20 +168,16 @@ router.get('/', async (req, res) => {
             const searchPattern = `%${searchStr.replace(/\s+/g, '%')}%`;
             const exactPattern = `%${searchStr}%`;
             
-            let searchCondition = `(sp.ten_san_pham LIKE ? OR dm.ten_danh_muc LIKE ? OR sp.thuong_hieu LIKE ? OR EXISTS (
-                SELECT 1 FROM anh_san_pham a 
-                WHERE a.ma_san_pham = sp.ma_san_pham 
-                AND a.duong_dan_anh LIKE ?
-            ))`;
-            params.push(exactPattern, exactPattern, exactPattern, searchPattern);
+            let searchCondition = `(sp.ten_san_pham LIKE ? OR dm.ten_danh_muc LIKE ? OR sp.thuong_hieu LIKE ?)`;
+            params.push(exactPattern, exactPattern, exactPattern);
             
             if (words.length > 1) {
                 let wordConditions = [];
                 for (const word of words) {
                     if (word.length >= 2) {
-                        wordConditions.push(`(sp.ten_san_pham LIKE ? OR dm.ten_danh_muc LIKE ? OR sp.thuong_hieu LIKE ? OR EXISTS(SELECT 1 FROM anh_san_pham a2 WHERE a2.ma_san_pham = sp.ma_san_pham AND a2.duong_dan_anh LIKE ?))`);
+                        wordConditions.push(`(sp.ten_san_pham LIKE ? OR dm.ten_danh_muc LIKE ? OR sp.thuong_hieu LIKE ?)`);
                         const wordPattern = `%${word}%`;
-                        params.push(wordPattern, wordPattern, wordPattern, wordPattern);
+                        params.push(wordPattern, wordPattern, wordPattern);
                     }
                 }
                 if (wordConditions.length > 0) {
@@ -273,6 +220,7 @@ router.get('/', async (req, res) => {
                     }
                 }
             } catch (err) {
+                console.error('Error in products search tracking:', err);
                 // Token lỗi hoặc hết hạn thì bỏ qua, không crash API
             }
         }

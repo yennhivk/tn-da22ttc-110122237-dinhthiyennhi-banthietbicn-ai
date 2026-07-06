@@ -190,6 +190,30 @@ function applyAllFilters() {
 
     // Lọc sản phẩm gợi ý tương tự như sản phẩm thường
     let filteredRecs = [...recommendedProducts];
+    
+    // Lọc theo từ khóa tìm kiếm nếu có
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchVal = (urlParams.get('search') || '').trim().toLowerCase();
+    if (searchVal) {
+        filteredRecs = filteredRecs.filter(product => {
+            const productName = (product.ten_san_pham || product.name || '').toLowerCase();
+            const productBrand = (product.thuong_hieu || product.brand || '').toLowerCase();
+            const productCategory = (product.ten_danh_muc || product.category || '').toLowerCase();
+            
+            if (productName.includes(searchVal) || productBrand.includes(searchVal) || productCategory.includes(searchVal)) {
+                return true;
+            }
+            
+            const words = searchVal.split(/\s+/).filter(w => w.length >= 2);
+            if (words.length > 0) {
+                return words.every(word => 
+                    productName.includes(word) || productBrand.includes(word) || productCategory.includes(word)
+                );
+            }
+            return false;
+        });
+    }
+
     if (categoryName) {
         filteredRecs = filteredRecs.filter(product => 
             product.ten_danh_muc && product.ten_danh_muc.toLowerCase().includes(categoryName.toLowerCase())
@@ -331,44 +355,18 @@ async function loadProducts(searchTerm = null) {
             url += `?${params.toString()}`;
         }
         
-        const response = await fetch(url);
+        const token = localStorage.getItem('token');
+        const headers = {};
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+        const response = await fetch(url, { headers });
         const result = await response.json();
         
         if (result.success) {
             allProducts = result.data;
             filteredProducts = result.data;
             itemsToShow = 6; // Reset số lượng hiển thị khi tải mới
-            // Ghi nhận hành vi tìm kiếm cho cá nhân hóa gợi ý
-            if (searchTerm && result.data && result.data.length > 0) {
-                const userStr = localStorage.getItem('user');
-                if (userStr) {
-                    try {
-                        const user = JSON.parse(userStr);
-                        const userId = user.ma_tai_khoan;
-                        if (userId) {
-                            // Chỉ lấy tối đa 3 sản phẩm đầu tiên để ghi nhận
-                            const topProducts = result.data.slice(0, 3);
-                            topProducts.forEach(product => {
-                                fetch(`${API_URL}/recommendations/track`, {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                                    },
-                                    body: JSON.stringify({
-                                        userId: userId,
-                                        productId: product.ma_san_pham,
-                                        actionType: 'search',
-                                        actionValue: 1.5
-                                    })
-                                }).catch(err => console.error('Error tracking search interaction:', err));
-                            });
-                        }
-                    } catch (e) {
-                        console.error('Error parsing user for tracking:', e);
-                    }
-                }
-            }
 
             
             // Cập nhật UI cho category

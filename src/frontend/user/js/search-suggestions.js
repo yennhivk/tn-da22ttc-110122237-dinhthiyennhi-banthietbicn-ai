@@ -143,7 +143,14 @@
 
     async function fetchSuggestions(input, query) { console.log("Fetching for:", query);
         try {
-            const response = await fetch(`${API_URL}/products/search/suggestions?q=${encodeURIComponent(query)}&limit=8`);
+            const token = localStorage.getItem('token');
+            const headers = {};
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+            const response = await fetch(`${API_URL}/products/search/suggestions?q=${encodeURIComponent(query)}&limit=8`, {
+                headers: headers
+            });
             const result = await response.json();
             
             if (result.success) {
@@ -244,7 +251,8 @@
     function getImageUrl(imagePath, apiBasePath) {
         if (!imagePath) return 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect fill=%22%23f3f4f6%22 width=%22100%22 height=%22100%22/%3E%3C/svg%3E';
         if (imagePath.startsWith('http')) return imagePath;
-        return `${apiBasePath}/${imagePath}`;
+        const cleanPath = imagePath.startsWith('/') ? imagePath : '/' + imagePath;
+        return `${apiBasePath}${cleanPath}`;
     }
     
     function formatPrice(price) {

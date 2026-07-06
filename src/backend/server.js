@@ -14,6 +14,14 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
+// Normalize double slashes in incoming request paths to prevent 404 route errors
+app.use((req, res, next) => {
+    if (req.url.startsWith('//')) {
+        req.url = req.url.replace(/^\/+/, '/');
+    }
+    next();
+});
+
 app.use(cors({
     origin: '*',
     credentials: true,

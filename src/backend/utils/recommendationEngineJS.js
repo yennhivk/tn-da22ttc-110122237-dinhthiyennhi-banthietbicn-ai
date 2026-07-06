@@ -414,28 +414,43 @@ class RecommendationEngineJS {
                        COALESCE(SUM(CASE WHEN ui.LoaiTuongTac = 'click' THEN 1 ELSE 0 END), 0) AS luot_click,
                        COALESCE(SUM(CASE WHEN ui.LoaiTuongTac = 'view_50s' THEN 1 ELSE 0 END), 0) AS luot_xem_50s,
                        COALESCE(SUM(CASE WHEN ui.LoaiTuongTac = 'search' THEN 1 ELSE 0 END), 0) AS luot_tim,
-                       COALESCE(avg_rating.diem_danh_gia, 0.0) AS diem_danh_gia
+                       COALESCE(avg_rating.diem_danh_gia, 0.0) AS diem_danh_gia,
+                       COALESCE(avg_rating.so_luong_danh_gia, 0) AS so_luong_danh_gia
                 FROM san_pham sp
                 LEFT JOIN anh_san_pham a ON sp.ma_san_pham = a.ma_san_pham AND a.la_anh_chinh = 1
                 LEFT JOIN user_interactions ui ON sp.ma_san_pham = ui.MaSP
                 LEFT JOIN (
-                    SELECT ma_san_pham, AVG(so_sao) AS diem_danh_gia
+                    SELECT ma_san_pham, 
+                           AVG(so_sao) AS diem_danh_gia,
+                           COUNT(*) AS so_luong_danh_gia
                     FROM danh_gia
                     WHERE trang_thai = 1
                     GROUP BY ma_san_pham
                 ) avg_rating ON sp.ma_san_pham = avg_rating.ma_san_pham
                 WHERE sp.trang_thai = 'hien_thi'
-                GROUP BY sp.ma_san_pham, sp.ten_san_pham, sp.gia, sp.thuong_hieu, sp.mo_ta, a.duong_dan_anh, avg_rating.diem_danh_gia
+                GROUP BY sp.ma_san_pham, sp.ten_san_pham, sp.gia, sp.thuong_hieu, sp.mo_ta, a.duong_dan_anh, avg_rating.diem_danh_gia, avg_rating.so_luong_danh_gia
             `);
             
-            // Calculate score in JS
+            // Calculate score in JS matching recommendations.js formula
+            const m = 5; // ngưỡng tối thiểu
+            const ratedProducts = products.filter(p => Number(p.so_luong_danh_gia || 0) > 0);
+            const C = ratedProducts.length > 0
+                ? ratedProducts.reduce((sum, p) => sum + Number(p.diem_danh_gia), 0) / ratedProducts.length
+                : 3.0; // mặc định 3.0 nếu chưa có đánh giá nào
+            
             products.forEach(p => {
                 p.luot_mua = Number(p.luot_mua);
                 p.luot_click = Number(p.luot_click);
                 p.luot_xem_50s = Number(p.luot_xem_50s);
                 p.luot_tim = Number(p.luot_tim);
                 p.diem_danh_gia = Number(p.diem_danh_gia || 0);
-                p.popularity_score = parseFloat(((p.luot_mua * 40) + (p.luot_click * 20) + (p.luot_xem_50s * 20) + (p.luot_tim * 10) + (p.diem_danh_gia * 6)).toFixed(1));
+                p.so_luong_danh_gia = Number(p.so_luong_danh_gia || 0);
+                
+                // Bayesian Average rating (thang 0-5)
+                const v = p.so_luong_danh_gia;
+                const R = p.diem_danh_gia;
+                const bayesian_rating = parseFloat(((v * R + m * C) / (v + m)).toFixed(2));
+                p.popularity_score = parseFloat(((p.luot_mua * 40) + (p.luot_click * 20) + (p.luot_xem_50s * 20) + (p.luot_tim * 10) + (bayesian_rating * 10)).toFixed(1));
             });
             
             // Sort by popularity_score DESC, then by luot_mua DESC, then by ma_san_pham DESC

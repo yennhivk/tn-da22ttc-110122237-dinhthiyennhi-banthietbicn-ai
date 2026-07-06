@@ -110,17 +110,18 @@ async function executeTool(name, args, userId) {
         }
         
         case 'get_product_detail': {
-            const productId = args.ma_san_pham;
-            if (!productId) return { error: "Thiếu mã sản phẩm (ma_san_pham)" };
+            const productName = args.ten_san_pham;
+            if (!productName) return { error: "Thiếu tên sản phẩm (ten_san_pham)" };
             const [rows] = await db.query(
                 `SELECT sp.*, dm.ten_danh_muc, a.duong_dan_anh 
                  FROM san_pham sp 
                  LEFT JOIN danh_muc_san_pham dm ON sp.ma_danh_muc = dm.ma_danh_muc
                  LEFT JOIN anh_san_pham a ON sp.ma_san_pham = a.ma_san_pham AND a.la_anh_chinh = 1
-                 WHERE sp.ma_san_pham = ?`,
-                [productId]
+                 WHERE sp.trang_thai = 'hien_thi' AND sp.ten_san_pham LIKE ?
+                 LIMIT 1`,
+                [`%${productName}%`]
             );
-            if (rows.length === 0) return { error: "Không tìm thấy sản phẩm này" };
+            if (rows.length === 0) return { error: `Không tìm thấy sản phẩm "${productName}"` };
             return rows[0];
         }
         
@@ -269,7 +270,10 @@ const chat = async (req, res) => {
                 const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
                 userId = decoded.ma_tai_khoan;
             } catch (err) {
-                console.log('🤖 Chatbot: JWT verification failed:', err.message);
+                // TokenExpiredError là bình thường với khách vãng lai, không cần log
+                if (err.name !== 'TokenExpiredError') {
+                    console.log('🤖 Chatbot: JWT verification failed:', err.message);
+                }
             }
         }
 
@@ -285,6 +289,15 @@ const chat = async (req, res) => {
             }
             return clone;
         });
+
+        // Giới hạn lịch sử hội thoại: giữ system message + tối đa 6 tin nhắn gần nhất
+        // (tránh vượt giới hạn TPM của Groq free tier)
+        const MAX_HISTORY = 6;
+        const systemMsgs   = sanitizedMessages.filter(m => m.role === 'system');
+        const nonSystemMsgs= sanitizedMessages.filter(m => m.role !== 'system');
+        if (nonSystemMsgs.length > MAX_HISTORY) {
+            sanitizedMessages = [...systemMsgs, ...nonSystemMsgs.slice(-MAX_HISTORY)];
+        }
 
         // 1. Thực hiện RAG để lấy thông tin tài liệu cửa hàng liên quan
         const lastUserMessage = [...sanitizedMessages].reverse().find(msg => msg.role === 'user');
@@ -306,13 +319,19 @@ const chat = async (req, res) => {
 - tai_khoan(ma_tai_khoan, ten_dang_nhap, email, vai_tro, trang_thai)
 Lưu ý: cột giá của sản phẩm là "gia" (không phải gia_ban), cột giá trong chi tiết đơn hàng là "gia_ban".`;
 
+        const productRules = `\n\n[QUY TẮC BẮT BUỘC KHI TƯ VẤN SẢN PHẨM]:
+1. TUYỆT ĐỐI không được tự nghĩ ra hoặc bịa đặt thông tin sản phẩm, giá cả, tên sản phẩm từ kiến thức huấn luyện. Mọi thông tin sản phẩm PHẢI lấy từ database thực tế của cửa hàng thông qua các công cụ (tools) được cung cấp.
+2. Khi khách hỏi về sản phẩm, tìm kiếm sản phẩm, giá cả, tồn kho → BẮT BUỘC phải gọi tool "tim_kiem_san_pham" hoặc "get_product_detail" để lấy dữ liệu thực tế.
+3. Chỉ đề cập tên sản phẩm và giá cả một cách tự nhiên bằng chữ thường. TUYỆT ĐỐI KHÔNG tự tạo ra bất kỳ đường dẫn markdown nào dạng [Tên](...) trong câu trả lời văn bản, vì hệ thống sẽ tự động đính kèm thẻ sản phẩm trực quan (gồm ảnh và link chi tiết) ở bên dưới.
+4. Nếu không tìm thấy sản phẩm phù hợp trong database, hãy thành thật thông báo cửa hàng không có sản phẩm này thay vì gợi ý sản phẩm bịa đặt.`;
+
         let systemMessageIndex = sanitizedMessages.findIndex(msg => msg.role === 'system');
         if (systemMessageIndex !== -1) {
-            sanitizedMessages[systemMessageIndex].content += dbSchemaContext + ragContext;
+            sanitizedMessages[systemMessageIndex].content += dbSchemaContext + productRules + ragContext;
         } else {
             sanitizedMessages.unshift({ 
                 role: 'system', 
-                content: `Bạn là trợ lý ảo của cửa hàng công nghệ "Yến Nhi Tech". Hãy trả lời ngắn gọn, thân thiện và hữu ích bằng tiếng Việt.${dbSchemaContext}${ragContext}` 
+                content: `Bạn là trợ lý ảo của cửa hàng công nghệ "Yến Nhi Tech". Hãy trả lời ngắn gọn, thân thiện và hữu ích bằng tiếng Việt.${dbSchemaContext}${productRules}${ragContext}` 
             });
         }
 
@@ -347,13 +366,13 @@ Lưu ý: cột giá của sản phẩm là "gia" (không phải gia_ban), cột 
                 type: 'function',
                 function: {
                     name: 'get_product_detail',
-                    description: 'Xem thông tin chi tiết và số lượng tồn kho của một sản phẩm cụ thể theo mã sản phẩm (ma_san_pham).',
+                    description: 'Xem thông tin chi tiết, giá, số lượng tồn kho của một sản phẩm cụ thể theo tên sản phẩm. Dùng khi khách hỏi chi tiết về một sản phẩm.',
                     parameters: {
                         type: 'object',
                         properties: {
-                            ma_san_pham: { type: 'number', description: 'Mã số ID của sản phẩm (ví dụ: 1, 2)' }
+                            ten_san_pham: { type: 'string', description: 'Tên sản phẩm cần xem chi tiết (ví dụ: "iPhone 15", "MacBook Air")' }
                         },
-                        required: ['ma_san_pham']
+                        required: ['ten_san_pham']
                     }
                 }
             },
@@ -402,26 +421,49 @@ Lưu ý: cột giá của sản phẩm là "gia" (không phải gia_ban), cột 
             }
         ];
 
+        // Hàm gửi request lên Groq với retry tự động khi gặp rate limit
+        async function callGroq(payload, label) {
+            for (let attempt = 1; attempt <= 3; attempt++) {
+                const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method : 'POST',
+                    headers: { 'Authorization': `Bearer ${GROQ_API_KEY}`, 'Content-Type': 'application/json' },
+                    body   : JSON.stringify(payload)
+                });
+                if (r.ok) return r;
+                const errText = await r.text();
+                let errObj;
+                try { errObj = JSON.parse(errText); } catch(e) { errObj = {}; }
+                // Nếu là rate limit → đợi rồi thử lại
+                if (r.status === 429 && attempt < 3) {
+                    // Lấy thời gian chờ từ header hoặc dùng fallback 10s
+                    const retryAfterHeader = r.headers && r.headers.get ? r.headers.get('retry-after') : null;
+                    const waitMs = retryAfterHeader ? parseFloat(retryAfterHeader) * 1000 : 10000;
+                    console.warn(`⚠️ Groq rate limit (${label}) lượt ${attempt}/3. Chờ ${waitMs}ms rồi thử lại...`);
+                    await new Promise(resolve => setTimeout(resolve, waitMs));
+                    continue;
+                }
+                // Lỗi khác hoặc hết lượt retry
+                console.error(`❌ Groq API Error ${label}:`, errText);
+                return r; // trả về response lỗi để xử lý bên ngoài
+            }
+        }
+
         // Lượt gọi 1: Gửi yêu cầu lên Groq AI kèm danh sách công cụ
         let response;
         try {
-            response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${GROQ_API_KEY}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    model: 'llama-3.3-70b-versatile', 
-                    messages: sanitizedMessages, 
-                    temperature: 0.0, 
-                    max_tokens: 1024, 
-                    tools: tools, 
-                    tool_choice: 'auto' 
-                })
-            });
+            response = await callGroq({
+                model       : 'llama-3.3-70b-versatile',
+                messages    : sanitizedMessages,
+                temperature : 0.0,
+                max_tokens  : 512,
+                tools       : tools,
+                tool_choice : 'auto'
+            }, '1');
         } catch (fetchErr) {
             console.error('❌ Fetch Error (Groq API call 1):', fetchErr.message);
             console.error('❌ Full error:', fetchErr);
-            return res.status(500).json({ 
-                error: 'Không thể kết nối đến Groq API. Vui lòng kiểm tra kết nối mạng.',
+            return res.status(500).json({
+                error  : 'Không thể kết nối đến Groq API. Vui lòng kiểm tra kết nối mạng.',
                 details: fetchErr.message 
             });
         }
@@ -449,9 +491,11 @@ Lưu ý: cột giá của sản phẩm là "gia" (không phải gia_ban), cột 
                 try {
                     toolResult = await executeTool(toolName, args, userId);
                     
-                    // Nếu là kết quả tìm kiếm sản phẩm, lưu lại danh sách sản phẩm để hiển thị dưới dạng card
+                    // Nếu là kết quả tìm kiếm hoặc chi tiết sản phẩm, lưu lại danh sách sản phẩm để hiển thị dưới dạng card
                     if ((toolName === 'tim_kiem_san_pham' || toolName === 'get_san_pham_moi_nhat') && toolResult.products) {
                         productsToDisplay = productsToDisplay.concat(toolResult.products);
+                    } else if (toolName === 'get_product_detail' && toolResult && !toolResult.error) {
+                        productsToDisplay.push(toolResult);
                     }
                     
                     // Ghi nhận hành động xem sản phẩm của người dùng (nếu có userId và có sản phẩm liên quan)
@@ -464,7 +508,7 @@ Lưu ý: cột giá của sản phẩm là "gia" (không phải gia_ban), cột 
                             }
                         } else if (toolName === 'get_product_detail' && toolResult && toolResult.ma_san_pham) {
                             try {
-                                    await RecommendationEngine.trackUserAction(userId, toolResult.ma_san_pham, 'chatbot_view', 2);
+                                await RecommendationEngine.trackUserAction(userId, toolResult.ma_san_pham, 'chatbot_view', 2);
                             } catch (trackErr) {}
                         }
                     }
@@ -484,22 +528,18 @@ Lưu ý: cột giá của sản phẩm là "gia" (không phải gia_ban), cột 
             // Lượt gọi 2: Gửi kết quả của các công cụ lại cho Groq để sinh phản hồi cuối cùng
             let secondResponse;
             try {
-                secondResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                    method: 'POST',
-                    headers: { 'Authorization': `Bearer ${GROQ_API_KEY}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        model: 'llama-3.3-70b-versatile',
-                        messages: secondTurnMessages,
-                        temperature: 0.0,
-                        max_tokens: 1024
-                    })
-                });
+                secondResponse = await callGroq({
+                    model      : 'llama-3.3-70b-versatile',
+                    messages   : secondTurnMessages,
+                    temperature: 0.0,
+                    max_tokens : 512
+                }, '2');
             } catch (fetchErr) {
                 console.error('❌ Fetch Error (Groq API call 2):', fetchErr.message);
                 console.error('❌ Full error:', fetchErr);
-                return res.status(500).json({ 
-                    error: 'Không thể kết nối đến Groq API ở lượt 2. Vui lòng kiểm tra kết nối mạng.',
-                    details: fetchErr.message 
+                return res.status(500).json({
+                    error  : 'Không thể kết nối đến Groq API ở lượt 2. Vui lòng kiểm tra kết nối mạng.',
+                    details: fetchErr.message
                 });
             }
 
