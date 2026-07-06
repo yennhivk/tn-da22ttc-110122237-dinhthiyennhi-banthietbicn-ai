@@ -511,19 +511,19 @@ function displayReviews(reviews) {
     // Hiển thị danh sách đánh giá
     if (reviewCount === 0) {
         container.innerHTML = `
-            <div class="text-center py-8 text-gray-500">
+            <div class="text-center py-12 text-gray-500 bg-gray-50 rounded-2xl border border-gray-100">
                 <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                 </svg>
-                <p>Chua c� d�nh gi� n�o cho s?n ph?m n�y</p>
-                <p class="text-sm mt-2">H�y l� ngu?i d?u ti�n d�nh gi�!</p>
+                <p>Chưa có đánh giá nào cho sản phẩm này</p>
+                <p class="text-sm mt-2">Hãy là người đầu tiên đánh giá!</p>
             </div>
         `;
         return;
     }
     
     container.innerHTML = `
-        <h3 class="font-bold text-lg text-gray-900 mb-4">🚚 T?t c? d�nh gi� (${reviewCount})</h3>
+        <h3 class="font-bold text-lg text-gray-900 mb-4">🚚 Tất cả đánh giá (${reviewCount})</h3>
         <div class="space-y-4">
             ${reviews.map(review => `
                 <div class="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition">
@@ -534,8 +534,8 @@ function displayReviews(reviews) {
                         <div class="flex-1">
                             <div class="flex items-center justify-between mb-2">
                                 <div>
-                                    <span class="font-semibold text-gray-900">${review.ten_dang_nhap || 'Ngu?i d�ng'}</span>
-                                    <span class="text-green-600 text-xs ml-2 bg-green-100 px-2 py-0.5 rounded-full">? �� mua h�ng</span>
+                                    <span class="font-semibold text-gray-900">${review.ten_dang_nhap || 'Người dùng'}</span>
+                                    <span class="text-green-600 text-xs ml-2 bg-green-100 px-2 py-0.5 rounded-full">✓ Đã mua hàng</span>
                                 </div>
                                 <span class="text-gray-400 text-sm">${formatDate(review.ngay_tao)}</span>
                             </div>
@@ -574,7 +574,7 @@ async function submitReview(event) {
     
     const token = localStorage.getItem('token');
     if (!token) {
-        alert('Phi�n dang nh?p d� h?t h?n. Vui l�ng dang nh?p l?i!');
+        alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!');
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         window.location.href = 'login.html';
@@ -583,12 +583,12 @@ async function submitReview(event) {
     
     const content = document.getElementById('reviewContent').value.trim();
     if (!content) {
-        alert('Vui l�ng nh?p n?i dung d�nh gi�!');
+        alert('Đánh giá của bạn đã được gửi thành công!');
         return;
     }
     
-    if (content.length < 10) {
-        alert('N?i dung d�nh gi� ph?i c� �t nh?t 10 k� t?!');
+    if (content.length < 2) {
+        alert('Đánh giá của bạn đã được gửi thành công!');
         return;
     }
     
@@ -609,7 +609,7 @@ async function submitReview(event) {
         
         if (response.status === 401) {
             // Token het han hoac khong hop le
-            alert('Phi�n dang nh?p d� h?t h?n. Vui l�ng dang nh?p l?i!');
+            alert('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!');
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             window.location.href = 'login.html';
@@ -617,17 +617,17 @@ async function submitReview(event) {
         }
         
         if (result.success) {
-            alert('��nh gi� c?a b?n d� du?c g?i th�nh c�ng!');
+            alert('Đánh giá của bạn đã được gửi thành công!');
             document.getElementById('reviewContent').value = '';
             selectStar(5);
             // Reload product de cap nhat danh gia
             loadProductDetail(currentProduct.ma_san_pham);
         } else {
-            alert(result.message || 'C� l?i x?y ra khi g?i d�nh gi�!');
+            alert(result.message || 'Có lỗi xảy ra khi gửi đánh giá!');
         }
     } catch (error) {
-        console.error('L?i g?i d�nh gi�:', error);
-        alert('Kh�ng th? k?t n?i d?n server!');
+        console.error('Lỗi gửi đánh giá:', error);
+        alert('Không thể kết nối đến server!');
     }
 }
 
@@ -1330,7 +1330,7 @@ window.addEventListener('beforeunload', () => {
 });
 
 // Ghi nhận hành vi CLICK vào sản phẩm bằng cách lắng nghe click toàn cục trên các liên kết chi tiết sản phẩm (sản phẩm liên quan)
-document.addEventListener('click', function(e) {
+document.addEventListener('click', async function(e) {
     const link = e.target.closest('a');
     if (link && link.href && link.href.includes('product-detail.html')) {
         try {
@@ -1342,19 +1342,25 @@ document.addEventListener('click', function(e) {
                 if (token && userStr) {
                     const userId = JSON.parse(userStr).ma_tai_khoan;
                     if (userId) {
-                        fetch(`${API_URL}/recommendations/track`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${token}`
-                            },
-                            body: JSON.stringify({
-                                userId: userId,
-                                productId: Number(productId),
-                                actionType: 'click',
-                                actionValue: 1
-                            })
-                        }).catch(err => console.error('Error tracking click:', err));
+                        e.preventDefault(); // Ngăn chuyển hướng ngay lập tức
+                        try {
+                            await fetch(`${API_URL}/recommendations/track`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${token}`
+                                },
+                                body: JSON.stringify({
+                                    userId: userId,
+                                    productId: Number(productId),
+                                    actionType: 'click',
+                                    actionValue: 1
+                                })
+                            });
+                        } catch (err) {
+                            console.error('Error tracking click:', err);
+                        }
+                        window.location.href = link.href; // Chuyển hướng sau khi track xong
                     }
                 }
             }

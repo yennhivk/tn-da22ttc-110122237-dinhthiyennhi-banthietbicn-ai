@@ -366,10 +366,10 @@ router.post('/:id/reviews', async (req, res) => {
             });
         }
         
-        if (!noi_dung || noi_dung.trim().length < 10) {
+        if (!noi_dung || noi_dung.trim().length < 2) {
             return res.status(400).json({
                 success: false,
-                message: 'Nội dung đánh giá phải có ít nhất 10 ký tự'
+                message: 'Nội dung đánh giá phải có ít nhất 2 ký tự'
             });
         }
         

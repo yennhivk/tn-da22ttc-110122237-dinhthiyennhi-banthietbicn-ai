@@ -921,8 +921,34 @@ function formatPrice(price) {
     }).format(price);
 }
 
-// View product details
-function viewProduct(productId) {
+// View product details with click tracking
+async function viewProduct(productId) {
+    const token = localStorage.getItem('token');
+    const userStr = localStorage.getItem('user');
+    if (token && userStr) {
+        try {
+            const user = JSON.parse(userStr);
+            const userId = user.ma_tai_khoan;
+            if (userId) {
+                // Sử dụng await để đảm bảo request gửi thành công trước khi unload trang
+                await fetch(`${API_URL}/recommendations/track`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        userId: userId,
+                        productId: Number(productId),
+                        actionType: 'click',
+                        actionValue: 1
+                    })
+                }).catch(err => console.error('Error tracking click:', err));
+            }
+        } catch (e) {
+            console.error('Error tracking click on viewProduct:', e);
+        }
+    }
     window.location.href = `product-detail.html?id=${productId}`;
 }
 
@@ -1243,37 +1269,4 @@ function shouldOpenProductTabFromUrl() {
     return Boolean(params.get('category') || params.get('brand') || params.get('search'));
 }
 
-// Ghi nhận hành vi CLICK vào sản phẩm bằng cách lắng nghe click toàn cục trên các liên kết chi tiết sản phẩm
-document.addEventListener('click', function(e) {
-    const link = e.target.closest('a');
-    if (link && link.href && link.href.includes('product-detail.html')) {
-        try {
-            const url = new URL(link.href);
-            const productId = url.searchParams.get('id');
-            if (productId) {
-                const token = localStorage.getItem('token');
-                const userStr = localStorage.getItem('user');
-                if (token && userStr) {
-                    const userId = JSON.parse(userStr).ma_tai_khoan;
-                    if (userId) {
-                        fetch(`${API_URL}/recommendations/track`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${token}`
-                            },
-                            body: JSON.stringify({
-                                userId: userId,
-                                productId: Number(productId),
-                                actionType: 'click',
-                                actionValue: 1
-                            })
-                        }).catch(err => console.error('Error tracking click:', err));
-                    }
-                }
-            }
-        } catch (err) {
-            console.error('Error parsing link for click tracking:', err);
-        }
-    }
-});
+// Ghi nhận hành vi CLICK vào sản phẩm được xử lý trực tiếp trong hàm viewProduct để tránh lỗi trích xuất thẻ 'a'

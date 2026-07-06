@@ -2083,32 +2083,32 @@
                     badgeText = '🔥 Bán chạy';
                     badgeColor = 'bg-amber-600';
                 }
-                const scoreText = product.match_score ? ` (${product.match_score}%)` : '';
-                badgeHtml = `
-                    <div class="absolute top-3 right-3 z-10">
-                        <span class="${badgeColor} text-white text-[10px] sm:text-xs font-bold px-2 py-1 rounded-lg shadow-md flex items-center gap-1">
-                            ${badgeText}${scoreText}
-                        </span>
-                    </div>
-                `;
-            }
+            const scoreText = product.match_score ? ` (${product.match_score}%)` : '';
+            badgeHtml = `
+                <div class="absolute top-3 right-3 z-10">
+                    <span class="${badgeColor} text-white text-[10px] sm:text-xs font-bold px-2 py-1 rounded-lg shadow-md flex items-center gap-1">
+                        ${badgeText}${scoreText}
+                    </span>
+                </div>
+            `;
+        }
 
-            return `
-                <div class="bg-white rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 border border-slate-100 relative group flex flex-col h-full transform hover:-translate-y-1 ${outOfStockClass}">
-                    ${outOfStockOverlay}
-                    ${badgeHtml}
-                    <!-- Freeship Badge -->
-                    <div class="absolute top-3 left-3 z-10">
-                        <div class="bg-red-600 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg">
-                            <div class="text-center">
-                                <div class="text-[10px] font-bold leading-tight">FREESHIP</div>
-                                <div class="text-[8px] leading-tight">TOÀN QUỐC</div>
-                            </div>
+        return `
+            <div class="bg-white rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 border border-slate-100 relative group flex flex-col h-full transform hover:-translate-y-1 ${outOfStockClass}">
+                ${outOfStockOverlay}
+                ${badgeHtml}
+                <!-- Freeship Badge -->
+                <div class="absolute top-3 left-3 z-10">
+                    <div class="bg-red-600 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg">
+                        <div class="text-center">
+                            <div class="text-[10px] font-bold leading-tight">FREESHIP</div>
+                            <div class="text-[8px] leading-tight">TOÀN QUỐC</div>
                         </div>
                     </div>
-                    
-                    <!-- Product Image -->
-                    <div class="relative p-4 bg-slate-50/50 cursor-pointer overflow-hidden aspect-square flex items-center justify-center" onclick="window.location.href='user/pages/product-detail.html?id=${productId}'">
+                </div>
+                
+                <!-- Product Image -->
+                <div class="relative p-4 bg-slate-50/50 cursor-pointer overflow-hidden aspect-square flex items-center justify-center" onclick="viewProduct(${productId})">
                         <img src="${imageUrl}" 
                              alt="${name}" 
                              class="product-image w-full h-40 md:h-48 object-contain group-hover:scale-105 transition-transform duration-500"
@@ -2128,10 +2128,10 @@
                         </div>
                         
                         <!-- Product Name -->
-                        <h3 class="font-extrabold text-sm sm:text-base text-slate-800 mb-2 line-clamp-2 h-12 cursor-pointer hover:text-red-600 transition-colors" onclick="window.location.href='user/pages/product-detail.html?id=${productId}'">
+                        <h3 class="font-extrabold text-sm sm:text-base text-slate-800 mb-2 line-clamp-2 h-12 cursor-pointer hover:text-red-600 transition-colors" onclick="viewProduct(${productId})">
                             ${name}
                         </h3>
-
+ 
                         <!-- Rating Stars -->
                         <div class="flex items-center gap-1 mb-3">
                             <span class="text-sm font-bold">${starString}</span>
@@ -2173,7 +2173,7 @@
                                 </button>
                                 
                                 <!-- Nút Xem chi tiết -->
-                                <button onclick="window.location.href='user/pages/product-detail.html?id=${productId}'" 
+                                <button onclick="viewProduct(${productId})" 
                                         class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-2 rounded-xl transition duration-200 flex items-center justify-center shadow-sm"
                                         title="Xem chi tiết">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2250,40 +2250,35 @@
 
         loadPopularProducts();
 
-        // Ghi nhận hành vi CLICK vào sản phẩm bằng cách lắng nghe click toàn cục trên các liên kết chi tiết sản phẩm
-        document.addEventListener('click', function(e) {
-            const link = e.target.closest('a');
-            if (link && link.href && link.href.includes('product-detail.html')) {
+        // Hàm chuyển hướng và ghi nhận hành vi click vào sản phẩm
+        async function viewProduct(productId) {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            if (token && userStr) {
                 try {
-                    const url = new URL(link.href);
-                    const productId = url.searchParams.get('id');
-                    if (productId) {
-                        const token = localStorage.getItem('token');
-                        const userStr = localStorage.getItem('user');
-                        if (token && userStr) {
-                            const userId = JSON.parse(userStr).ma_tai_khoan;
-                            if (userId) {
-                                fetch(`${API_BASE_URL}/recommendations/track`, {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'Authorization': `Bearer ${token}`
-                                    },
-                                    body: JSON.stringify({
-                                        userId: userId,
-                                        productId: Number(productId),
-                                        actionType: 'click',
-                                        actionValue: 1
-                                    })
-                                }).catch(err => console.error('Error tracking click:', err));
-                            }
-                        }
+                    const user = JSON.parse(userStr);
+                    const userId = user.ma_tai_khoan;
+                    if (userId) {
+                        await fetch(`${API_BASE_URL}/recommendations/track`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({
+                                userId: userId,
+                                productId: Number(productId),
+                                actionType: 'click',
+                                actionValue: 1
+                            })
+                        }).catch(err => console.error('Error tracking click:', err));
                     }
-                } catch (err) {
-                    console.error('Error parsing link for click tracking:', err);
+                } catch (e) {
+                    console.error('Error tracking click on viewProduct:', e);
                 }
             }
-        });
+            window.location.href = `user/pages/product-detail.html?id=${productId}`;
+        }
 
         // Load sản phẩm cùng danh mục khi user đã mua sản phẩm bất kỳ
         async function loadInterestedCategoryProducts() {

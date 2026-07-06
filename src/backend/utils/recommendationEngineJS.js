@@ -446,11 +446,10 @@ class RecommendationEngineJS {
                 p.diem_danh_gia = Number(p.diem_danh_gia || 0);
                 p.so_luong_danh_gia = Number(p.so_luong_danh_gia || 0);
                 
-                // Bayesian Average rating (thang 0-5)
                 const v = p.so_luong_danh_gia;
                 const R = p.diem_danh_gia;
                 const bayesian_rating = parseFloat(((v * R + m * C) / (v + m)).toFixed(2));
-                p.popularity_score = parseFloat(((p.luot_mua * 40) + (p.luot_click * 20) + (p.luot_xem_50s * 20) + (p.luot_tim * 10) + (bayesian_rating * 10)).toFixed(1));
+                p.popularity_score = Math.round((p.luot_mua * 40) + (p.luot_click * 20) + (p.luot_xem_50s * 20) + (p.luot_tim * 10) + (p.diem_danh_gia * 10));
             });
             
             // Sort by popularity_score DESC, then by luot_mua DESC, then by ma_san_pham DESC
@@ -498,7 +497,7 @@ class RecommendationEngineJS {
             
             // Lấy tất cả sản phẩm cùng danh mục
             const [candidates] = await db.query(`
-                SELECT sp.ma_san_pham, sp.ten_san_pham, sp.gia, sp.thuong_hieu, sp.mo_ta, a.duong_dan_anh
+                SELECT sp.ma_san_pham, sp.ten_san_pham, sp.gia, sp.thuong_hieu, sp.mo_ta, a.duong_dan_anh AS anh_chinh
                 FROM san_pham sp
                 LEFT JOIN anh_san_pham a ON sp.ma_san_pham = a.ma_san_pham AND a.la_anh_chinh = 1
                 WHERE sp.ma_danh_muc = ? AND sp.ma_san_pham != ? AND sp.trang_thai = 'hien_thi'

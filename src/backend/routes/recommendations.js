@@ -763,9 +763,8 @@ router.get('/popularity-stats', async (req, res) => {
             const R = p.diem_danh_gia;
             p.bayesian_rating = parseFloat(((v * R + m * C) / (v + m)).toFixed(2));
 
-            // Calculate popularity score (tổng trọng số = 100)
-            // Mua: x40 | Click: x20 | Xem(>30s): x20 | Tìm kiếm: x10 | Đánh giá (Bayesian): x10
-            p.popularity_score = parseFloat(((p.luot_mua * 40) + (p.luot_click * 20) + (p.luot_xem_50s * 20) + (p.luot_tim * 10) + (p.bayesian_rating * 10)).toFixed(1));
+            // Tính điểm phổ biến dựa trên điểm đánh giá trung bình hiển thị (diem_danh_gia) để khớp với giao diện
+            p.popularity_score = Math.round((p.luot_mua * 40) + (p.luot_click * 20) + (p.luot_xem_50s * 20) + (p.luot_tim * 10) + (p.diem_danh_gia * 10));
             
             // Parse recent interactions
             p.recent_users = [];
